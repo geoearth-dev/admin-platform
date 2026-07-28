@@ -1,0 +1,100 @@
+app:
+  openapi:
+    title: 仿真后台接口文档
+    version: 1.0.0
+    description: AFsim仿真系统后端接口说明
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: sim
+#  jackson:
+#    property-naming-strategy: SNAKE_CASE
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      url: jdbc:postgresql://139.186.204.78:5432/fz_project
+      username: ${DB_USERNAME:fz_user}
+      password: ${DB_PASSWORD}
+      driver-class-name: org.postgresql.Driver
+
+      # 连接池初始化时创建的连接数量
+      initial-size: 5
+      # 连接池中最小空闲连接数
+      min-idle: 5
+      # 连接池中最大活动连接数
+      maxActive: 20
+      # 连接池等待连接的最长时间（毫秒）
+      maxWait: 60000
+
+      # 用于检测连接是否有效的SQL语句
+      validation-query: SELECT 1
+      # 是否在空闲时检测连接的有效性
+      test-while-idle: true
+      # 借用连接时是否测试连接的有效性
+      test-on-borrow: false
+      # 归还连接时是否测试连接的有效性
+      test-on-return: false
+      # SQL统计
+      filter:
+        stat:
+          enabled: true
+          log-slow-sql: true
+          slow-sql-millis: 2000
+
+
+# MyBatis Plus配置
+mybatis-plus:
+  # Mapper XML文件位置
+  mapper-locations: classpath*:/mapper/**/*.xml
+  # 实体类别名包
+  type-aliases-package: com.xyy.sim.model.entity
+  configuration:
+    # 转换驼峰命名
+    map-underscore-to-camel-case: true
+    # 开发阶段 控制台打印SQL
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  global-config:
+    # 关闭MyBatis-Plus启动Banner
+    banner: false
+    db-config:
+      # 主键类型 AUTO 自增 NONE 空 INPUT 用户输入 ASSIGN_ID 雪花 ASSIGN_UUID 唯一 UUID
+      id-type: ASSIGN_ID
+
+scalar:
+  enabled: true
+  path: /api
+  url: /v3/api-docs
+  page-title: 仿真后台接口文档
+  favicon: /favicon.ico
+  # 隐藏开发者工具 always localhost never
+  show-developer-tools: never
+  default-http-client:
+    target-key: node
+    client-key: axios
+  agent:
+    disabled: true
+  # 隐藏Models数据模型区域
+#  hide-models: true
+  # 隐藏“打开API客户端”按钮
+  hide-client-button: true
+  document-download-type: none
+  custom-css: |
+    .items-center a[href="https://www.scalar.com"]{
+      display: none !important;
+    }
+# 日志配置
+logging:
+  level:
+    # 全局默认级别
+    root: INFO
+    # 项目的日志级别
+    com.xyy.sim: WARN
+    # 开发环境输出MyBatis SQL
+    com.xyy.sim.mapper: DEBUG
+    # Spring框架日志
+    org.springframework: INFO
+    # Druid日志
+    com.alibaba.druid: INFO
