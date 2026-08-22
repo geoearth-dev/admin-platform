@@ -2,23 +2,35 @@ app:
   openapi:
     title: 仿真后台接口文档
     version: 1.0.0
-    description: AFsim仿真系统后端接口说明
+    description: Admin Framework API
 
 server:
   port: 8080
 
 spring:
   application:
-    name: sim
+    name: admin-framework
+  # Redis服务器连接
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password:
+      database: 0
+      connect-timeout: 3s
+      timeout: 3s
+  # Spring Cache 缓存规则
+  cache:
+    type: redis
 #  jackson:
 #    property-naming-strategy: SNAKE_CASE
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
-      url: jdbc:postgresql://139.186.204.78:5432/fz_project
-      username: ${DB_USERNAME:fz_user}
+      url: jdbc:mysql://localhost:3306/admin_framework
+      username: ${DB_USERNAME:root}
       password: ${DB_PASSWORD}
-      driver-class-name: org.postgresql.Driver
+      driver-class-name: com.mysql.cj.jdbc.Driver
 
       # 连接池初始化时创建的连接数量
       initial-size: 5
@@ -48,9 +60,9 @@ spring:
 # MyBatis Plus配置
 mybatis-plus:
   # Mapper XML文件位置
-  mapper-locations: classpath*:/mapper/**/*.xml
+  mapper-locations: classpath*:/mapper/**/*Mapper.xml
   # 实体类别名包
-  type-aliases-package: com.xyy.sim.model.entity
+  type-aliases-package: dev.geoearth.admin.model.entity
   configuration:
     # 转换驼峰命名
     map-underscore-to-camel-case: true
@@ -62,6 +74,9 @@ mybatis-plus:
     db-config:
       # 主键类型 AUTO 自增 NONE 空 INPUT 用户输入 ASSIGN_ID 雪花 ASSIGN_UUID 唯一 UUID
       id-type: ASSIGN_ID
+      logic-delete-field: delFlag
+      logic-not-delete-value: "0"
+      logic-delete-value: "1"
 
 scalar:
   enabled: true
@@ -91,10 +106,10 @@ logging:
     # 全局默认级别
     root: INFO
     # 项目的日志级别
-    com.xyy.sim: WARN
+    dev.geoearth.admin: debug
     # 开发环境输出MyBatis SQL
-    com.xyy.sim.mapper: DEBUG
+    dev.geoearth.admin.mapper: debug
     # Spring框架日志
-    org.springframework: INFO
+    org.springframework: info
     # Druid日志
-    com.alibaba.druid: INFO
+    com.alibaba.druid: debug
