@@ -9,7 +9,7 @@ server:
 
 spring:
   application:
-    name: admin-framework
+    name: admin-platform
   # Redis服务器连接
   data:
     redis:

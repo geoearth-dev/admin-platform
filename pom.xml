@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>dev.geoearth</groupId>
-    <artifactId>admin-framework</artifactId>
+    <artifactId>admin-platform</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>admin-framework</name>
-    <description>A modern admin framework built with Spring Boot</description>
+    <name>admin-platform</name>
+    <description>A modern admin platform built with Spring Boot</description>
     <url/>
     <licenses>
         <license/>
