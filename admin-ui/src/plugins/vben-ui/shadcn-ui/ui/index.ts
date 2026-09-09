@@ -26,7 +26,7 @@ export * from './breadcrumb';
 export * from './hover-card';
 export * from './pin-input';
 export * from './pagination';
+export * from './resizable';
 // export * from './accordion';
-// export * from './resizable';
 // export * from './textarea';
 // export * from './tree';

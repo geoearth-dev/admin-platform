@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { Recordable } from '@/types';
-import type { SettingProps } from './types';
+import type { SettingChange, SettingProps } from './types'
 
 import {
   FormControl,
@@ -9,26 +8,34 @@ import {
   FormItem,
   FormLabel,
   Switch,
-} from '@/plugins/vben-ui/shadcn-ui';
+} from '@/plugins/vben-ui/shadcn-ui'
 
 withDefaults(defineProps<SettingProps>(), {
   formSchema: () => [],
-});
+})
 
 const emit = defineEmits<{
-  change: [Recordable<unknown>];
-}>();
+  change: [SettingChange]
+}>()
 
 function handleChange(fieldName: string, value: boolean) {
-  emit('change', { fieldName, value });
+  emit('change', { fieldName, value })
 }
 </script>
 <template>
   <form class="space-y-8">
     <div class="space-y-4">
-      <template v-for="item in formSchema" :key="item.fieldName">
-        <FormField type="checkbox" :name="item.fieldName">
-          <FormItem class="flex flex-row items-center justify-between rounded-lg border p-4">
+      <template
+        v-for="item in formSchema"
+        :key="item.fieldName"
+      >
+        <FormField
+          type="checkbox"
+          :name="item.fieldName"
+        >
+          <FormItem
+            class="flex flex-row items-center justify-between rounded-lg border p-4"
+          >
             <div class="space-y-0.5">
               <FormLabel class="text-base"> {{ item.label }} </FormLabel>
               <FormDescription>
@@ -38,6 +45,7 @@ function handleChange(fieldName: string, value: boolean) {
             <FormControl>
               <Switch
                 :model-value="item.value"
+                :disabled="disabled"
                 @update:model-value="handleChange(item.fieldName, $event)"
               />
             </FormControl>

@@ -25,7 +25,7 @@ import {
 import { objectOmit, refDebounced, watchDebounced } from '@vueuse/core';
 
 import { fetchIconsData } from './icons';
-import { usePagination } from '@/plugins/effects/hooks';
+import { usePagination } from '@/plugins/effects/hooks/use-pagination';
 import { isFunction } from '@/utils/inference';
 
 const props = withDefaults(defineProps<IconPickerProps>(), {

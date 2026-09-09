@@ -11,7 +11,6 @@ import { systemPublicRouter } from './system/public'
  * 本地访问条件放入 meta.permissions（权限码）或 meta.authority（角色）。
  * 详情页使用 meta.activePath 指定菜单高亮；redirect 必须是真实跳转目标。
  */
-
 // 启动时注册的固定路由；是否允许匿名访问由守卫和 meta.ignoreAccess 决定。
 const constantRoutes: RouteRecordRaw[] = [
   ...systemPublicRouter,

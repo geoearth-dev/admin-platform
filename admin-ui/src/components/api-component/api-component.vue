@@ -109,6 +109,7 @@ const getOptions = computed(() => {
 
 const bindProps = computed(() => {
   return {
+    loading: loading.value,
     [props.modelPropName]: unref(modelValue),
     [props.optionsPropName]: unref(getOptions),
     [`onUpdate:${props.modelPropName}`]: (val: unknown) => {

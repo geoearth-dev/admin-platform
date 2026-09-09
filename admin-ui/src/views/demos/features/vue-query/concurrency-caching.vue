@@ -1,12 +1,8 @@
 <script lang="ts" setup>
-import { useQuery, useQueryClient } from '@tanstack/vue-query';
+import { useQuery, useQueryClient } from '@tanstack/vue-query'
 
-import { listMenu } from '@/api/system/admin/menu';
-import { useVbenForm } from '@/plugins/vben-ui/form-ui';
-import { ElSelectV2 } from 'element-plus';
-// import 'element-plus/es/components/select-v2/style/css';
-import { ApiComponent } from '@/components/api-component';
-import { markRaw } from 'vue';
+import { listMenu } from '@/api/system/admin/menu'
+import { useVbenForm } from '@/plugins/vben-ui/form-ui'
 
 const queryOptions = {
   queryKey: ['demo', 'api', 'options'],
@@ -14,26 +10,25 @@ const queryOptions = {
   // 五分钟内复用新鲜数据。
   staleTime: 5 * 60 * 1000,
   retry: false,
-};
-const count = 4;
+}
+const count = 4
+const queryClient = useQueryClient()
 
 const { dataUpdatedAt } = useQuery({
   ...queryOptions,
   enabled: false,
-});
+})
 
 async function fetchOptions() {
-  const queryClient = useQueryClient();
-  return queryClient.query(queryOptions);
+  return queryClient.query(queryOptions)
 }
 
-const schema = [];
+const schema = []
 
 for (let i = 0; i < count; i++) {
   schema.push({
-    component: markRaw(ApiComponent),
+    component: 'ApiSelect',
     componentProps: {
-      component: markRaw(ElSelectV2),
       api: fetchOptions,
       labelField: 'menuName',
       valueField: 'id',
@@ -41,18 +36,16 @@ for (let i = 0; i < count; i++) {
       clearable: true,
       class: 'w-full',
       placeholder: '请选择菜单',
-      loadingSlot: 'loading',
-      visibleEvent: 'onVisibleChange',
     },
     fieldName: `field${i}`,
     label: `Select ${i + 1}`,
-  });
+  })
 }
 
 const [Form] = useVbenForm({
   schema,
   showDefaultActions: false,
-});
+})
 </script>
 <template>
   <div>

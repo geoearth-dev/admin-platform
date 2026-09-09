@@ -3,12 +3,18 @@ import { computed, ref } from 'vue'
 
 import { Page } from '@/components/page'
 
-import { Button, Card } from '@/plugins/vben-ui/shadcn-ui'
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+} from '@/plugins/vben-ui/shadcn-ui'
 import { ElMessage as message, ElSpace as Space } from 'element-plus'
 
 import { useVbenForm, z } from '@/plugins/vben-ui/form-ui'
 import type {
   BaseFormComponentType,
+  ElementPlusComponentProps,
   VbenFormSchema,
 } from '@/plugins/vben-ui/form-ui'
 
@@ -70,7 +76,7 @@ const outputClass = [
 // 底层 FormSchema 的泛型顺序为：组件名、组件属性映射、表单值。
 type ArrayFormSchema = VbenFormSchema<
   BaseFormComponentType,
-  Record<never, never>,
+  ElementPlusComponentProps,
   ArrayFormValues
 >
 
@@ -164,8 +170,9 @@ const schema: ArrayFormSchema[] = [
       {
         component: 'Switch',
         componentProps: {
-          checkedChildren: '启用',
-          unCheckedChildren: '停用',
+          activeText: '启用',
+          inactiveText: '停用',
+          inlinePrompt: true,
         },
         defaultValue: true,
         fieldName: 'enabled',
@@ -191,7 +198,7 @@ const schema: ArrayFormSchema[] = [
 const [Form, formApi] = useVbenForm<
   ArrayFormValues,
   BaseFormComponentType,
-  Record<never, never>,
+  ElementPlusComponentProps,
   ArraySubmitValues
 >({
   codec: {
@@ -232,20 +239,18 @@ function handlePatchChildRule() {
 <template>
   <Page title="Form Array Demo">
     <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-      <Card title="数组字段">
+      <Card>
+        <CardHeader><CardTitle>数组字段</CardTitle></CardHeader>
         <Form />
         <Space class="mt-4 flex flex-wrap">
-          <Button
-            type="primary"
-            @click="handleSubmit"
-            >提交</Button
-          >
+          <Button @click="handleSubmit">提交</Button>
           <Button @click="handleGetValues">获取值</Button>
           <Button @click="handlePatchChildRule">更新电话规则</Button>
         </Space>
       </Card>
 
-      <Card title="输出">
+      <Card>
+        <CardHeader><CardTitle>输出</CardTitle></CardHeader>
         <pre
           :class="outputClass"
           v-text="formattedSubmitValues"

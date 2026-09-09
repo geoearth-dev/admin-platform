@@ -6,10 +6,7 @@ import type {
   VbenFormAdapterOptions,
 } from './types'
 
-import { defineComponent, h } from 'vue'
-
 import {
-  VbenButton,
   VbenCheckbox,
   Input as VbenInput,
   VbenInputPassword,
@@ -21,34 +18,29 @@ import VbenFormFieldArray from './components/form-field-array.vue'
 import { warnDeprecatedOnce } from './deprecation'
 import { registerFormRules } from './rule-registry'
 import { globalShareState } from '@/plugins/global-state'
+import {
+  elementPlusComponents,
+  elementPlusModelProps,
+} from './adapter/element-plus'
 
 const DEFAULT_MODEL_PROP_NAME = 'modelValue'
 
 export const DEFAULT_FORM_COMMON_CONFIG: FormCommonConfig = {}
 
 export const COMPONENT_MAP: Record<BaseFormComponentType, Component> = {
-  DefaultButton: defineComponent(
-    (_, { attrs, slots }) =>
-      () =>
-        h(VbenButton, { size: 'sm', variant: 'outline', ...attrs }, slots),
-  ),
-  PrimaryButton: defineComponent(
-    (_, { attrs, slots }) =>
-      () =>
-        h(VbenButton, { size: 'sm', variant: 'default', ...attrs }, slots),
-  ),
   VbenCheckbox,
   VbenFormFieldArray,
   VbenInput,
   VbenInputPassword,
   VbenPinInput,
   VbenSelect,
+  ...elementPlusComponents,
 }
 
-// 当前 Reka UI 和本地 VbenCheckbox 都使用 modelValue。
+// 大部分组件使用 modelValue；Upload 的文件列表通过 fileList 绑定。
 export const COMPONENT_BIND_EVENT_MAP: Partial<
   Record<BaseFormComponentType, string>
-> = {}
+> = { ...elementPlusModelProps }
 
 export function setupVbenForm<
   T extends BaseFormComponentType = BaseFormComponentType,
@@ -94,6 +86,7 @@ export function setupVbenForm<
 
   for (const key of Object.keys(COMPONENT_MAP)) {
     // 同时覆盖内置组件，重复 setup 时不会保留上一轮的映射。
-    COMPONENT_BIND_EVENT_MAP[key] = modelPropNameMap?.[key] ?? baseModelPropName
+    COMPONENT_BIND_EVENT_MAP[key] =
+      modelPropNameMap?.[key] ?? elementPlusModelProps[key] ?? baseModelPropName
   }
 }

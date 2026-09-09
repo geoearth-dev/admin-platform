@@ -6,6 +6,7 @@ import type { VbenButtonProps } from '@/plugins/vben-ui/shadcn-ui';
 import type { ClassType, MaybeComputedRef } from '@/types';
 
 import type { FormApi } from './form-api';
+import type { ElementPlusComponentProps, ElementPlusComponentType } from './adapter/types';
 
 export type FormValues = Record<string, unknown>;
 
@@ -31,6 +32,7 @@ export type FormFieldValue<
 export type FormLayout = 'horizontal' | 'inline' | 'vertical';
 
 export type BaseFormComponentType =
+  | ElementPlusComponentType
   | 'DefaultButton'
   | 'PrimaryButton'
   | 'VbenCheckbox'
@@ -204,7 +206,7 @@ type KnownFormFieldName<TValues extends FormValues> =
 export interface VbenFormActionSlotProps<
   TValues extends FormValues = FormValues,
   T extends BaseFormComponentType = BaseFormComponentType,
-  P extends object = Record<never, never>,
+  P extends object = ElementPlusComponentProps,
   TSubmitValues extends FormValues = TValues,
 > {
   formApi: ExtendedFormApi<TValues, T, P, TSubmitValues>;
@@ -214,7 +216,7 @@ export interface VbenFormActionSlotProps<
 export interface VbenFormDefaultSlotProps<
   TValues extends FormValues = FormValues,
   T extends BaseFormComponentType = BaseFormComponentType,
-  P extends object = Record<never, never>,
+  P extends object = ElementPlusComponentProps,
   TSubmitValues extends FormValues = TValues,
 > extends VbenFormActionSlotProps<TValues, T, P, TSubmitValues> {
   shapes: FormShape[];
@@ -224,7 +226,7 @@ export interface VbenFormFieldSlotProps<
   TValues extends FormValues = FormValues,
   TFieldName extends KnownFormFieldName<TValues> = KnownFormFieldName<TValues>,
   T extends BaseFormComponentType = BaseFormComponentType,
-  P extends object = Record<never, never>,
+  P extends object = ElementPlusComponentProps,
   TSubmitValues extends FormValues = TValues,
 > extends VbenFormActionSlotProps<TValues, T, P, TSubmitValues> {
   componentField: FormComponentField<TValues[TFieldName], TFieldName>;
@@ -252,7 +254,7 @@ type VbenFormFieldSlots<
 export type VbenFormSlots<
   TValues extends FormValues = FormValues,
   T extends BaseFormComponentType = BaseFormComponentType,
-  P extends object = Record<never, never>,
+  P extends object = ElementPlusComponentProps,
   TSubmitValues extends FormValues = TValues,
 > = VbenFormFieldSlots<TValues, T, P, TSubmitValues> & {
   default?: Slot<VbenFormDefaultSlotProps<TValues, T, P, TSubmitValues>>;
@@ -265,7 +267,7 @@ export type VbenFormSlots<
 export type VbenFormComponent<
   TValues extends FormValues = FormValues,
   T extends BaseFormComponentType = BaseFormComponentType,
-  P extends object = Record<never, never>,
+  P extends object = ElementPlusComponentProps,
   TSubmitValues extends FormValues = TValues,
 > = new () => {
   $props: VbenFormProps<T, P, TValues, TSubmitValues>;
@@ -601,7 +603,7 @@ type FormArraySchema<
 
 export type FormSchema<
   T extends BaseFormComponentType = BaseFormComponentType,
-  P extends object = Record<never, never>,
+  P extends object = ElementPlusComponentProps,
   TValues extends FormValues = FormValues,
 > =
   | FormArraySchema<T, P, TValues>
@@ -613,7 +615,7 @@ export type FormSchema<
  */
 export interface VbenFormFieldArrayProps<
   T extends BaseFormComponentType = BaseFormComponentType,
-  P extends object = Record<never, never>,
+  P extends object = ElementPlusComponentProps,
   TValues extends FormValues = FormValues,
 > {
   /** 操作列表头文案 */
@@ -679,7 +681,7 @@ export interface FormFieldProps<
 
 export interface FormRenderProps<
   T extends BaseFormComponentType = BaseFormComponentType,
-  P extends object = Record<never, never>,
+  P extends object = ElementPlusComponentProps,
   TValues extends FormValues = FormValues,
 > {
   /**
@@ -759,7 +761,7 @@ export interface ActionButtonOptions extends VbenButtonProps {
 
 export interface VbenFormProps<
   T extends BaseFormComponentType = BaseFormComponentType,
-  P extends object = Record<never, never>,
+  P extends object = ElementPlusComponentProps,
   TValues extends FormValues = FormValues,
   TSubmitValues extends FormValues = TValues,
 > extends Omit<FormRenderProps<T, P, TValues>, 'componentBindEventMap' | 'componentMap' | 'form'> {
@@ -856,7 +858,7 @@ export interface VbenFormProps<
 export type ExtendedFormApi<
   TValues extends FormValues = FormValues,
   T extends BaseFormComponentType = BaseFormComponentType,
-  P extends object = Record<never, never>,
+  P extends object = ElementPlusComponentProps,
   TSubmitValues extends FormValues = TValues,
 > = FormApi<TValues, T, P, TSubmitValues> & {
   useStore: <TResult = NoInfer<VbenFormProps<T, P, TValues, TSubmitValues>>>(

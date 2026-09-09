@@ -1,4 +1,5 @@
 import type { Component, SlotsType } from 'vue';
+import type { ElementPlusComponentProps } from './adapter/types';
 
 import type {
   BaseFormComponentType,
@@ -28,13 +29,13 @@ type UseVbenFormReturn<
 
 export function useVbenForm<
   T extends BaseFormComponentType = BaseFormComponentType,
-  P extends object = Record<never, never>,
+  P extends object = ElementPlusComponentProps,
 >(options: VbenFormProps<T, P>): UseVbenFormReturn<FormValues, T, P>;
 
 export function useVbenForm<
   TValues extends FormValues,
   T extends BaseFormComponentType = BaseFormComponentType,
-  P extends object = Record<never, never>,
+  P extends object = ElementPlusComponentProps,
   TSubmitValues extends FormValues = TValues,
 >(
   options: VbenFormProps<T, P, TValues, TSubmitValues>,
@@ -43,7 +44,7 @@ export function useVbenForm<
 export function useVbenForm<
   TValues extends FormValues,
   T extends BaseFormComponentType = BaseFormComponentType,
-  P extends object = Record<never, never>,
+  P extends object = ElementPlusComponentProps,
   TSubmitValues extends FormValues = TValues,
 >(
   options: VbenFormProps<T, P, TValues, TSubmitValues>,

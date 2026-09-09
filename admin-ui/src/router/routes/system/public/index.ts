@@ -1,9 +1,6 @@
 import { LOGIN_PATH } from '@/constants/core'
+import { AuthPageLayout, BasicLayout } from '@/layout'
 import type { RouteRecordRaw } from 'vue-router'
-
-/* Layout */
-const BasicLayout = () => import('@/layout/basic.vue')
-const AuthPageLayout = () => import('@/layout/auth.vue')
 
 /** 启动时注册的系统固定路由，包含根布局、登录页和 404。 */
 const systemPublicRouter: RouteRecordRaw[] = [
@@ -11,7 +8,7 @@ const systemPublicRouter: RouteRecordRaw[] = [
     path: '/',
     component: BasicLayout,
     name: 'Index',
-    meta: { title: '首页', hideInBreadcrumb: true },
+    meta: { title: '首页', hideInBreadcrumb: true,hideInMenu:true },
     children: [],
   },
   {
@@ -19,7 +16,7 @@ const systemPublicRouter: RouteRecordRaw[] = [
     redirect: LOGIN_PATH,
     component: AuthPageLayout,
     name: 'Authentication',
-    meta: { title: 'Authentication', hideInTab: true },
+    meta: { title: 'Authentication', hideInTab: true,  hideInMenu:true },
     children: [
       {
         name: 'Login',

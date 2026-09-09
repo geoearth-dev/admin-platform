@@ -1,4 +1,5 @@
 export { setupVbenForm } from './config';
+export type { ElementPlusComponentProps, ElementPlusComponentType, FormOption } from './adapter/types';
 export { FormCodecError } from './form-codec';
 
 export type { FormCodecPhase } from './form-codec';

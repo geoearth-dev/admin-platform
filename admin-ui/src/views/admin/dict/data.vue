@@ -275,8 +275,8 @@ import { listData, getData, delData, addData, updateData } from '@/api/system/ad
 import { getCurrentInstance, reactive, ref, toRefs } from 'vue';
 import { useRoute } from 'vue-router';
 
-const { proxy } = getCurrentInstance();
-const { sys_normal_disable } = proxy.useDict('sys_normal_disable');
+// const { proxy } = getCurrentInstance();
+// const { sys_normal_disable } = proxy.useDict('sys_normal_disable');
 
 const dataList = ref([]);
 const open = ref(false);

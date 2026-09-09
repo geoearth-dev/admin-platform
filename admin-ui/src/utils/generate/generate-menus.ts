@@ -1,6 +1,7 @@
 import type { ExRouteRecordRaw, MenuRecordRaw } from '@/types';
 import type { RouteMeta, Router, RouteRecordRaw } from 'vue-router';
 import { filterTree, mapTree, sortTree } from '../tree';
+import { constantRoutes } from '@/router/routes';
 
 /**
  * 根据 routes 生成菜单列表
@@ -9,12 +10,13 @@ import { filterTree, mapTree, sortTree } from '../tree';
  * @returns 生成的菜单列表
  */
 function generateMenus(routes: RouteRecordRaw[], router: Router): MenuRecordRaw[] {
+  const allRoutes = constantRoutes.concat(routes);
   // 将路由列表转换为一个以 name 为键的对象映射
   const finalRoutesMap: { [key: string]: string } = Object.fromEntries(
     router.getRoutes().map(({ name, path }) => [name, path]),
   );
 
-  let menus = mapTree<ExRouteRecordRaw, MenuRecordRaw>(routes, (route) => {
+  let menus = mapTree<ExRouteRecordRaw, MenuRecordRaw>(allRoutes, (route) => {
     // 获取最终的路由路径
     const path = finalRoutesMap[route.name as string] ?? route.path ?? '';
 

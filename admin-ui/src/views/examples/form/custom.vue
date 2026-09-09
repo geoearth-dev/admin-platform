@@ -1,0 +1,148 @@
+<script lang="ts" setup>
+import { h, markRaw } from 'vue'
+
+import { Page } from '@/components/page'
+
+import { ElCard, ElInput, ElMessage } from 'element-plus'
+
+import {
+  useVbenForm,
+  z,
+  type BaseFormComponentType,
+  type ElementPlusComponentProps,
+} from '@/plugins/vben-ui/form-ui'
+
+import TwoFields from './modules/two-fields.vue'
+
+interface CustomFormValues extends Record<string, unknown> {
+  field?: string
+  field1?: string
+  field2?: string
+  field3?: string
+  field4?: [string | undefined, string]
+}
+
+function encodeCustomFormValues(values: Readonly<CustomFormValues>) {
+  const { field4, ...formValues } = values
+  return {
+    ...formValues,
+    phoneNumber: field4?.[1],
+    phoneType: field4?.[0],
+  }
+}
+
+type CustomSubmitValues = ReturnType<typeof encodeCustomFormValues>
+
+function decodeCustomFormValues(
+  values: Readonly<CustomSubmitValues>,
+): CustomFormValues {
+  const { phoneNumber, phoneType, ...formValues } = values
+  return {
+    ...formValues,
+    field4: [phoneType, phoneNumber ?? ''],
+  }
+}
+
+const [Form] = useVbenForm<
+  CustomFormValues,
+  BaseFormComponentType,
+  ElementPlusComponentProps,
+  CustomSubmitValues
+>({
+  codec: {
+    decode: decodeCustomFormValues,
+    encode: encodeCustomFormValues,
+  },
+  // 所有表单项共用，可单独在表单内覆盖
+  commonConfig: {
+    // 所有表单项
+    componentProps: {
+      class: 'w-full',
+    },
+    labelClass: 'w-2/6',
+  },
+  // 提交函数
+  handleSubmit: onSubmit,
+  // 垂直布局，label和input在不同行，值为vertical
+  // 水平布局，label和input在同一行
+  layout: 'horizontal',
+  schema: [
+    {
+      // 组件名称由 form-ui 内部的 Element Plus 适配层提供
+      component: 'Input',
+      fieldName: 'field',
+      label: '自定义后缀',
+      suffix: () => h('span', { class: 'text-red-600' }, '元'),
+    },
+    {
+      component: 'Input',
+      fieldName: 'field1',
+      label: '自定义组件slot',
+      renderComponentContent: () => ({
+        prefix: () => 'prefix',
+        suffix: () => 'suffix',
+      }),
+    },
+    {
+      component: markRaw(ElInput),
+      componentProps: { placeholder: '请输入Field2' },
+      fieldName: 'field2',
+      label: '自定义组件',
+      rules: 'required',
+    },
+    {
+      component: 'Input',
+      fieldName: 'field3',
+      label: '自定义组件(slot)',
+      rules: 'required',
+    },
+    {
+      component: markRaw(TwoFields),
+      defaultValue: [undefined, ''],
+      changeEventFallback: true,
+      fieldName: 'field4',
+      formItemClass: 'col-span-1',
+      label: '组合字段',
+      rules: z
+        .array(z.string().optional())
+        .length(2, '请选择类型并输入手机号码')
+        .refine((v) => !!v[0], {
+          message: '请选择类型',
+        })
+        .refine((v) => !!v[1] && v[1] !== '', {
+          message: '　　　　　　　输入手机号码',
+        })
+        .refine((v) => v[1]?.match(/^1[3-9]\d{9}$/), {
+          // 使用全角空格占位，将错误提示文字挤到手机号码输入框的下面
+          message: '　　　　　　　号码格式不正确',
+        }),
+    },
+  ],
+  // 中屏一行显示2个，小屏一行显示1个
+  wrapperClass: 'grid-cols-1 md:grid-cols-2',
+})
+
+function onSubmit(values: CustomSubmitValues) {
+  ElMessage.success({
+    message: `form values: ${JSON.stringify(values)}`,
+  })
+}
+</script>
+
+<template>
+  <Page
+    description="表单组件自定义示例"
+    title="表单组件"
+  >
+    <ElCard header="基础示例">
+      <Form>
+        <template #field3="slotProps">
+          <ElInput
+            placeholder="请输入"
+            v-bind="slotProps.componentField"
+          />
+        </template>
+      </Form>
+    </ElCard>
+  </Page>
+</template>

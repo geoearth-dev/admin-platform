@@ -9,6 +9,7 @@ import { overridesPreferences } from './preference';
 import { initStores } from './store/index';
 import { initPreferences } from './plugins/preference/index.ts';
 import { ElLoading } from 'element-plus';
+import { initTippy } from '@/components/tippy';
 import { MotionPlugin } from '@vueuse/motion';
 import { unmountGlobalLoading } from './plugins/config/inject-app-loading/unmount-global-loading.ts';
 import { registerAccessDirective } from './plugins/effects/access/directive.ts';
@@ -25,6 +26,9 @@ const app = createApp(App);
 
 // 注册Element Plus提供的v-loading指令
 app.directive('loading', ElLoading.directive);
+
+// 注册悬浮提示指令及默认配置
+initTippy(app);
 
 // 配置 pinia-store
 await initStores(app, namespace);

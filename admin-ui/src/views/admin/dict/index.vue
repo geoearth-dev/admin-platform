@@ -264,10 +264,10 @@ import {
   updateType,
   refreshCache,
 } from '@/api/system/admin/dict/type';
-import { getCurrentInstance, ref, toRefs } from 'vue';
+import { getCurrentInstance, reactive, ref, toRefs } from 'vue';
 
 const { proxy } = getCurrentInstance();
-const { sys_normal_disable } = proxy.useDict('sys_normal_disable');
+// const { sys_normal_disable } = proxy.useDict('sys_normal_disable');
 
 const typeList = ref([]);
 const open = ref(false);
@@ -300,12 +300,12 @@ const { queryParams, form, rules } = toRefs(data);
 
 /** 查询字典类型列表 */
 function getList() {
-  loading.value = true;
-  listType(proxy.addDateRange(queryParams.value, dateRange.value)).then((response) => {
-    typeList.value = response.rows;
-    total.value = response.total;
-    loading.value = false;
-  });
+  // loading.value = true;
+  // listType(proxy.addDateRange(queryParams.value, dateRange.value)).then((response) => {
+  //   typeList.value = response.rows;
+  //   total.value = response.total;
+  //   loading.value = false;
+  // });
 }
 
 /** 取消按钮 */
