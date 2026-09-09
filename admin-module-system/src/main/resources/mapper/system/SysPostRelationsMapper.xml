@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.geo.admin.system.mapper.system.SysPostMapper">
+
+    <!-- 用户已分配的岗位主键 -->
+    <select id="selectPostListByUserId" resultType="java.lang.Long">
+        select p.id
+        from sys_post p
+                 inner join sys_user_post up on up.post_id = p.id
+        where up.user_id = #{userId}
+        order by p.post_sort, p.id
+    </select>
+
+    <!-- 用户所属岗位 -->
+    <select id="selectPostsByUserName"
+            resultType="dev.geo.admin.system.model.system.entity.SysPost">
+        select p.id, p.post_name, p.post_code, p.post_sort, p.status
+        from sys_post p
+                 inner join sys_user_post up on up.post_id = p.id
+                 inner join sys_user u on u.id = up.user_id
+        where u.user_name = #{userName}
+        order by p.post_sort, p.id
+    </select>
+
+</mapper>

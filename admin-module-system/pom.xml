@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>dev.geo</groupId>
+        <artifactId>admin</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>admin-module-system</artifactId>
+
+    <description>admin 系统模块</description>
+
+    <dependencies>
+        <!-- ==================== 平台模块 ==================== -->
+        <dependency>
+            <groupId>dev.geo</groupId>
+            <artifactId>admin-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.geo</groupId>
+            <artifactId>admin-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.geo</groupId>
+            <artifactId>admin-mybatis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.geo</groupId>
+            <artifactId>admin-excel</artifactId>
+        </dependency>
+        <!-- ==================== 第三方组件 ==================== -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

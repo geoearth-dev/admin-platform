@@ -1,0 +1,16 @@
+{
+  "version": "0.2",
+  "language": "en,en-US",
+  "allowCompoundWords": true,
+  "words": ["echarts", "vben", "clsx", "pinia", "shadcn"],
+  "ignorePaths": [
+    "**/*-dist/**",
+    "**/*.log",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/__tests__/**",
+    "**/dist/**",
+    "**/icons/**",
+    "**/node_modules/**"
+  ]
+}

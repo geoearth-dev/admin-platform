@@ -1,0 +1,5 @@
+# 登录认证
+security:
+  cookie:
+    secure: true
+    same-site: Strict

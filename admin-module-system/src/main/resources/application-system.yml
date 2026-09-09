@@ -1,0 +1,21 @@
+# 登录认证
+security:
+  jwt:
+    secret: ${JWT_SECRET:YWRtaW4tcGxhdGZvcm0tZGV2LXNlY3JldC0zMmJ5dGVzIQ==}
+    issuer: https://admin.geoearth.dev
+    audience: admin-api
+    access-token-ttl: 15m
+    refresh-token-ttl: 8h
+    remember-refresh-token-ttl: 30d
+  cookie:
+    secure: false
+    same-site: Strict
+    path: /
+  cors:
+    allowed-origins:
+      - http://localhost:5173
+  login:
+    # 最大密码错误次数
+    max-retry-count: 5
+    # 锁定时间
+    lock-time: 10m

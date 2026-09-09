@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.geo.admin.system.mapper.system.SysRoleMapper">
+
+    <resultMap type="SysRole" id="SysRoleResult">
+        <id property="id" column="id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="roleKey" column="role_key"/>
+        <result property="roleSort" column="role_sort"/>
+        <result property="dataScope" column="data_scope"/>
+        <result property="menuCheckStrictly" column="menu_check_strictly"/>
+        <result property="deptCheckStrictly" column="dept_check_strictly"/>
+        <result property="status" column="status"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="creatorId" column="creator_id"/>
+        <result property="updaterId" column="updater_id"/>
+    </resultMap>
+
+    <sql id="selectRoleVo">
+        select distinct r.id,
+                        r.role_name,
+                        r.role_key,
+                        r.role_sort,
+                        r.data_scope,
+                        r.menu_check_strictly,
+                        r.dept_check_strictly,
+                        r.status,
+                        r.del_flag,
+                        r.create_by,
+                        r.create_time,
+                        r.update_by,
+                        r.update_time,
+                        r.creator_id,
+                        r.updater_id,
+                        r.remark
+        from sys_role r
+                 left join sys_user_role ur on ur.role_id = r.id
+                 left join sys_user u on u.id = ur.user_id
+                 left join sys_dept d on u.dept_id = d.id
+    </sql>
+
+    <select id="selectRolePage" resultMap="SysRoleResult">
+        <include refid="selectRoleVo"/>
+        where r.del_flag = '0'
+        <if test="query.id != null and query.id != 0">
+            and r.id = #{query.id}
+        </if>
+        <if test="query.roleName != null and query.roleName != ''">
+            and r.role_name like concat('%', #{query.roleName}, '%')
+        </if>
+        <if test="query.roleKey != null and query.roleKey != ''">
+            and r.role_key like concat('%', #{query.roleKey}, '%')
+        </if>
+        <if test="query.status != null and query.status != ''">
+            and r.status = #{query.status}
+        </if>
+        <if test="query.beginTime != null">
+            and r.create_time &gt;= #{query.beginTime}
+        </if>
+        <if test="query.endTime != null">
+            and r.create_time &lt; date_add(#{query.endTime}, interval 1 day)
+        </if>
+        ${query.params.dataScope}
+        order by r.role_sort, r.create_time desc, r.id desc
+    </select>
+
+    <select id="selectRoleList" parameterType="SysRole" resultMap="SysRoleResult">
+        <include refid="selectRoleVo"/>
+        where r.del_flag = '0'
+        <if test="id != null and id != 0">
+            AND r.id = #{id}
+        </if>
+        <if test="roleName != null and roleName != ''">
+            AND r.role_name like concat('%', #{roleName}, '%')
+        </if>
+        <if test="status != null and status != ''">
+            AND r.status = #{status}
+        </if>
+        <if test="roleKey != null and roleKey != ''">
+            AND r.role_key like concat('%', #{roleKey}, '%')
+        </if>
+        <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+            and date_format(r.create_time,'%Y%m%d') &gt;= date_format(#{params.beginTime},'%Y%m%d')
+        </if>
+        <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+            and date_format(r.create_time,'%Y%m%d') &lt;= date_format(#{params.endTime},'%Y%m%d')
+        </if>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by r.role_sort, r.create_time desc, r.id desc
+    </select>
+
+    <select id="selectRolePermissionByUserId" parameterType="Long" resultMap="SysRoleResult">
+        <include refid="selectRoleVo"/>
+        WHERE r.del_flag = '0' and ur.user_id = #{userId}
+    </select>
+
+    <select id="selectRoleAll" resultMap="SysRoleResult">
+        <include refid="selectRoleVo"/>
+    </select>
+
+    <select id="selectRoleListByUserId" parameterType="Long" resultType="Long">
+        select r.id
+        from sys_role r
+                 left join sys_user_role ur on ur.role_id = r.id
+                 left join sys_user u on u.id = ur.user_id
+        where u.id = #{userId}
+    </select>
+
+    <select id="selectRoleById" parameterType="Long" resultMap="SysRoleResult">
+        <include refid="selectRoleVo"/>
+        where r.id = #{roleId}
+    </select>
+
+    <select id="selectRolesByUserName" parameterType="String" resultMap="SysRoleResult">
+        <include refid="selectRoleVo"/>
+        WHERE r.del_flag = '0' and u.user_name = #{userName}
+    </select>
+
+    <select id="checkRoleNameUnique" parameterType="String" resultMap="SysRoleResult">
+        <include refid="selectRoleVo"/>
+        where r.role_name=#{roleName} and r.del_flag = '0' limit 1
+    </select>
+
+    <select id="checkRoleKeyUnique" parameterType="String" resultMap="SysRoleResult">
+        <include refid="selectRoleVo"/>
+        where r.role_key=#{roleKey} and r.del_flag = '0' limit 1
+    </select>
+
+</mapper> 

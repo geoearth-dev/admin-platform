@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>dev.geo</groupId>
+        <artifactId>admin</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>admin-server</artifactId>
+    <name>admin-server</name>
+    <description>web服务入口</description>
+
+
+    <dependencies>
+        <!-- ==================== 平台模块 ==================== -->
+        <!-- 系统管理模块 -->
+        <dependency>
+            <groupId>dev.geo</groupId>
+            <artifactId>admin-module-system</artifactId>
+        </dependency>
+        <!-- ==================== 三方模块 ==================== -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional> <!-- 表示依赖不会传递 -->
+        </dependency>
+    </dependencies>
+
+    <!-- 只有启动模块执行 Spring Boot 可执行 Jar 打包 -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

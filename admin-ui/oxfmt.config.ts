@@ -1,0 +1,91 @@
+import { defineConfig } from 'oxfmt';
+export default defineConfig({
+  /**
+   * 单行长度 oxfmt
+   * Default：100
+   */
+  printWidth: 100,
+  /**
+   * 缩进宽度
+   * Default：2
+   */
+  tabWidth: 2,
+  /**
+   * Markdown、MDX、YAML 文件格式化包裹
+   * type: always | never | preserve
+   * Default: preserve
+   */
+  proseWrap: 'never',
+  /**
+   * 结尾添加分号
+   * Default：true
+   */
+  semi: true,
+  /**
+   * 使用单引号
+   * Default：false
+   */
+  singleQuote: true,
+  /**
+   * 对象属性添加引号
+   * Default：as-needed
+   */
+  quoteProps: 'as-needed',
+  /**
+   * 将多行元素的 > 放在最后一行的末尾，而不是单独放在下一行
+   * Default：false
+   */
+  bracketSameLine: false,
+  /**
+   * 对象字面量的大括号间添加空格
+   * Default：true
+   */
+  bracketSpacing: true,
+  /**
+   * 箭头函数参数总是使用括号
+   * type: always | avoid
+   * Default：always
+   */
+  arrowParens: 'always',
+  /**
+   * 配置 package.json 排序，但是 oxfmt 不支持 pnpm-workspace
+   * 现使用 eslint 搭配 eslint-plugin-pnpm eslint-plugin-yml 支持 package.json 和 pnpm-workspace.yaml 但排序风格不太一致
+   * Default：true
+   */
+  sortPackageJson: false,
+  /**
+   * 配置 import 排序，现在 使用 eslint-plugin-perfectionist，但是 oxfmt 不支持 export 等
+   * 并且 customGroups 不支持 ts-equals-import
+   * Default：false
+   */
+  sortImports: false,
+  /**
+   * 多行结构中的后置逗号
+   * Default：all
+   */
+  trailingComma: 'all',
+  /**
+   * 行尾换行符
+   * type: lf | crlf | cr
+   * Default: lf
+   */
+  endOfLine: 'lf',
+  /**
+   * 在文件最后插入一个换行
+   * Default：true
+   */
+  insertFinalNewline: true,
+  /**
+   * 控制格式化文件中例如，CSS-in-JS 或 JS-in-Vue 等
+   * Default：auto
+   */
+  embeddedLanguageFormatting: 'auto',
+  /**
+   * Vue/HTML/Angular/Handlebars 的空白敏感度（oxfmt 现会格式化 <template>）
+   * type: css | strict | ignore
+   * Default：css
+   */
+  htmlWhitespaceSensitivity: 'css',
+
+  ignorePatterns: ['dist', 'node_modules', 'coverage', 'public', '**/*.svg'],
+});

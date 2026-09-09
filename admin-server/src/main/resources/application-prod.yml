@@ -1,0 +1,70 @@
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      url: ${DB_URL}
+      username: ${DB_USERNAME}
+      password: ${DB_PASSWORD}
+      driver-class-name: com.mysql.cj.jdbc.Driver
+
+      # 初始连接数
+      initial-size: 5
+      # 最小连接池数量
+      min-idle: 5
+      # 最大连接池数量
+      max-active: 20
+      # 配置获取连接等待超时的时间
+      max-wait: 60000
+      # 配置连接超时时间
+      connect-timeout: 30000
+      # 配置网络超时时间
+      socket-timeout: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      time-between-eviction-runs-millis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 300000
+      # 配置一个连接在池中最大生存的时间，单位是毫秒
+      max-evictable-idle-time-millis: 900000
+      # 配置检测连接是否有效
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        # 控制台管理用户名和密码
+        login-username: ${DRUID_USERNAME}
+        login-password: ${DRUID_PASSWORD}
+      filter:
+        stat:
+          enabled: true
+          # 慢SQL记录
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: true
+
+  # Redis服务器连接
+  data:
+    redis:
+      # 地址
+      host: localhost
+      # 端口，默认为6379
+      port: 6379
+      # 数据库索引
+      database: 0
+      # 密码
+      password:
+      # 连接超时时间
+      timeout: 10s
+  # Spring Cache 缓存规则
+  cache:
+    type: redis
+
+# 日志配置
+logging:
+  level:
+    # 全局默认级别
+    root: INFO
+    # 项目的日志级别
+    dev.geo.admin: INFO
