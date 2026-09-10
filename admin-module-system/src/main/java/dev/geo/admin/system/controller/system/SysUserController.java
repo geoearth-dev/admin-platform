@@ -10,15 +10,10 @@ import dev.geo.admin.common.enums.BusinessType;
 import dev.geo.admin.excel.core.ExcelService;
 import dev.geo.admin.mybatis.model.page.PageParam;
 import dev.geo.admin.security.utils.SecurityUtils;
+import dev.geo.admin.system.model.system.dto.*;
 import dev.geo.admin.system.model.system.entity.SysDept;
-import dev.geo.admin.system.model.system.entity.SysPost;
 import dev.geo.admin.system.model.system.entity.SysRole;
 import dev.geo.admin.system.model.system.entity.SysUser;
-import dev.geo.admin.system.model.system.dto.PasswordResetDTO;
-import dev.geo.admin.system.model.system.dto.RoleIdsDTO;
-import dev.geo.admin.system.model.system.dto.StatusUpdateDTO;
-import dev.geo.admin.system.model.system.dto.UserSaveDTO;
-import dev.geo.admin.system.model.system.dto.UserPageReqDTO;
 import dev.geo.admin.system.model.system.vo.TreeSelect;
 import dev.geo.admin.system.model.system.vo.UserRoleGrantVO;
 import dev.geo.admin.system.service.system.ISysDeptService;
@@ -95,7 +90,7 @@ public class SysUserController extends BaseController {
         List<SysRole> roles = roleService.selectRoleAll().stream()
                 .filter(role -> (SecurityUtils.isAdmin(id)) || !role.isAdmin())
                 .toList();
-        List<SysPost> posts =   postService.selectPostAll();
+//        List<SysPost> posts =   postService.selectPostAll();
         if (user != null) {
             user.setRoles(roles);
             user.setRoleIds(roleIds.toArray(Long[]::new));
