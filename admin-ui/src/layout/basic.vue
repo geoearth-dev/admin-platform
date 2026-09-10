@@ -52,7 +52,7 @@ import { Layout, LockScreen, Notification, UserDropdown } from '@/layout';
 import { preferences, usePreferences } from '@/plugins/preference';
 import { useAccessStore, useUserStore, useAuthStore } from '@/store';
 
-import LoginForm from '@/views/system/authentication/login.vue';
+import LoginForm from '@/views/admin/authentication/login.vue';
 import { VBEN_DOC_URL, VBEN_GITHUB_URL } from '@/constants/vben';
 import { useWatermark } from '@/plugins/effects/hooks/use-watermark';
 import { $t } from '@/plugins/locale';

@@ -108,7 +108,7 @@ public class SysMenu extends BaseEntity {
     private Boolean hideInMenu;
 
     /**
-     * 菜单状态（0正常 1停用）
+     * 菜单状态（0停用 1正常）
      */
     private Integer status;
 

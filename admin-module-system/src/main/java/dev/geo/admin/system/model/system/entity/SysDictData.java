@@ -64,9 +64,9 @@ public class SysDictData extends BaseEntity {
     private String isDefault;
 
     /**
-     * 状态（0正常 1停用）
+     * 状态（0停用 1正常）
      */
-    @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
+    @Excel(name = "状态", readConverterExp = "0=停用,1=正常")
     private String status;
 
     public Long getId() {

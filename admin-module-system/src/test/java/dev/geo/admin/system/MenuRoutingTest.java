@@ -26,6 +26,26 @@ class MenuRoutingTest {
     private final SysMenuServiceImpl service = new SysMenuServiceImpl();
 
     @Test
+    void permissionAndRouteQueriesRequireEnabledMenusAndRoles() throws Exception {
+        var configuration = new MybatisConfiguration();
+        configuration.getTypeAliasRegistry().registerAlias("SysMenu", SysMenu.class);
+        String resource = "mapper/system/SysMenuMapper.xml";
+        try (var input = Resources.getResourceAsStream(resource)) {
+            new XMLMapperBuilder(input, configuration, resource, configuration.getSqlFragments()).parse();
+        }
+        for (String name : List.of("selectMenuTreeAll", "selectMenuTreeByUserId",
+                "selectMenuPermsByUserId", "selectMenuPermsByRoleId")) {
+            String sql = configuration.getMappedStatement(SysMenuMapper.class.getName() + "." + name)
+                    .getBoundSql(java.util.Map.of("userId", 2L, "roleId", 2L)).getSql()
+                    .replaceAll("\\s+", " ");
+            assertTrue(sql.contains("m.status = '1'"), sql);
+            assertFalse(sql.contains("status = '0'"), sql);
+            if (name.equals("selectMenuTreeByUserId")) assertTrue(sql.contains("ro.status = '1'"), sql);
+            if (name.equals("selectMenuPermsByUserId")) assertTrue(sql.contains("r.status = '1'"), sql);
+        }
+    }
+
+    @Test
     void buildsVbenTreeAndSerializesMetadataWithNewBooleanSemantics() {
         SysMenu directory = menu(1L, 0L, "M", "system");
         directory.setComponent("Layout");
@@ -129,7 +149,7 @@ class MenuRoutingTest {
         assertEquals(5, saved.get().getOrder());
         assertEquals(Boolean.FALSE, saved.get().getKeepAlive());
         assertEquals(Boolean.FALSE, saved.get().getHideInMenu());
-        assertEquals(0, saved.get().getStatus());
+        assertEquals(1, saved.get().getStatus());
     }
 
     @Test
@@ -199,7 +219,7 @@ class MenuRoutingTest {
         menu.setOrder(0);
         menu.setHideInMenu(false);
         menu.setKeepAlive(false);
-        menu.setStatus(0);
+        menu.setStatus(1);
         return menu;
     }
 }

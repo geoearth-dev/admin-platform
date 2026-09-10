@@ -1,7 +1,7 @@
 import type { RouteRecordRaw } from 'vue-router';
 
 import { acceptHMRUpdate, defineStore } from 'pinia';
-import type { MenuRecordRaw } from '@/types/base/menu';
+import type { MenuRecordRaw } from '@/types/base/router';
 
 interface AccessState {
   /**

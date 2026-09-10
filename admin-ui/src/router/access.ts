@@ -1,8 +1,7 @@
-import { getRouters } from '@/api/system/auth/router';
+import { getRouters } from '@/api/admin/auth/router';
 import router from '.';
 import type { RouteRecordRaw } from 'vue-router';
-import type { MenuRecordRaw } from '@/types';
-import type { RouterVo } from '@/types/model/menu';
+import type { RouterVo } from '@/types';
 import type { Component } from 'vue';
 import { generateMenus } from '@/utils/generate/generate-menus';
 import { useAccessStore, useUserStore } from '@/store';

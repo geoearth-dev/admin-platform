@@ -15,7 +15,7 @@ import {
   logoutApi,
   refreshTokenApi,
   type LoginParams,
-} from '@/api/system/auth/auth';
+} from '@/api/admin/auth/auth';
 import { requestClient } from '@/utils/request';
 import { resetAccessRoutes } from '@/router/access';
 

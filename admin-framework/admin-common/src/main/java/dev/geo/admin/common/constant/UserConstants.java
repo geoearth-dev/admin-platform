@@ -12,42 +12,42 @@ public class UserConstants {
     /**
      * 正常状态
      */
-    public static final String NORMAL = "0";
+    public static final String NORMAL = "1";
 
     /**
      * 异常状态
      */
-    public static final String EXCEPTION = "1";
+    public static final String EXCEPTION = "0";
 
     /**
      * 用户封禁状态
      */
-    public static final String USER_DISABLE = "1";
+    public static final String USER_DISABLE = "0";
 
     /**
      * 角色正常状态
      */
-    public static final String ROLE_NORMAL = "0";
+    public static final String ROLE_NORMAL = "1";
 
     /**
      * 角色封禁状态
      */
-    public static final String ROLE_DISABLE = "1";
+    public static final String ROLE_DISABLE = "0";
 
     /**
      * 部门正常状态
      */
-    public static final String DEPT_NORMAL = "0";
+    public static final String DEPT_NORMAL = "1";
 
     /**
      * 部门停用状态
      */
-    public static final String DEPT_DISABLE = "1";
+    public static final String DEPT_DISABLE = "0";
 
     /**
      * 字典正常状态
      */
-    public static final String DICT_NORMAL = "0";
+    public static final String DICT_NORMAL = "1";
 
     /**
      * 是否为系统默认（是）
@@ -57,12 +57,12 @@ public class UserConstants {
     /**
      * 是否菜单外链（是）
      */
-    public static final String YES_FRAME = "0";
+    public static final String YES_FRAME = "1";
 
     /**
      * 是否菜单外链（否）
      */
-    public static final String NO_FRAME = "1";
+    public static final String NO_FRAME = "0";
 
     /**
      * 菜单类型（目录）

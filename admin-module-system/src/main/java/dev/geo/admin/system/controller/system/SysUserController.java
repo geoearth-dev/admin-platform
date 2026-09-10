@@ -11,6 +11,7 @@ import dev.geo.admin.excel.core.ExcelService;
 import dev.geo.admin.mybatis.model.page.PageParam;
 import dev.geo.admin.security.utils.SecurityUtils;
 import dev.geo.admin.system.model.system.entity.SysDept;
+import dev.geo.admin.system.model.system.entity.SysPost;
 import dev.geo.admin.system.model.system.entity.SysRole;
 import dev.geo.admin.system.model.system.entity.SysUser;
 import dev.geo.admin.system.model.system.dto.PasswordResetDTO;
@@ -19,7 +20,6 @@ import dev.geo.admin.system.model.system.dto.StatusUpdateDTO;
 import dev.geo.admin.system.model.system.dto.UserSaveDTO;
 import dev.geo.admin.system.model.system.dto.UserPageReqDTO;
 import dev.geo.admin.system.model.system.vo.TreeSelect;
-import dev.geo.admin.system.model.system.vo.UserDetailVO;
 import dev.geo.admin.system.model.system.vo.UserRoleGrantVO;
 import dev.geo.admin.system.service.system.ISysDeptService;
 import dev.geo.admin.system.service.system.ISysPostService;
@@ -82,7 +82,7 @@ public class SysUserController extends BaseController {
 
     @PreAuthorize("@se.hasPermission('system:user:query')")
     @GetMapping({"/detail", "/detail/{id}"})
-    public ApiResult<UserDetailVO> getInfo(@PathVariable(required = false) Long id) {
+    public ApiResult<SysUser> getInfo(@PathVariable(required = false) Long id) {
         SysUser user = null;
         List<Long> roleIds = List.of();
         List<Long> postIds = List.of();
@@ -93,9 +93,17 @@ public class SysUserController extends BaseController {
             postIds = postService.selectPostListByUserId(id);
         }
         List<SysRole> roles = roleService.selectRoleAll().stream()
-                .filter(role -> (id != null && SecurityUtils.isAdmin(id)) || !role.isAdmin())
+                .filter(role -> (SecurityUtils.isAdmin(id)) || !role.isAdmin())
                 .toList();
-        return success(new UserDetailVO(user, roles, postService.selectPostAll(), roleIds, postIds));
+        List<SysPost> posts =   postService.selectPostAll();
+        if (user != null) {
+            user.setRoles(roles);
+            user.setRoleIds(roleIds.toArray(Long[]::new));
+//            user.setPosts(posts);
+            user.setPostIds(postIds.toArray(Long[]::new));
+
+        }
+        return success(user);
     }
 
     @PreAuthorize("@se.hasPermission('system:user:add')")

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 
-import { listMenu } from '@/api/system/admin/menu'
+import { listMenu } from '@/api/admin/menu'
 import { useVbenForm } from '@/plugins/vben-ui/form-ui'
 
 const queryOptions = {

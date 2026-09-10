@@ -138,7 +138,7 @@ import ThirdPartyLogin from './third-party-login.vue';
 import Title from './auth-title.vue';
 
 import { VbenCheckbox, VbenButton } from '@/plugins/vben-ui/shadcn-ui/index.ts';
-import { getCodeImg, type LoginParams } from '@/api/system/auth/auth.ts';
+import { getCodeImg, type LoginParams } from '@/api/admin/auth/auth.ts';
 import type { ElButton, FormInstance, FormRules } from 'element-plus';
 import { ShieldCheck } from '@/assets/icons';
 // import { SliderCaptcha } from '@/components/captcha';

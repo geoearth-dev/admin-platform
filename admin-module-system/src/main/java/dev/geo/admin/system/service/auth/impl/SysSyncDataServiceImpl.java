@@ -32,6 +32,16 @@ import java.util.stream.Collectors;
  */
 @Service
 public class SysSyncDataServiceImpl implements SysSyncDataService {
+    /** 认证平台仍使用旧编码：0 正常、1 停用；仅在接入边界转换。 */
+    static String fromLegacyStatus(String status) {
+        if ("0".equals(status)) {
+            return "1";
+        }
+        if ("1".equals(status)) {
+            return "0";
+        }
+        return status;
+    }
     private static final Logger log = LoggerFactory.getLogger(SysSyncDataService.class);
     @Resource
     private SysDeptMapper sysDeptMapper;
@@ -117,7 +127,7 @@ public class SysSyncDataServiceImpl implements SysSyncDataService {
             }
             sysUser.setSex(sex);
             sysUser.setPhoneNumber(phone);
-            sysUser.setStatus(status);
+            sysUser.setStatus(fromLegacyStatus(status));
             sysUser.setDelFlag(delFlag);
 //            sysUser.setPassword("qdata@123");
             sysUser.setPassword(SecurityUtils.encryptPassword("qdata@123"));
@@ -180,7 +190,7 @@ public class SysSyncDataServiceImpl implements SysSyncDataService {
             sysDept.setAncestors(ancestors);
             sysDept.setDeptName(deptName);
             sysDept.setOrderNum(StrUtil.isBlank(orderNum) ? null : Integer.valueOf(orderNum));
-            sysDept.setStatus(status);
+            sysDept.setStatus(fromLegacyStatus(status));
             sysDept.setDelFlag(delFlag);
             sysDept.setParentName(simpleDeptName);
             sysIdHubDepts.add(sysDept);

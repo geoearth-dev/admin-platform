@@ -28,7 +28,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class SysMessageServiceImpl implements ISysMessageService {
-    private static final String ENABLED = "0";
+    private static final String ENABLED = "1";
 
     private final SysMessageMapper messageMapper;
     private final SysMessageTemplateMapper templateMapper;

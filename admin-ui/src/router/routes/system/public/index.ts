@@ -21,14 +21,14 @@ const systemPublicRouter: RouteRecordRaw[] = [
       {
         name: 'Login',
         path: 'login',
-        component: () => import('@/views/system/authentication/login.vue'),
+        component: () => import('@/views/admin/authentication/login.vue'),
         meta: { title: '登录' },
       },
     ],
   },
   //全局404页面
   {
-    component: () => import('@/views/system/fallback/not-found.vue'),
+    component: () => import('@/views/admin/fallback/not-found.vue'),
     meta: {
       hideInBreadcrumb: true,
       hideInMenu: true,

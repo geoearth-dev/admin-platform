@@ -42,10 +42,10 @@ public class BaseEntity {
     @Schema(description = "创建时间", example = "")
     private Instant createTime;
 
+
     @Schema(description = "更新者id", example = "")
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updaterId;
-
     /**
      * 更新者
      */

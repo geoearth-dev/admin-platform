@@ -39,7 +39,7 @@ public class SysNotice extends BaseEntity {
     private String noticeContent;
 
     /**
-     * 公告状态（0正常 1关闭）
+     * 公告状态（0关闭 1正常）
      */
     private String status;
 

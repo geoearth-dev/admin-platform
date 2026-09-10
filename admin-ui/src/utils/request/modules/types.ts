@@ -8,17 +8,6 @@ interface RequestConfig<T = unknown> extends AxiosRequestConfig<T> {
   /** 是否跳过登录拦截 */
   noAuth?: boolean;
 }
-/**
- * 后端统一响应结构
- */
-interface ApiResponse<T> {
-  /**
-   * 200 表示成功 其他表示失败
-   */
-  code: number;
-  data: T;
-  message: string;
-}
 
 interface RequestAuthOptions {
   /**
@@ -34,4 +23,4 @@ interface RequestAuthOptions {
    */
   onUnauthorized?: () => Promise<void> | void;
 }
-export type { ApiResponse, RequestConfig, RequestAuthOptions };
+export type { RequestConfig, RequestAuthOptions };

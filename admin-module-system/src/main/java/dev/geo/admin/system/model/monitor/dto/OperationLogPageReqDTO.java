@@ -28,7 +28,7 @@ public class OperationLogPageReqDTO extends PageParam {
     @Schema(description = "业务类型集合")
     private Integer[] businessTypes;
 
-    @Schema(description = "操作状态：0-正常，1-异常")
+    @Schema(description = "操作状态：0-异常，1-正常")
     private Integer status;
 
     @Schema(description = "HTTP 请求方法")

@@ -34,9 +34,9 @@ public class SysLoginLog {
     private String userName;
 
     /**
-     * 登录状态 0成功 1失败
+     * 登录状态 0失败 1成功
      */
-    @Excel(name = "登录状态", readConverterExp = "0=成功,1=失败")
+    @Excel(name = "登录状态", readConverterExp = "0=失败,1=成功")
     private String status;
 
     /**

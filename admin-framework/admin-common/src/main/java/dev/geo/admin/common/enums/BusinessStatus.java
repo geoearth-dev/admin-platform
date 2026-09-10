@@ -8,10 +8,20 @@ public enum BusinessStatus {
     /**
      * 成功
      */
-    SUCCESS,
+    SUCCESS(1),
 
     /**
      * 失败
      */
-    FAIL,
+    FAIL(0);
+
+    private final int code;
+
+    BusinessStatus(int code) {
+        this.code = code;
+    }
+
+    public int getCode() {
+        return code;
+    }
 }

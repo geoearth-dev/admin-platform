@@ -1,8 +1,9 @@
 import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
-import type { ApiResponse, RequestAuthOptions, RequestConfig } from './modules/types';
+import type { RequestAuthOptions, RequestConfig } from './modules/types';
 import { setupRequestInterceptors } from './modules/interceptors';
 import { FileUploader, type UploadRequestConfig } from './modules/uploader';
 import { FileDownloader, type DownloadRequestConfig } from './modules/downloader';
+import type { AjaxResult } from '@/types/base/api/common';
 
 class Request {
   private readonly instance: AxiosInstance;
@@ -74,7 +75,7 @@ class Request {
    * 这里不再重复显示错误。
    */
   async request<T = unknown, D = unknown>(config: RequestConfig<D>): Promise<T> {
-    const response = await this.instance.request<ApiResponse<T>, AxiosResponse<ApiResponse<T>>, D>(
+    const response = await this.instance.request<AjaxResult<T>, AxiosResponse<AjaxResult<T>>, D>(
       config,
     );
     return response.data.data;

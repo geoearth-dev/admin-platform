@@ -308,7 +308,7 @@ const exampleDynamicRouter: RouteRecordRaw[] = [
           {
             name: 'Fallback403Demo',
             path: '403',
-            component: () => import('@/views/system/fallback/forbidden.vue'),
+            component: () => import('@/views/admin/fallback/forbidden.vue'),
             meta: {
               icon: 'mdi:do-not-disturb-alt',
               title: '403',
@@ -317,7 +317,7 @@ const exampleDynamicRouter: RouteRecordRaw[] = [
           {
             name: 'Fallback404Demo',
             path: '404',
-            component: () => import('@/views/system/fallback/not-found.vue'),
+            component: () => import('@/views/admin/fallback/not-found.vue'),
             meta: {
               icon: 'mdi:table-off',
               title: '404',
@@ -326,7 +326,7 @@ const exampleDynamicRouter: RouteRecordRaw[] = [
           {
             name: 'Fallback500Demo',
             path: '500',
-            component: () => import('@/views/system/fallback/internal-error.vue'),
+            component: () => import('@/views/admin/fallback/internal-error.vue'),
             meta: {
               icon: 'mdi:server-network-off',
               title: '500',
@@ -335,7 +335,7 @@ const exampleDynamicRouter: RouteRecordRaw[] = [
           {
             name: 'FallbackOfflineDemo',
             path: 'offline',
-            component: () => import('@/views/system/fallback/offline.vue'),
+            component: () => import('@/views/admin/fallback/offline.vue'),
             meta: {
               icon: 'mdi:offline',
               title: $t('ui.fallback.offline'),

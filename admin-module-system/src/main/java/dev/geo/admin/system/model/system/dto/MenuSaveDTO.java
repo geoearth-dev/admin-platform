@@ -52,7 +52,7 @@ public class MenuSaveDTO {
     @NotNull(message = "菜单状态不能为空")
     @Min(value = 0, message = "菜单状态只能为0或1")
     @Max(value = 1, message = "菜单状态只能为0或1")
-    private Integer status = 0;
+    private Integer status = 1;
 
     @Size(max = 100, message = "权限标识不能超过100个字符")
     private String perms;

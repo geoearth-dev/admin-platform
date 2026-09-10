@@ -1,17 +1,34 @@
+<template>
+  <component ref="collapseRef" :is="formComponent" v-bind="formComponentProps">
+    <div ref="wrapperRef" :class="wrapperClass">
+      <template v-for="cSchema in computedSchema" :key="cSchema.fieldName">
+        <!-- <div v-if="$slots[cSchema.fieldName]" :class="cSchema.formItemClass">
+          <slot :definition="cSchema" :name="cSchema.fieldName"> </slot>
+        </div> -->
+        <FormField v-bind="cSchema" :class="cSchema.formItemClass" :rules="cSchema.rules">
+          <template #default="slotProps">
+            <slot v-bind="slotProps" :name="cSchema.fieldName"> </slot>
+          </template>
+        </FormField>
+      </template>
+      <slot :shapes="shapes"></slot>
+    </div>
+  </component>
+</template>
 <script setup lang="ts">
-import type { FormCommonConfig, FormRenderProps, FormShape } from '../types'
-import type { NormalizedFormFieldSchema } from './schema'
+import type { FormCommonConfig, FormRenderProps, FormShape } from '../types';
+import type { NormalizedFormFieldSchema } from './schema';
 
-import { computed, toRaw } from 'vue'
+import { computed, toRaw } from 'vue';
 
-import { isString } from '@/utils/inference'
-import { cn } from '@/utils/cn'
+import { isString } from '@/utils/inference';
+import { cn } from '@/utils/cn';
 
-import { provideFormRenderProps } from './context'
-import { useExpandable } from './expandable'
-import FormField from './form-field.vue'
-import { getBaseRules, getDefaultValueInZodStack } from './helper'
-import { createFormFieldSchema } from './schema'
+import { provideFormRenderProps } from './context';
+import { useExpandable } from './expandable';
+import FormField from './form-field.vue';
+import { getBaseRules, getDefaultValueInZodStack } from './helper';
+import { createFormFieldSchema } from './schema';
 
 const props = withDefaults(
   defineProps<FormRenderProps & { globalCommonConfig?: FormCommonConfig }>(),
@@ -22,44 +39,44 @@ const props = withDefaults(
     showCollapseButton: false,
     wrapperClass: 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3',
   },
-)
+);
 
 const emits = defineEmits<{
-  submit: [event: unknown]
-}>()
+  submit: [event: unknown];
+}>();
 
 const wrapperClass = computed(() => {
-  const cls = ['flex']
+  const cls = ['flex'];
   if (props.layout === 'inline') {
-    cls.push('flex-wrap gap-x-2')
+    cls.push('flex-wrap gap-x-2');
   } else {
-    cls.push(props.compact ? 'gap-x-2' : 'gap-x-4', 'flex-col grid')
+    cls.push(props.compact ? 'gap-x-2' : 'gap-x-4', 'flex-col grid');
   }
-  return cn(...cls, props.wrapperClass)
-})
+  return cn(...cls, props.wrapperClass);
+});
 
-provideFormRenderProps(props)
+provideFormRenderProps(props);
 
-const { isCalculated, keepFormItemIndex, wrapperRef } = useExpandable(props)
+const { isCalculated, keepFormItemIndex, wrapperRef } = useExpandable(props);
 
 const shapes = computed(() => {
-  const resultShapes: FormShape[] = []
+  const resultShapes: FormShape[] = [];
   props.schema?.forEach((schema) => {
-    const { fieldName } = schema
-    const rules = toRaw(schema.rules)
-    const baseRules = getBaseRules(rules)
+    const { fieldName } = schema;
+    const rules = toRaw(schema.rules);
+    const baseRules = getBaseRules(rules);
 
     resultShapes.push({
       default: getDefaultValueInZodStack(rules),
       fieldName,
       required: Boolean(rules && !isString(rules) && !rules.isOptional()),
       rules: baseRules ?? undefined,
-    })
-  })
-  return resultShapes
-})
+    });
+  });
+  return resultShapes;
+});
 
-const formComponent = 'form'
+const formComponent = 'form';
 
 const formComponentProps = computed(() => {
   return props.form
@@ -68,66 +85,29 @@ const formComponentProps = computed(() => {
       }
     : {
         onSubmit: (event: Event) => {
-          event.preventDefault()
-          emits('submit', event)
+          event.preventDefault();
+          emits('submit', event);
         },
-      }
-})
+      };
+});
 
 const formCollapsed = computed(() => {
-  return props.collapsed && isCalculated.value
-})
+  return props.collapsed && isCalculated.value;
+});
 
 const computedSchema = computed((): NormalizedFormFieldSchema[] => {
   return (props.schema || []).map((schema, index) => {
-    const keepIndex = keepFormItemIndex.value
+    const keepIndex = keepFormItemIndex.value;
 
     const hidden =
       // 折叠状态 & 显示折叠按钮 & 当前索引大于保留索引
-      props.showCollapseButton && !!formCollapsed.value && keepIndex
-        ? keepIndex <= index
-        : false
+      props.showCollapseButton && !!formCollapsed.value && keepIndex ? keepIndex <= index : false;
 
     return createFormFieldSchema(schema, {
       commonConfig: props.commonConfig,
       globalCommonConfig: props.globalCommonConfig,
       hidden,
-    })
-  })
-})
+    });
+  });
+});
 </script>
-
-<template>
-  <component
-    :is="formComponent"
-    v-bind="formComponentProps"
-  >
-    <div
-      ref="wrapperRef"
-      :class="wrapperClass"
-    >
-      <template
-        v-for="cSchema in computedSchema"
-        :key="cSchema.fieldName"
-      >
-        <!-- <div v-if="$slots[cSchema.fieldName]" :class="cSchema.formItemClass">
-          <slot :definition="cSchema" :name="cSchema.fieldName"> </slot>
-        </div> -->
-        <FormField
-          v-bind="cSchema"
-          :class="cSchema.formItemClass"
-          :rules="cSchema.rules"
-        >
-          <template #default="slotProps">
-            <slot
-              v-bind="slotProps"
-              :name="cSchema.fieldName"
-            >
-            </slot>
-          </template>
-        </FormField>
-      </template>
-      <slot :shapes="shapes"></slot>
-    </div>
-  </component>
-</template>

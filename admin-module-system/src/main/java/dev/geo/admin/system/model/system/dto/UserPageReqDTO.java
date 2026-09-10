@@ -20,7 +20,7 @@ public class UserPageReqDTO extends PageParam {
     private String phoneNumber;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date beginTime;
+    private Date startTime;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date endTime;

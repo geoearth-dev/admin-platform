@@ -19,7 +19,7 @@ public class LoginLogPageReqDTO extends PageParam {
     @Schema(description = "用户账号")
     private String userName;
 
-    @Schema(description = "登录状态：0-成功，1-失败")
+    @Schema(description = "登录状态：0-失败，1-成功")
     private String status;
 
     @Schema(description = "登录 IP")

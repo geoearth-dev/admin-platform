@@ -93,9 +93,9 @@ public class SysUser extends BaseEntity {
     private String password;
 
     /**
-     * 账号状态（0正常 1停用）
+     * 账号状态（0停用 1正常）
      */
-    @Excel(name = "账号状态", readConverterExp = "0=正常,1=停用")
+    @Excel(name = "账号状态", readConverterExp = "0=停用,1=正常")
     private String status;
 
     /**

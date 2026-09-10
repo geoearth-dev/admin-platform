@@ -38,7 +38,7 @@ const systemDynamicRouter: RouteRecordRaw[] = [
   {
     name: 'VbenAbout',
     path: '/admin/about',
-    component: () => import('@/views/system/about/index.vue'),
+    component: () => import('@/views/admin/about/index.vue'),
     meta: {
       icon: 'lucide:copyright',
       title: $t('demos.vben.about'),
@@ -48,7 +48,7 @@ const systemDynamicRouter: RouteRecordRaw[] = [
   {
     name: 'Profile',
     path: '/profile',
-    component: () => import('@/views/system/profile/index.vue'),
+    component: () => import('@/views/admin/profile/index.vue'),
     meta: {
       icon: 'lucide:user',
       hideInMenu: true,

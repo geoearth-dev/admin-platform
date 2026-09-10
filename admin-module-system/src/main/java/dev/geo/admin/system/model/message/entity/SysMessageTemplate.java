@@ -28,7 +28,7 @@ public class SysMessageTemplate extends BaseEntity {
     private Integer category;
     private Integer messageLevel;
 
-    /** 模板状态：0启用，1停用。 */
+    /** 模板状态：0停用，1启用。 */
     private String status;
 
     @TableLogic(value = "0", delval = "1")

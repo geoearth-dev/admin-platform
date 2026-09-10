@@ -74,7 +74,7 @@ public class SysDept extends BaseEntity {
     private String email;
 
     /**
-     * 部门状态:0正常,1停用
+     * 部门状态:0停用,1正常
      */
     private String status;
 

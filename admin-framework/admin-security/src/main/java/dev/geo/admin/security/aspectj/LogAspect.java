@@ -93,7 +93,7 @@ public class LogAspect {
 
             // *========数据库日志=========*//
             OperationLogEvent operationLogEvent = new OperationLogEvent();
-            operationLogEvent.setStatus(BusinessStatus.SUCCESS.ordinal());
+            operationLogEvent.setStatus(BusinessStatus.SUCCESS.getCode());
             // 请求的地址
             String ip = IpUtils.getIp();
             operationLogEvent.setIpAddress(ip);
@@ -102,7 +102,7 @@ public class LogAspect {
             operationLogEvent.setDeptName(loginUser.getDeptName());
 
             if (e != null) {
-                operationLogEvent.setStatus(BusinessStatus.FAIL.ordinal());
+                operationLogEvent.setStatus(BusinessStatus.FAIL.getCode());
                 operationLogEvent.setErrorMessage(StrUtil.sub(e.getMessage(), 0, 2000));
             }
             // 设置方法名称

@@ -75,7 +75,7 @@ public class OperationLogEvent {
     private String responseBody;
 
     /**
-     * 操作状态（0正常 1异常）
+     * 操作状态（0异常 1正常）
      */
     private Integer status;
 

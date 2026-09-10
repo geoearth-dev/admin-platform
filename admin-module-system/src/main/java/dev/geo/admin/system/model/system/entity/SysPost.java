@@ -37,8 +37,8 @@ public class SysPost extends BaseEntity
     @Excel(name = "岗位排序")
     private Integer postSort;
 
-    /** 状态（0正常 1停用） */
-    @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
+    /** 状态（0停用 1正常） */
+    @Excel(name = "状态", readConverterExp = "0=停用,1=正常")
     private String status;
 
     /** 用户是否存在此岗位标识 默认不存在 */

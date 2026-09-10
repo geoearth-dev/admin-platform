@@ -22,5 +22,5 @@ export * from './input-password';
 export * from './select';
 export * from './pin-input';
 export * from './count-to-animator';
-// export * from './descriptions';
-// export * from './table-action';
+export * from './descriptions';
+export * from './table-action';

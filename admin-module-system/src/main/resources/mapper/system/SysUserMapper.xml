@@ -80,8 +80,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="query.phoneNumber != null and query.phoneNumber != ''">
             and u.phone_number like concat('%', #{query.phoneNumber}, '%')
         </if>
-        <if test="query.beginTime != null">
-            and u.create_time &gt;= #{query.beginTime}
+        <if test="query.startTime != null">
+            and u.create_time &gt;= #{query.startTime}
         </if>
         <if test="query.endTime != null">
             and u.create_time &lt; date_add(#{query.endTime}, interval 1 day)

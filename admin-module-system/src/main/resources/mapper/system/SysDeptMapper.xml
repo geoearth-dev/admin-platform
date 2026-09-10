@@ -85,7 +85,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<select id="selectNormalChildrenDeptById" parameterType="Long" resultType="int">
-		select count(*) from sys_dept where status = 0 and del_flag = '0' and find_in_set(#{deptId}, ancestors)
+		select count(*) from sys_dept where status = '1' and del_flag = '0' and find_in_set(#{deptId}, ancestors)
 	</select>
 	
 	<select id="checkDeptNameUnique" resultMap="SysDeptResult">
@@ -107,7 +107,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</update>
 	 
 	<update id="updateDeptStatusNormal" parameterType="Long">
- 	    update sys_dept set status = '0' where id in 
+ 	    update sys_dept set status = '1' where id in 
  	    <foreach collection="array" item="deptId" open="(" separator="," close=")">
         	#{deptId}
         </foreach>

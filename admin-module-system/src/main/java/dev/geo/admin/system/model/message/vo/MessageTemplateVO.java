@@ -34,7 +34,7 @@ public class MessageTemplateVO {
     @Excel(name = "消息级别")
     private Integer messageLevel;
 
-    @Excel(name = "状态", readConverterExp = "0=启用,1=停用")
+    @Excel(name = "状态", readConverterExp = "0=停用,1=启用")
     private String status;
 
     @Excel(name = "创建时间", width = 30, dateFormat = DateTimeFormat.DATE_TIME_PATTERN)
