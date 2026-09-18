@@ -54,6 +54,10 @@ export default defineConfig(async ({ command, mode }) => {
           target: 'http://localhost:8080',
           ws: true,
         },
+        '/druid': {
+          target: 'http://localhost:8080',
+          changeOrigin: false,
+        },
       },
     },
   };

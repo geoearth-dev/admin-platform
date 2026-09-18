@@ -231,7 +231,7 @@ import { LayoutExtraMenu, LayoutMenu, LayoutMixedMenu, useExtraMenu, useMixedMen
 import { LayoutTabbar } from './tabbar';
 import { useLayoutScroll } from './use-layout-scroll';
 import { useRefresh } from '@/plugins/effects/hooks';
-import type { MenuRecordRaw } from '@/types';
+import type { NavigationMenu } from '@/types';
 import { ELEMENT_ID_LAYOUT_SCROLL } from '@/constants/globals';
 import { mapTree } from '@/utils/tree';
 
@@ -363,7 +363,7 @@ const {
  * @param menus 原始菜单数据
  * @param deep 是否深度包装。对于双列布局，只需要包装第一层，因为更深层的数据会在扩展菜单中重新包装
  */
-function wrapperMenus(menus: MenuRecordRaw[], deep: boolean = true) {
+function wrapperMenus(menus: NavigationMenu[], deep: boolean = true) {
   return deep
     ? mapTree(menus, (item) => ({
         ...item,

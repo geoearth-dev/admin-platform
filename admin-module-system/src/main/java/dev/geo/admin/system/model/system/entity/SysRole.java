@@ -60,14 +60,14 @@ public class SysRole extends BaseEntity {
     private String dataScope;
 
     /**
-     * 菜单树选择项是否关联显示（ 0：父子不互相关联显示 1：父子互相关联显示）
+     * 菜单树勾选是否父子联动（true：联动，false：独立勾选）
      */
-    private boolean menuCheckStrictly;
+    private boolean menuCheckLinked;
 
     /**
-     * 部门树选择项是否关联显示（0：父子不互相关联显示 1：父子互相关联显示 ）
+     * 部门树勾选是否父子联动（true：联动，false：独立勾选）
      */
-    private boolean deptCheckStrictly;
+    private boolean deptCheckLinked;
 
     /**
      * 角色状态（0停用 1正常）
@@ -128,8 +128,8 @@ public class SysRole extends BaseEntity {
                 .append("roleKey", getRoleKey())
                 .append("roleSort", getRoleSort())
                 .append("dataScope", getDataScope())
-                .append("menuCheckStrictly", isMenuCheckStrictly())
-                .append("deptCheckStrictly", isDeptCheckStrictly())
+                .append("menuCheckLinked", isMenuCheckLinked())
+                .append("deptCheckLinked", isDeptCheckLinked())
                 .append("status", getStatus())
                 .append("delFlag", getDelFlag())
                 .append("createBy", getCreateBy())

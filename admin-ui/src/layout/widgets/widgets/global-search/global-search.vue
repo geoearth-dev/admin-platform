@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MenuRecordRaw }from '@/types';
+import type { NavigationMenu }from '@/types';
 
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
@@ -26,7 +26,7 @@ defineOptions({
 const props = withDefaults(
   defineProps<{
     enableShortcutKey?: boolean;
-    menus?: MenuRecordRaw[];
+    menus?: NavigationMenu[];
     /** 是否显示触发按钮（嵌在 dropdown 等容器里时可关掉） */
     showButton?: boolean;
   }>(),

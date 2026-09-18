@@ -6,6 +6,7 @@ import dev.geo.admin.security.model.LoginSession;
 import dev.geo.admin.security.session.LoginSessionStore;
 import dev.geo.admin.system.model.monitor.dto.OnlineSessionQueryDTO;
 import dev.geo.admin.system.model.monitor.entity.SysUserOnline;
+import dev.geo.admin.system.service.message.MessageSseService;
 import dev.geo.admin.system.service.monitor.ISysUserOnlineService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,10 +21,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SysUserOnlineServiceImpl implements ISysUserOnlineService {
     private final LoginSessionStore sessionStore;
-
+    private final MessageSseService messageSseService;
     @Override
     public List<SysUserOnline> getOnlineSessions(OnlineSessionQueryDTO query) {
-        return sessionStore.findAll().stream()
+        return messageSseService.onlineSessions().stream()
                 .filter(session -> StrUtil.isBlank(query.getUserName())
                         || StrUtil.containsIgnoreCase(session.userInfo().username(), query.getUserName()))
                 .filter(session -> StrUtil.isBlank(query.getIpAddress())
@@ -44,7 +45,7 @@ public class SysUserOnlineServiceImpl implements ISysUserOnlineService {
         online.setDeptName(session.userInfo().deptName());
         online.setUserName(session.userInfo().username());
         online.setIp(session.userInfo().ip());
-        online.setLoginLocation(AddressUtils.getRealAddressByIP(session.userInfo().ip()));
+        online.setLoginLocation(session.userInfo().loginLocation());
         online.setBrowser(session.userInfo().browser());
         online.setOs(session.userInfo().os());
         online.setLoginTime(session.loginAt().toEpochMilli());

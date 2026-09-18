@@ -28,8 +28,7 @@ public interface SysConfigMapper extends BaseMapperX<SysConfig> {
             // 使用次日零点的开区间，完整覆盖结束日期且不对数据库列执行函数。
             wrapper.lt(SysConfig::getCreateTime, query.getEndDate().plusDays(1).atStartOfDay());
         }
-        wrapper.orderByDesc(SysConfig::getCreateTime)
-                .orderByDesc(SysConfig::getId);
+        wrapper.orderByAsc(SysConfig::getId);
         return selectPage(query, wrapper);
     }
 

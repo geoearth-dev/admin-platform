@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MenuRecordRaw }from '@/types';
+import type { NavigationMenu }from '@/types';
 
 import { nextTick, onMounted, ref, shallowRef, watch } from 'vue';
 import { useRouter } from 'vue-router';
@@ -23,7 +23,7 @@ defineOptions({
 });
 
 const props = withDefaults(
-  defineProps<{ keyword?: string; menus?: MenuRecordRaw[] }>(),
+  defineProps<{ keyword?: string; menus?: NavigationMenu[] }>(),
   {
     keyword: '',
     menus: () => [],
@@ -32,13 +32,13 @@ const props = withDefaults(
 const emit = defineEmits<{ close: [] }>();
 
 const router = useRouter();
-const searchHistory = useLocalStorage<MenuRecordRaw[]>(
+const searchHistory = useLocalStorage<NavigationMenu[]>(
   `__search-history-${location.hostname}__`,
   [],
 );
 const activeIndex = ref(-1);
-const searchItems = shallowRef<MenuRecordRaw[]>([]);
-const searchResults = ref<MenuRecordRaw[]>([]);
+const searchItems = shallowRef<NavigationMenu[]>([]);
+const searchResults = ref<NavigationMenu[]>([]);
 const isNavigating = ref(false);
 
 const handleSearch = useThrottleFn(search, 200);
@@ -60,7 +60,7 @@ function search(searchKey: string) {
   const reg = createSearchReg(searchKey);
 
   // 初始化结果数组
-  const results: MenuRecordRaw[] = [];
+  const results: NavigationMenu[] = [];
 
   // 遍历搜索项
   traverseTreeValues(searchItems.value, (item) => {

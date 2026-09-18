@@ -24,10 +24,10 @@ public interface SysDeptMapper extends BaseMapperX<SysDept>
      * 根据角色ID查询部门树信息
      * 
      * @param roleId 角色ID
-     * @param deptCheckStrictly 部门树选择项是否关联显示
+     * @param deptCheckLinked 部门树勾选是否父子联动（true：联动，false：独立勾选）
      * @return 选中部门列表
      */
-    List<Long> selectDeptListByRoleId(@Param("roleId") Long roleId, @Param("deptCheckStrictly") boolean deptCheckStrictly);
+    List<Long> selectDeptListByRoleId(@Param("roleId") Long roleId, @Param("deptCheckLinked") boolean deptCheckLinked);
 
     /**
      * 根据部门ID查询信息

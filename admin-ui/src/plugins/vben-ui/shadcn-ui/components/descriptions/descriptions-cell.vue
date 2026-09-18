@@ -2,7 +2,7 @@
 import type { CSSProperties } from 'vue';
 
 import type { DescriptionsRenderNode, DescriptionsSize } from './types';
-
+import { VbenRenderContent } from '../render-content';
 import { computed } from 'vue';
 import { cn } from '@/utils/cn';
 

@@ -1,83 +1,56 @@
-import type { ExRouteRecordRaw, MenuRecordRaw } from '@/types';
-import type { RouteMeta, Router, RouteRecordRaw } from 'vue-router';
-import { filterTree, mapTree, sortTree } from '../tree';
-import { constantRoutes } from '@/router/routes';
+import type { NavigationMenu } from '@/types'
+import type { Router, RouteRecordRaw } from 'vue-router'
+import { constantRoutes } from '@/router/routes'
 
-/**
- * 根据 routes 生成菜单列表
- * @param routes - 路由配置列表
- * @param router - Vue Router 实例
- * @returns 生成的菜单列表
- */
-function generateMenus(routes: RouteRecordRaw[], router: Router): MenuRecordRaw[] {
-  const allRoutes = constantRoutes.concat(routes);
-  // 将路由列表转换为一个以 name 为键的对象映射
-  const finalRoutesMap: { [key: string]: string } = Object.fromEntries(
+/** 从已注册的路由生成导航菜单，不修改原始路由树。 */
+function generateMenus(
+  routes: RouteRecordRaw[],
+  router: Router,
+): NavigationMenu[] {
+  const routePaths = new Map(
     router.getRoutes().map(({ name, path }) => [name, path]),
-  );
+  )
 
-  let menus = mapTree<ExRouteRecordRaw, MenuRecordRaw>(allRoutes, (route) => {
-    // 获取最终的路由路径
-    const path = finalRoutesMap[route.name as string] ?? route.path ?? '';
+  function convert(
+    items: RouteRecordRaw[],
+    parents: string[] = [],
+  ): NavigationMenu[] {
+    return items
+      .filter((route) => !route.meta?.hideInMenu)
+      .map((route): NavigationMenu => {
+        const path =
+          (route.name ? routePaths.get(route.name) : undefined) ?? route.path
+        const meta = route.meta
+        let targetPath = meta?.link || path
+        if (
+          meta?.hideChildrenInMenu &&
+          route.redirect &&
+          typeof route.redirect !== 'function'
+        ) {
+          targetPath = router.resolve(route.redirect).path
+        }
+        return {
+          name: meta?.title || String(route.name ?? ''),
+          path: targetPath,
+          icon: meta?.icon,
+          activeIcon: meta?.activeIcon,
+          badge: meta?.badge,
+          badgeType: meta?.badgeType,
+          badgeVariants: meta?.badgeVariants,
+          query: meta?.query,
+          order: meta?.order,
+          parent: parents.at(-1),
+          parents,
+          show: true,
+          children: meta?.hideChildrenInMenu
+            ? []
+            : convert(route.children ?? [], [...parents, path]),
+        }
+      })
+      .sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
+  }
 
-    const { meta = {} as RouteMeta, name: routeName, redirect, children = [] } = route;
-    const {
-      activeIcon,
-      badge,
-      badgeType,
-      badgeVariants,
-      hideChildrenInMenu = false,
-      icon,
-      link,
-      order,
-      title = '',
-      query,
-    } = meta;
-
-    // 确保菜单名称不为空
-    const name = (title || routeName || '') as string;
-
-    // 处理子菜单
-    const resultChildren = hideChildrenInMenu ? [] : ((children as MenuRecordRaw[]) ?? []);
-
-    // 设置子菜单的父子关系
-    if (resultChildren.length > 0) {
-      resultChildren.forEach((child) => {
-        child.parents = [...(route.parents ?? []), path];
-        child.parent = path;
-      });
-    }
-
-    // 确定最终路径
-    let resultPath = link || path;
-    if (hideChildrenInMenu) {
-      // 静态重定向转换成菜单地址；函数重定向留到实际导航时执行。
-      const target = typeof redirect === 'function' ? undefined : redirect;
-      resultPath = target ? router.resolve(target).path : path;
-    }
-
-    return {
-      activeIcon,
-      badge,
-      badgeType,
-      badgeVariants,
-      icon,
-      name,
-      query,
-      order,
-      parent: route.parent,
-      parents: route.parents,
-      path: resultPath,
-      show: !meta.hideInMenu,
-      children: resultChildren,
-    };
-  });
-
-  // 对菜单进行排序，避免order=0时被替换成999的问题
-  menus = sortTree(menus, (a, b) => (a?.order ?? 999) - (b?.order ?? 999));
-
-  // 过滤掉隐藏的菜单项
-  return filterTree(menus, (menu) => !!menu.show);
+  return convert([...constantRoutes, ...routes])
 }
 
-export { generateMenus };
+export { generateMenus }

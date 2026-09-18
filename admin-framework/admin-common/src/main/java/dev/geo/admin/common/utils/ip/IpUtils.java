@@ -117,7 +117,7 @@ public class IpUtils {
      * @return byte 字节
      */
     public static byte[] textToNumericFormatV4(String text) {
-        if (text.isEmpty()) {
+        if (StrUtil.isBlank(text)) {
             return null;
         }
 

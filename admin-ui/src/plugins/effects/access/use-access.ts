@@ -1,3 +1,4 @@
+import { ALL_PERMISSION } from '@/constants/permissions';
 import { useAccessStore, useUserStore } from '@/store';
 import { computed } from 'vue';
 import { preferences, updatePreferences } from '../../preference';
@@ -28,7 +29,7 @@ function useAccess() {
   function hasAccessByCodes(codes: string[]) {
     const permissions = new Set(accessStore.permissions);
 
-    return permissions.has('*:*:*') || codes.some((code) => permissions.has(code));
+    return permissions.has(ALL_PERMISSION) || codes.some((code) => permissions.has(code));
   }
 
   async function toggleAccessMode() {

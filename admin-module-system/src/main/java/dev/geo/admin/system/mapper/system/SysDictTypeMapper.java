@@ -22,8 +22,7 @@ public interface SysDictTypeMapper extends BaseMapperX<SysDictType> {
                 .ge(query.getBeginTime() != null, SysDictType::getCreateTime, query.getBeginTime())
                 .le(query.getEndTime() != null, SysDictType::getCreateTime,
                         query.getEndTime() == null ? null : DateUtil.endOfDay(query.getEndTime()))
-                .orderByDesc(SysDictType::getCreateTime)
-                .orderByDesc(SysDictType::getId);
+                .orderByAsc(SysDictType::getId);
         return selectPage(query, wrapper);
     }
     /**
@@ -34,8 +33,7 @@ public interface SysDictTypeMapper extends BaseMapperX<SysDictType> {
      */
     default List<SysDictType> selectDictTypeAll() {
         return selectList(new LambdaQueryWrapper<SysDictType>()
-                .orderByDesc(SysDictType::getCreateTime)
-                .orderByDesc(SysDictType::getId));
+                .orderByAsc(SysDictType::getId));
     }
 
     /**

@@ -14,11 +14,15 @@ const props = defineProps<{ action: ActionItem }>();
 const open = ref(false);
 
 const buttonClass = computed(() =>
-  cn('gap-1', props.action.danger && 'text-destructive hover:text-destructive', props.action.class),
+  cn(
+    'h-auto gap-1 px-2 py-0 font-normal leading-[inherit]',
+    props.action.danger && 'text-destructive hover:text-destructive',
+    props.action.class,
+  ),
 );
 
 const variant = computed(() => props.action.variant ?? 'link');
-const size = computed(() => props.action.size ?? 'default');
+const size = computed(() => props.action.size ?? 'sm');
 
 function onClick() {
   if (props.action.disabled || props.action.loading) return;
@@ -49,10 +53,9 @@ function onCancel() {
         :disabled="action.disabled"
         :loading="action.loading"
         :size="size"
-        class="p-2"
         :variant="variant"
       >
-        <VbenIcon :icon="action.icon" v-if="action.icon" class="size-4" />
+        <VbenIcon :icon="action.icon" v-if="action.icon" class="size-[1em] shrink-0" />
         <span v-if="action.text">{{ action.text }}</span>
       </VbenButton>
     </PopoverTrigger>
@@ -67,7 +70,6 @@ function onCancel() {
         <VbenButton
           :variant="action.danger ? 'destructive' : 'default'"
           size="default"
-          class="p-2"
           @click="onConfirm"
         >
           {{ action.popConfirm.okText ?? 'OK' }}
@@ -83,11 +85,10 @@ function onCancel() {
     :disabled="action.disabled"
     :loading="action.loading"
     :size="size"
-    class="p-2"
     :variant="variant"
     @click="onClick"
   >
-    <VbenIcon :icon="action.icon" v-if="action.icon" class="size-4" />
+    <VbenIcon :icon="action.icon" v-if="action.icon" class="size-[1em] shrink-0" />
     <span v-if="action.text">{{ action.text }}</span>
   </VbenButton>
 </template>

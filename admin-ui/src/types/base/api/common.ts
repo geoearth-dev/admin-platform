@@ -1,5 +1,5 @@
 /**后端统一响应结构 */
-export interface AjaxResult<T> {
+export interface ApiResult<T> {
   /**
    * 200 表示成功 其他表示失败
    */
@@ -69,4 +69,12 @@ export interface TreeSelect extends Record<string, unknown> {
   disabled?: boolean;
   /** 子节点 */
   children?: TreeSelect[];
+}
+
+/** 显隐列信息 */
+export interface TableShowColumns {
+  // 显示名称
+  label: string;
+  // 是否显示
+  visible: boolean;
 }

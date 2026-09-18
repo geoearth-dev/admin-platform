@@ -16,7 +16,6 @@ import dev.geo.admin.system.model.system.dto.RoleDataScopeDTO;
 import dev.geo.admin.system.model.system.dto.RoleSaveDTO;
 import dev.geo.admin.system.model.system.dto.StatusUpdateDTO;
 import dev.geo.admin.system.model.system.dto.RoleUserRelationDTO;
-import dev.geo.admin.system.model.system.dto.UserIdsDTO;
 import dev.geo.admin.system.model.system.dto.RolePageReqDTO;
 import dev.geo.admin.system.model.system.dto.RoleUserPageReqDTO;
 import dev.geo.admin.system.model.system.vo.RoleDeptTreeVO;
@@ -56,14 +55,18 @@ public class SysRoleController extends BaseController {
         query.setPageSize(PageParam.PAGE_SIZE_NONE);
         excelService.exportExcel(response, roleService.selectRolePage(query).getRecords(), SysRole.class, "角色数据");
     }
-
+    /**
+     * 根据角色编号获取详细信息
+     */
     @PreAuthorize("@se.hasPermission('system:role:query')")
     @GetMapping("/{id}")
-    public ApiResult<SysRole> getInfo(@PathVariable Long id) {
+    public ApiResult<SysRole> getRole(@PathVariable Long id) {
         roleService.checkRoleDataScope(id);
         return success(roleService.selectRoleById(id));
     }
-
+    /**
+     * 新增角色
+     */
     @PostMapping
     @PreAuthorize("@se.hasPermission('system:role:add')")
     @Log(title = "角色管理", businessType = BusinessType.INSERT)
@@ -72,7 +75,9 @@ public class SysRoleController extends BaseController {
         ApiResult<Void> validation = validateRole(role, "新增");
         return validation == null ? toApiResult(roleService.insertRole(role)) : validation;
     }
-
+    /**
+     * 修改保存角色
+     */
     @PutMapping
     @PreAuthorize("@se.hasPermission('system:role:edit')")
     @Log(title = "角色管理", businessType = BusinessType.UPDATE)
@@ -83,7 +88,9 @@ public class SysRoleController extends BaseController {
         ApiResult<Void> validation = validateRole(role, "修改");
         return validation == null ? toApiResult(roleService.updateRole(role)) : validation;
     }
-
+    /**
+     * 修改保存数据权限
+     */
     @PreAuthorize("@se.hasPermission('system:role:edit')")
     @Log(title = "角色管理", businessType = BusinessType.UPDATE)
     @PutMapping("/data-scope")
@@ -93,7 +100,9 @@ public class SysRoleController extends BaseController {
         roleService.checkRoleDataScope(role.getId());
         return toApiResult(roleService.authDataScope(role));
     }
-
+    /**
+     * 状态修改
+     */
     @PreAuthorize("@se.hasPermission('system:role:edit')")
     @Log(title = "角色管理", businessType = BusinessType.UPDATE)
     @PutMapping("/status")
@@ -103,19 +112,72 @@ public class SysRoleController extends BaseController {
         roleService.checkRoleDataScope(role.getId());
         return toApiResult(roleService.updateRoleStatus(role));
     }
-
+    /**
+     * 删除角色
+     */
     @PreAuthorize("@se.hasPermission('system:role:remove')")
     @Log(title = "角色管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public ApiResult<Void> remove(@PathVariable Long[] ids) {
         return toApiResult(roleService.deleteRoleByIds(ids));
     }
-
+    /**
+     * 获取角色选择框列表
+     */
     @GetMapping("/options")
     public ApiResult<List<SysRole>> options() {
         return success(roleService.selectRoleAll());
     }
 
+
+    /**
+     * 查询已分配用户角色列表
+     */
+    @PreAuthorize("@se.hasPermission('system:role:list')")
+    @GetMapping("/users/allocated")
+    public ApiResult<PageResult<SysUser>> allocatedUsers(@Validated RoleUserPageReqDTO query) {
+        return success(userService.selectAllocatedPage(query));
+    }
+    /**
+     * 查询未分配用户角色列表
+     */
+    @PreAuthorize("@se.hasPermission('system:role:list')")
+    @GetMapping("/users/unallocated")
+    public ApiResult<PageResult<SysUser>> unallocatedUsers(@Validated RoleUserPageReqDTO query) {
+        return success(userService.selectUnallocatedPage(query));
+    }
+    /**
+     * 取消授权用户
+     */
+    @PreAuthorize("@se.hasPermission('system:role:edit')")
+    @Log(title = "角色授权", businessType = BusinessType.GRANT)
+    @DeleteMapping("/users")
+    public ApiResult<Void> cancelUser(@Validated @RequestBody RoleUserRelationDTO request) {
+        SysUserRole userRole = BeanUtil.toBean(request, SysUserRole.class);
+        return toApiResult(roleService.deleteAuthUser(userRole));
+    }
+    /**
+     * 批量取消授权用户
+     */
+    @PreAuthorize("@se.hasPermission('system:role:edit')")
+    @Log(title = "角色授权", businessType = BusinessType.GRANT)
+    @DeleteMapping("/{roleId}/users")
+    public ApiResult<Void> cancelUsers(@PathVariable Long roleId, @Validated @RequestBody Long[] userIds) {
+        return toApiResult(roleService.deleteAuthUsers(roleId, userIds));
+    }
+    /**
+     * 批量选择用户授权
+     */
+    @PreAuthorize("@se.hasPermission('system:role:edit')")
+    @Log(title = "角色授权", businessType = BusinessType.GRANT)
+    @PostMapping("/{roleId}/users")
+    public ApiResult<Void> selectUsers(@PathVariable Long roleId, @Validated @RequestBody Long[] userIds) {
+        roleService.checkRoleDataScope(roleId);
+        return toApiResult(roleService.insertAuthUsers(roleId, userIds));
+    }
+    /**
+     * 获取对应角色部门树列表
+     */
     @PreAuthorize("@se.hasPermission('system:role:query')")
     @GetMapping("/dept-tree/{roleId}")
     public ApiResult<RoleDeptTreeVO> deptTree(@PathVariable Long roleId) {
@@ -124,41 +186,6 @@ public class SysRoleController extends BaseController {
                 deptService.selectDeptListByRoleId(roleId),
                 deptService.buildDeptTreeSelect(departments)
         ));
-    }
-
-    @PreAuthorize("@se.hasPermission('system:role:list')")
-    @GetMapping("/users/allocated")
-    public ApiResult<PageResult<SysUser>> allocatedUsers(@Validated RoleUserPageReqDTO query) {
-        return success(userService.selectAllocatedPage(query));
-    }
-
-    @PreAuthorize("@se.hasPermission('system:role:list')")
-    @GetMapping("/users/unallocated")
-    public ApiResult<PageResult<SysUser>> unallocatedUsers(@Validated RoleUserPageReqDTO query) {
-        return success(userService.selectUnallocatedPage(query));
-    }
-
-    @PreAuthorize("@se.hasPermission('system:role:edit')")
-    @Log(title = "角色授权", businessType = BusinessType.GRANT)
-    @DeleteMapping("/users")
-    public ApiResult<Void> cancelUser(@Validated @RequestBody RoleUserRelationDTO request) {
-        SysUserRole userRole = BeanUtil.toBean(request, SysUserRole.class);
-        return toApiResult(roleService.deleteAuthUser(userRole));
-    }
-
-    @PreAuthorize("@se.hasPermission('system:role:edit')")
-    @Log(title = "角色授权", businessType = BusinessType.GRANT)
-    @DeleteMapping("/{roleId}/users")
-    public ApiResult<Void> cancelUsers(@PathVariable Long roleId, @Validated @RequestBody UserIdsDTO request) {
-        return toApiResult(roleService.deleteAuthUsers(roleId, request.getUserIds()));
-    }
-
-    @PreAuthorize("@se.hasPermission('system:role:edit')")
-    @Log(title = "角色授权", businessType = BusinessType.GRANT)
-    @PostMapping("/{roleId}/users")
-    public ApiResult<Void> selectUsers(@PathVariable Long roleId, @Validated @RequestBody UserIdsDTO request) {
-        roleService.checkRoleDataScope(roleId);
-        return toApiResult(roleService.insertAuthUsers(roleId, request.getUserIds()));
     }
 
     private ApiResult<Void> validateRole(SysRole role, String action) {
@@ -170,4 +197,6 @@ public class SysRoleController extends BaseController {
         }
         return null;
     }
+
+
 }

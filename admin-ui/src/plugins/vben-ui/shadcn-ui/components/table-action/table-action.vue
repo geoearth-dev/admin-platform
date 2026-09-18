@@ -1,3 +1,76 @@
+<template>
+  <div :class="wrapperClass">
+    <!-- 所有主操作共享同一个 TooltipProvider，避免每个 tooltip 各建一个 provider -->
+    <TooltipProvider v-if="renderedActions.length > 0" :delay-duration="0">
+      <template v-for="item in renderedActions" :key="item.key">
+        <!-- 气泡确认：需独立弹层状态，交由子组件维护 -->
+        <ActionItemComp v-if="item.isConfirm" :action="item.action" />
+
+        <!-- 带提示的普通按钮 -->
+        <Tooltip v-else-if="item.hasTooltip">
+          <TooltipTrigger as-child tabindex="-1">
+            <VbenButton
+              :class="item.buttonClass"
+              :disabled="item.action.disabled"
+              :loading="item.action.loading"
+              :size="item.size"
+              :variant="item.variant"
+              @click="onActionClick(item.action)"
+            >
+              <VbenIcon
+                v-if="item.action.icon"
+                :icon="item.action.icon"
+                class="size-[1em] shrink-0"
+              />
+              <span v-if="item.action.text">{{ item.action.text }}</span>
+            </VbenButton>
+          </TooltipTrigger>
+          <TooltipContent
+            :side="item.tooltipSide"
+            class="side-content bg-accent text-popover-foreground rounded-md"
+          >
+            {{ item.tooltipContent }}
+          </TooltipContent>
+        </Tooltip>
+
+        <!-- 普通按钮 -->
+        <VbenButton
+          v-else
+          :class="item.buttonClass"
+          :disabled="item.action.disabled"
+          :loading="item.action.loading"
+          :size="item.size"
+          :variant="item.variant"
+          @click="onActionClick(item.action)"
+        >
+          <VbenIcon v-if="item.action.icon" :icon="item.action.icon" class="size-[1em] shrink-0" />
+          <span v-if="item.action.text">{{ item.action.text }}</span>
+        </VbenButton>
+
+        <Separator v-if="item.showDivider" orientation="vertical" class="h-4" />
+      </template>
+    </TooltipProvider>
+
+    <DropdownMenu v-if="visibleDropdownActions.length > 0" v-model:open="dropdownOpen">
+      <DropdownMenuTrigger as-child>
+        <VbenButton
+          size="sm"
+          class="h-auto gap-1 px-2 py-0 font-normal leading-[inherit]"
+          variant="link"
+        >
+          <Ellipsis class="size-[1em] shrink-0" />
+          <span v-if="moreText">{{ moreText }}</span>
+        </VbenButton>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" @interact-outside="onContentInteractOutside">
+        <template v-for="(item, index) in visibleDropdownActions" :key="item.key ?? index">
+          <ActionDropdownItemComp :action="item" @confirm="dropdownOpen = false" />
+          <DropdownMenuSeparator v-if="divider && index < visibleDropdownActions.length - 1" />
+        </template>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  </div>
+</template>
 <script setup lang="ts">
 import type { ActionItem, TableActionProps } from './types';
 
@@ -78,7 +151,7 @@ const renderedActions = computed(() => {
     return {
       action,
       buttonClass: cn(
-        'gap-1 p-2',
+        'h-auto gap-1 px-2 py-0 font-normal leading-[inherit]',
         action.danger && 'text-destructive hover:text-destructive',
         action.class,
       ),
@@ -86,7 +159,7 @@ const renderedActions = computed(() => {
       isConfirm: !!action.popConfirm,
       key: action.key ?? index,
       showDivider: props.divider && index < list.length - 1,
-      size: action.size ?? 'default',
+      size: action.size ?? 'sm',
       tooltipContent: hasTooltip ? tooltipContent(action) : undefined,
       tooltipSide: hasTooltip ? tooltipSide(action) : 'top',
       variant: action.variant ?? 'link',
@@ -115,69 +188,3 @@ function onContentInteractOutside(event: Event) {
   }
 }
 </script>
-
-<template>
-  <div :class="wrapperClass">
-    <!-- 所有主操作共享同一个 TooltipProvider，避免每个 tooltip 各建一个 provider -->
-    <TooltipProvider v-if="renderedActions.length > 0" :delay-duration="0">
-      <template v-for="item in renderedActions" :key="item.key">
-        <!-- 气泡确认：需独立弹层状态，交由子组件维护 -->
-        <ActionItemComp v-if="item.isConfirm" :action="item.action" />
-
-        <!-- 带提示的普通按钮 -->
-        <Tooltip v-else-if="item.hasTooltip">
-          <TooltipTrigger as-child tabindex="-1">
-            <VbenButton
-              :class="item.buttonClass"
-              :disabled="item.action.disabled"
-              :loading="item.action.loading"
-              :size="item.size"
-              :variant="item.variant"
-              @click="onActionClick(item.action)"
-            >
-              <VbenIcon v-if="item.action.icon" :icon="item.action.icon" class="size-4" />
-              <span v-if="item.action.text">{{ item.action.text }}</span>
-            </VbenButton>
-          </TooltipTrigger>
-          <TooltipContent
-            :side="item.tooltipSide"
-            class="side-content bg-accent text-popover-foreground rounded-md"
-          >
-            {{ item.tooltipContent }}
-          </TooltipContent>
-        </Tooltip>
-
-        <!-- 普通按钮 -->
-        <VbenButton
-          v-else
-          :class="item.buttonClass"
-          :disabled="item.action.disabled"
-          :loading="item.action.loading"
-          :size="item.size"
-          :variant="item.variant"
-          @click="onActionClick(item.action)"
-        >
-          <VbenIcon v-if="item.action.icon" :icon="item.action.icon" class="size-4" />
-          <span v-if="item.action.text">{{ item.action.text }}</span>
-        </VbenButton>
-
-        <Separator v-if="item.showDivider" orientation="vertical" class="h-4" />
-      </template>
-    </TooltipProvider>
-
-    <DropdownMenu v-if="visibleDropdownActions.length > 0" v-model:open="dropdownOpen">
-      <DropdownMenuTrigger as-child>
-        <VbenButton class="gap-1 p-2" variant="link">
-          <Ellipsis class="size-4" />
-          <span v-if="moreText">{{ moreText }}</span>
-        </VbenButton>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" @interact-outside="onContentInteractOutside">
-        <template v-for="(item, index) in visibleDropdownActions" :key="item.key ?? index">
-          <ActionDropdownItemComp :action="item" @confirm="dropdownOpen = false" />
-          <DropdownMenuSeparator v-if="divider && index < visibleDropdownActions.length - 1" />
-        </template>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  </div>
-</template>

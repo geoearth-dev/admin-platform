@@ -20,5 +20,6 @@
         <module>admin-redis</module>
         <module>admin-websocket</module>
         <module>admin-excel</module>
+        <module>admin-quartz</module>
     </modules>
 </project>

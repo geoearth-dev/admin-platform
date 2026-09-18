@@ -1,6 +1,7 @@
 @import './tailwind/theme.css';
 
 @import './ele/index.css';
+@import './ele/compat.css';
 
 @import './design-tokens/index.css';
 

@@ -1,6 +1,6 @@
+import type { ClassType } from '@/types';
 import type { ButtonVariants } from '../../ui';
-
-import { VbenIcon } from '../icon';
+import type { Component } from 'vue';
 
 /** 权限码：单个或多个，配合注入的 hasPermission 判断 */
 export type TableActionAuth = string | string[];
@@ -27,13 +27,13 @@ export interface ActionItem {
   /** 权限码，配合注入的 hasPermission 过滤 */
   auth?: TableActionAuth;
   /** 自定义类名 */
-  class?: any;
+  class?: ClassType;
   /** 危险操作（红色文字） */
   danger?: boolean;
   /** 是否禁用 */
   disabled?: boolean;
   /** 图标组件 */
-  icon?: typeof VbenIcon.icon;
+  icon?: Component | string;
   /** 是否显示：布尔或返回布尔的函数 */
   ifShow?: (() => boolean) | boolean;
   /** 唯一标识，点击回调可据此区分 */
@@ -60,7 +60,7 @@ export interface TableActionProps {
   /** 对齐方式 */
   align?: 'center' | 'end' | 'start';
   /** 自定义类名 */
-  class?: any;
+  class?: ClassType;
   /** 按钮之间是否显示分割线 */
   divider?: boolean;
   /** “更多”下拉中的操作 */

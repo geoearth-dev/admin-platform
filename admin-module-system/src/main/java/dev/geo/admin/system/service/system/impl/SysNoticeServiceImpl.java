@@ -5,8 +5,11 @@ import dev.geo.admin.system.mapper.system.SysNoticeMapper;
 import dev.geo.admin.system.model.system.dto.NoticePageReqDTO;
 import dev.geo.admin.system.model.system.entity.SysNotice;
 import dev.geo.admin.system.service.system.ISysNoticeService;
+import dev.geo.admin.system.service.system.ISysNoticeReadService;
+import dev.geo.admin.common.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,6 +27,9 @@ public class SysNoticeServiceImpl implements ISysNoticeService
 
     @Autowired
     private SysNoticeMapper noticeMapper;
+
+    @Autowired
+    private ISysNoticeReadService noticeReadService;
 
     /**
      * 查询公告信息
@@ -80,9 +86,10 @@ public class SysNoticeServiceImpl implements ISysNoticeService
      * @return 结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int deleteNoticeById(Long noticeId)
     {
-        return noticeMapper.deleteNoticeById(noticeId);
+        return deleteNoticeByIds(new Long[]{noticeId});
     }
 
     /**
@@ -92,8 +99,14 @@ public class SysNoticeServiceImpl implements ISysNoticeService
      * @return 结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int deleteNoticeByIds(Long[] noticeIds)
     {
+        if (noticeIds == null || noticeIds.length == 0 ||
+                java.util.Arrays.stream(noticeIds).anyMatch(id -> id == null || id <= 0)) {
+            throw new ServiceException("请选择有效的公告ID");
+        }
+        noticeReadService.deleteByNoticeIds(noticeIds);
         return noticeMapper.deleteNoticeByIds(noticeIds);
     }
 }

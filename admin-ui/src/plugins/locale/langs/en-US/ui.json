@@ -134,6 +134,7 @@
     "viewAll": "View All Messages",
     "notifications": "Notifications",
     "markAllAsRead": "Make All as Read",
+    "loadingNotifications": "Loading notifications…",
     "clearNotifications": "Clear",
     "checkUpdatesTitle": "New Version Available",
     "checkUpdatesDescription": "Click to refresh and get the latest version",

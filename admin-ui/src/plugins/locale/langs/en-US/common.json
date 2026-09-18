@@ -18,6 +18,8 @@
   "delete": "Delete",
   "detail": "Detail",
   "create": "Create",
+  "import": "Import",
+  "export": "Export",
   "yes": "Yes",
   "no": "No",
   "showSearchPanel": "Show search panel",

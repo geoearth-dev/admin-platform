@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 import { useRoute } from 'vue-router';
 
-import type { MenuRecordRaw } from '@/types';
+import type { NavigationMenu } from '@/types';
 
 import { useNavigation } from './use-navigation';
 import type { MenuProps } from '@/plugins/vben-ui/menu-ui';
 
 interface Props extends MenuProps {
   collapse?: boolean;
-  menus?: MenuRecordRaw[];
+  menus?: NavigationMenu[];
 }
 
 withDefaults(defineProps<Props>(), {

@@ -71,10 +71,10 @@ public interface SysMenuMapper extends BaseMapperX<SysMenu>
      * 根据角色ID查询菜单树信息
      * 
      * @param roleId 角色ID
-     * @param menuCheckStrictly 菜单树选择项是否关联显示
+     * @param menuCheckLinked 菜单树勾选是否父子联动（true：联动，false：独立勾选）
      * @return 选中菜单列表
      */
-    List<Long> selectMenuListByRoleId(@Param("roleId") Long roleId, @Param("menuCheckStrictly") boolean menuCheckStrictly);
+    List<Long> selectMenuListByRoleId(@Param("roleId") Long roleId, @Param("menuCheckLinked") boolean menuCheckLinked);
 
     /**
      * 根据菜单ID查询信息
@@ -115,7 +115,16 @@ public interface SysMenuMapper extends BaseMapperX<SysMenu>
                 .set(menu.getLink() == null, SysMenu::getLink, null)
                 .set(menu.getIframeSrc() == null, SysMenu::getIframeSrc, null)
                 .set(menu.getQuery() == null, SysMenu::getQuery, null)
-                .set(menu.getComponent() == null, SysMenu::getComponent, null));
+                .set(menu.getComponent() == null, SysMenu::getComponent, null)
+                .set(menu.getActiveIcon() == null, SysMenu::getActiveIcon, null)
+                .set(menu.getActivePath() == null, SysMenu::getActivePath, null)
+                .set(menu.getBadge() == null, SysMenu::getBadge, null)
+                .set(menu.getBadgeType() == null, SysMenu::getBadgeType, null)
+                .set(menu.getBadgeVariants() == null, SysMenu::getBadgeVariants, null)
+                .set(menu.getRedirect() == null, SysMenu::getRedirect, null)
+                .set(menu.getRouteName() == null, SysMenu::getRouteName, null)
+                .set(menu.getIcon() == null, SysMenu::getIcon, null)
+                .set(menu.getPerms() == null, SysMenu::getPerms, null));
     }
 
     /**

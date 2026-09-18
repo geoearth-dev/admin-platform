@@ -3,9 +3,11 @@ package dev.geo.admin.system.mapper.system;
 import dev.geo.admin.system.model.system.entity.SysNotice;
 import dev.geo.admin.system.model.system.entity.SysNoticeRead;
 import org.apache.ibatis.annotations.Param;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import dev.geo.admin.system.model.system.dto.NoticeReadUserPageReqDTO;
+import dev.geo.admin.system.model.system.vo.NoticeReadUserVO;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 公告已读记录 数据层
@@ -57,11 +59,12 @@ public interface SysNoticeReadMapper {
     /**
      * 查询已阅读某公告的用户列表
      *
-     * @param noticeId    公告ID
-     * @param searchValue 搜索值
+     * @param page 分页参数
+     * @param query 查询条件
      * @return 已读用户列表
      */
-    List<Map<String, Object>> selectReadUsersByNoticeId(@Param("noticeId") Long noticeId, @Param("searchValue") String searchValue);
+    IPage<NoticeReadUserVO> selectReadUsersPage(IPage<NoticeReadUserVO> page,
+                                              @Param("query") NoticeReadUserPageReqDTO query);
 
     /**
      * 公告删除时清理对应已读记录

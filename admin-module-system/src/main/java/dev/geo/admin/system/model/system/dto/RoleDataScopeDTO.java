@@ -13,6 +13,7 @@ public class RoleDataScopeDTO {
     @NotNull(message = "角色主键不能为空")
     private Long id;
     private String dataScope;
-    private boolean deptCheckStrictly;
+    /** 部门树勾选是否父子联动，true 表示联动。 */
+    private boolean deptCheckLinked;
     private Long[] deptIds;
 }

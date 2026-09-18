@@ -91,7 +91,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 or u.dept_id in (select t.id from sys_dept t where find_in_set(#{query.deptId}, t.ancestors)))
         </if>
         ${query.params.dataScope}
-        order by u.create_time desc, u.id desc
+        order by u.id asc
     </select>
 
     <select id="selectAllocatedPage" resultMap="SysUserResult">
@@ -109,7 +109,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             and u.phone_number like concat('%', #{query.phoneNumber}, '%')
         </if>
         ${query.params.dataScope}
-        order by u.create_time desc, u.id desc
+        order by u.id asc
     </select>
 
     <select id="selectUnallocatedPage" resultMap="SysUserResult">
@@ -131,7 +131,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             and u.phone_number like concat('%', #{query.phoneNumber}, '%')
         </if>
         ${query.params.dataScope}
-        order by u.create_time desc, u.id desc
+        order by u.id asc
     </select>
     
     <select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult">
@@ -164,7 +164,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>
 		<!-- 数据范围过滤 -->
 		${params.dataScope}
-		order by u.create_time desc, u.id desc
+		order by u.id asc
 	</select>
 	
 	<select id="selectAllocatedList" parameterType="SysUser" resultMap="SysUserResult">
@@ -182,7 +182,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>
 		<!-- 数据范围过滤 -->
 		${params.dataScope}
-		order by u.create_time desc, u.id desc
+		order by u.id asc
 	</select>
 	
 	<select id="selectUnallocatedList" parameterType="SysUser" resultMap="SysUserResult">
@@ -201,7 +201,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>
 		<!-- 数据范围过滤 -->
 		${params.dataScope}
-		order by u.create_time desc, u.id desc
+		order by u.id asc
 	</select>
 	
 	<select id="selectUserByUserName" parameterType="String" resultMap="SysUserResult">

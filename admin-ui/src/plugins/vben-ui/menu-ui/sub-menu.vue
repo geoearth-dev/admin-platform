@@ -3,13 +3,13 @@ import { computed } from 'vue';
 
 import { MenuBadge, MenuItem, SubMenu as SubMenuComp } from './components';
 import SubMenu from './sub-menu.vue';
-import type { MenuRecordRaw } from '@/types';
+import type { NavigationMenu } from '@/types';
 
 interface Props {
   /**
    * 菜单项
    */
-  menu: MenuRecordRaw;
+  menu: NavigationMenu;
 }
 
 defineOptions({

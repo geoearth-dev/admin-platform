@@ -15,10 +15,10 @@
 </template>
 <script lang="ts" setup>
 import type { MenuProps } from '@/plugins/vben-ui/menu-ui';
-import type { MenuRecordRaw } from '@/types';
+import type { NavigationMenu } from '@/types';
 import { Menu } from '@/plugins/vben-ui/menu-ui';
 interface Props extends MenuProps {
-  menus?: MenuRecordRaw[];
+  menus?: NavigationMenu[];
 }
 
 const props = withDefaults(defineProps<Props>(), {

@@ -12,7 +12,7 @@
 		<result property="order"       column="order"      />
 		<result property="path"           column="path"           />
 		<result property="component"      column="component"      />
-		<result property="query"          column="query"          />
+		<result property="query" column="query" typeHandler="com.baomidou.mybatisplus.extension.handlers.Fastjson2TypeHandler" />
 		<result property="routeName"      column="route_name"     />
 		<result property="link"           column="link"           />
 		<result property="iframeSrc"      column="iframe_src"     />
@@ -29,12 +29,26 @@
 		<result property="remark"         column="remark"         />
 		<result property="creatorId"      column="creator_id"     />
 		<result property="updaterId"      column="updater_id"     />
+	    <result property="activeIcon" column="active_icon" />
+    <result property="activePath" column="active_path" />
+    <result property="affixTab" column="affix_tab" />
+    <result property="affixTabOrder" column="affix_tab_order" />
+    <result property="badge" column="badge" />
+    <result property="badgeType" column="badge_type" />
+    <result property="badgeVariants" column="badge_variants" />
+    <result property="hideChildrenInMenu" column="hide_children_in_menu" />
+    <result property="hideInBreadcrumb" column="hide_in_breadcrumb" />
+    <result property="hideInTab" column="hide_in_tab" />
+    <result property="redirect" column="redirect" />
+    <result property="openInNewWindow" column="open_in_new_window" />
+    <result property="noBasicLayout" column="no_basic_layout" />
+    <result property="maxNumOfOpenTab" column="max_num_of_open_tab" />
 	</resultMap>
 
 	<sql id="selectMenuVo">
         select id, menu_name, parent_id, `order`, path, component, `query`, route_name, link, iframe_src,
                keep_alive, menu_type, hide_in_menu, status, ifnull(perms,'') as perms, icon, create_by,
-               create_time, update_by, update_time, remark, creator_id, updater_id
+               create_time, update_by, update_time, remark, creator_id, updater_id, `active_icon`, `active_path`, `affix_tab`, `affix_tab_order`, `badge`, `badge_type`, `badge_variants`, `hide_children_in_menu`, `hide_in_breadcrumb`, `hide_in_tab`, `redirect`, `open_in_new_window`, `no_basic_layout`, `max_num_of_open_tab`
 		from sys_menu
     </sql>
     
@@ -55,13 +69,13 @@
 	</select>
 	
 	<select id="selectMenuTreeAll" resultMap="SysMenuResult">
-		select distinct m.id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.route_name, m.hide_in_menu, m.status, ifnull(m.perms,'') as perms, m.link, m.iframe_src, m.keep_alive, m.menu_type, m.icon, m.`order`, m.create_time
-		from sys_menu m where m.menu_type in ('M', 'C') and m.status = '1'
+		select distinct m.id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.route_name, m.hide_in_menu, m.status, ifnull(m.perms,'') as perms, m.link, m.iframe_src, m.keep_alive, m.menu_type, m.icon, m.`order`, m.create_time, m.`active_icon`, m.`active_path`, m.`affix_tab`, m.`affix_tab_order`, m.`badge`, m.`badge_type`, m.`badge_variants`, m.`hide_children_in_menu`, m.`hide_in_breadcrumb`, m.`hide_in_tab`, m.`redirect`, m.`open_in_new_window`, m.`no_basic_layout`, m.`max_num_of_open_tab`
+		from sys_menu m where m.menu_type in ('catalog', 'menu', 'embedded', 'link') and m.status = '1'
 		order by m.parent_id, m.`order`, m.id
 	</select>
 	
 	<select id="selectMenuListByUserId" parameterType="SysMenu" resultMap="SysMenuResult">
-		select distinct m.id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.route_name, m.hide_in_menu, m.status, ifnull(m.perms,'') as perms, m.link, m.iframe_src, m.keep_alive, m.menu_type, m.icon, m.`order`, m.create_time
+		select distinct m.id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.route_name, m.hide_in_menu, m.status, ifnull(m.perms,'') as perms, m.link, m.iframe_src, m.keep_alive, m.menu_type, m.icon, m.`order`, m.create_time, m.`active_icon`, m.`active_path`, m.`affix_tab`, m.`affix_tab_order`, m.`badge`, m.`badge_type`, m.`badge_variants`, m.`hide_children_in_menu`, m.`hide_in_breadcrumb`, m.`hide_in_tab`, m.`redirect`, m.`open_in_new_window`, m.`no_basic_layout`, m.`max_num_of_open_tab`
 		from sys_menu m
 		left join sys_role_menu rm on m.id = rm.menu_id
 		left join sys_user_role ur on rm.role_id = ur.role_id
@@ -80,13 +94,13 @@
 	</select>
     
     <select id="selectMenuTreeByUserId" parameterType="Long" resultMap="SysMenuResult">
-		select distinct m.id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.route_name, m.hide_in_menu, m.status, ifnull(m.perms,'') as perms, m.link, m.iframe_src, m.keep_alive, m.menu_type, m.icon, m.`order`, m.create_time
+		select distinct m.id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.route_name, m.hide_in_menu, m.status, ifnull(m.perms,'') as perms, m.link, m.iframe_src, m.keep_alive, m.menu_type, m.icon, m.`order`, m.create_time, m.`active_icon`, m.`active_path`, m.`affix_tab`, m.`affix_tab_order`, m.`badge`, m.`badge_type`, m.`badge_variants`, m.`hide_children_in_menu`, m.`hide_in_breadcrumb`, m.`hide_in_tab`, m.`redirect`, m.`open_in_new_window`, m.`no_basic_layout`, m.`max_num_of_open_tab`
 		from sys_menu m
 			 left join sys_role_menu rm on m.id = rm.menu_id
 			 left join sys_user_role ur on rm.role_id = ur.role_id
 			 left join sys_role ro on ur.role_id = ro.id
 			 left join sys_user u on ur.user_id = u.id
-		where u.id = #{userId} and m.menu_type in ('M', 'C') and m.status = '1'  AND ro.status = '1'
+		where u.id = #{userId} and m.menu_type in ('catalog', 'menu', 'embedded', 'link') and m.status = '1'  AND ro.status = '1'
 		order by m.parent_id, m.`order`, m.id
 	</select>
 	
@@ -95,7 +109,7 @@
 		from sys_menu m
             left join sys_role_menu rm on m.id = rm.menu_id
         where rm.role_id = #{roleId}
-            <if test="menuCheckStrictly">
+            <if test="menuCheckLinked">
               and m.id not in (select m.parent_id from sys_menu m inner join sys_role_menu rm on m.id = rm.menu_id and rm.role_id = #{roleId})
             </if>
 		order by m.parent_id, m.`order`, m.id
@@ -140,7 +154,7 @@
 	
 	<select id="selectMenusByPathOrRouteName" parameterType="SysMenu" resultMap="SysMenuResult">
 		<include refid="selectMenuVo"/>
-		where menu_type in ('M', 'C') and (path = #{path} or path = #{routeName} or route_name = #{path} or route_name = #{routeName})
+		where menu_type in ('catalog', 'menu', 'embedded', 'link') and (path = #{path} or path = #{routeName} or route_name = #{path} or route_name = #{routeName})
 	</select>
 	
 </mapper>

@@ -20,8 +20,7 @@ public interface SysPostMapper extends BaseMapperX<SysPost>
                 .like(StrUtil.isNotBlank(query.getPostCode()), SysPost::getPostCode, query.getPostCode())
                 .like(StrUtil.isNotBlank(query.getPostName()), SysPost::getPostName, query.getPostName())
                 .eq(StrUtil.isNotBlank(query.getStatus()), SysPost::getStatus, query.getStatus())
-                .orderByDesc(SysPost::getCreateTime)
-                .orderByDesc(SysPost::getId));
+                .orderByAsc(SysPost::getId));
     }
     /**
      * 查询岗位数据集合
@@ -34,8 +33,7 @@ public interface SysPostMapper extends BaseMapperX<SysPost>
                 .like(StrUtil.isNotBlank(query.getPostCode()), SysPost::getPostCode, query.getPostCode())
                 .like(StrUtil.isNotBlank(query.getPostName()), SysPost::getPostName, query.getPostName())
                 .eq(StrUtil.isNotBlank(query.getStatus()), SysPost::getStatus, query.getStatus())
-                .orderByDesc(SysPost::getCreateTime)
-                .orderByDesc(SysPost::getId));
+                .orderByAsc(SysPost::getId));
     }
 
     /**
@@ -46,7 +44,7 @@ public interface SysPostMapper extends BaseMapperX<SysPost>
     default List<SysPost> selectPostAll() {
         return selectList(new LambdaQueryWrapper<SysPost>()
                 .orderByAsc(SysPost::getPostSort)
-                .orderByDesc(SysPost::getId));
+                .orderByAsc(SysPost::getId));
     }
 
     /**

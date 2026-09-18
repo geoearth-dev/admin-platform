@@ -1,7 +1,7 @@
 import type { RouteRecordRaw } from 'vue-router';
 
 import { acceptHMRUpdate, defineStore } from 'pinia';
-import type { MenuRecordRaw } from '@/types/base/router';
+import type { NavigationMenu } from '@/types';
 
 interface AccessState {
   /**
@@ -15,7 +15,7 @@ interface AccessState {
   /**
    * 可访问的菜单列表
    */
-  accessMenus: MenuRecordRaw[];
+  accessMenus: NavigationMenu[];
   /**
    * 可访问的路由列表
    */
@@ -44,7 +44,7 @@ interface AccessState {
 export const useAccessStore = defineStore('core-access', {
   actions: {
     getMenuByPath(path: string) {
-      function findMenu(menus: MenuRecordRaw[], path: string): MenuRecordRaw | undefined {
+      function findMenu(menus: NavigationMenu[], path: string): NavigationMenu | undefined {
         for (const menu of menus) {
           if (menu.path === path) {
             return menu;
@@ -69,7 +69,7 @@ export const useAccessStore = defineStore('core-access', {
     setAccessToken(token: string) {
       this.accessToken = token;
     },
-    setAccessMenus(menus: MenuRecordRaw[]) {
+    setAccessMenus(menus: NavigationMenu[]) {
       this.accessMenus = menus;
     },
     setAccessRoutes(routes: RouteRecordRaw[]) {

@@ -4,17 +4,17 @@ import { useRoute } from 'vue-router';
 import { useNavigation } from './use-navigation';
 import { usePreferences, preferences } from '@/plugins/preference';
 import { useAccessStore } from '@/store';
-import type { MenuRecordRaw } from '@/types';
+import type { NavigationMenu } from '@/types';
 import { findRootMenuByPath } from '@/utils/find-menu-by-path';
 
 function useMixedMenu() {
   const { navigation, willOpenedByWindow } = useNavigation();
   const accessStore = useAccessStore();
   const route = useRoute();
-  const splitSideMenus = ref<MenuRecordRaw[]>([]);
+  const splitSideMenus = ref<NavigationMenu[]>([]);
   const rootMenuPath = ref<string>('');
   const mixedRootMenuPath = ref<string>('');
-  const mixExtraMenus = ref<MenuRecordRaw[]>([]);
+  const mixExtraMenus = ref<NavigationMenu[]>([]);
   /** 记录当前顶级菜单下哪个子菜单最后激活 */
   const defaultSubMap = new Map<string, string>();
   const { isMixedNav, isHeaderMixedNav, isMobile } = usePreferences();

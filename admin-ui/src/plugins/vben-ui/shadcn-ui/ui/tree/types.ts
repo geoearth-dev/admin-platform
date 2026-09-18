@@ -14,6 +14,8 @@ export interface TreeProps {
   checkStrictly?: boolean;
   /** 子级字段名 */
   childrenField?: string;
+  /** 全部折叠按钮的文字；与 expandAllLabel 均未设置时只显示图标 */
+  collapseAllLabel?: string;
   /** 默认展开的键 */
   defaultExpandedKeys?: Array<number | string>;
   /** 默认展开的级别（优先级高于defaultExpandedKeys） */
@@ -24,6 +26,8 @@ export interface TreeProps {
   disabled?: boolean;
   /** 禁用字段名 */
   disabledField?: string;
+  /** 全部展开按钮的文字；与 collapseAllLabel 均未设置时只显示图标 */
+  expandAllLabel?: string;
   /** 自定义节点类名 */
   getNodeClass?: (item: FlattenedItem<Recordable<unknown>>) => string;
   iconField?: string;

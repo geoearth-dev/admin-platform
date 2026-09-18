@@ -56,6 +56,17 @@ public final class SpringUtils implements BeanFactoryPostProcessor, ApplicationC
     }
 
     /**
+     * 获取类型为requiredType的对象
+     *
+     * @param name beanName
+     * @return Object
+     * @throws BeansException BeansException
+     */
+    public static Object getBean(String name) throws BeansException {
+        return beanFactory.getBean(name, Object.class);
+    }
+
+    /**
      * 如果BeanFactory包含一个与所给名称匹配的bean定义，则返回true
      *
      * @param name name

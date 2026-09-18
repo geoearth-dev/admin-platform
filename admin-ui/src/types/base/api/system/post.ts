@@ -13,13 +13,29 @@ export interface PostQueryParams extends PageParam {
 /** 岗位信息 */
 export interface SysPost extends BaseEntity {
   /** 岗位编号 */
-  postId?: number;
+  id?: number;
   /** 岗位编码 */
   postCode?: string;
   /** 岗位名称 */
   postName?: string;
   /** 岗位排序 */
   postSort?: number;
-  /** 状态（0正常 1停用） */
+  /** 状态（0停用 1正常） */
   status?: '0' | '1';
+}
+
+/** 新增、修改岗位 请求参数 */
+export interface PostSaveParams {
+  /** 岗位编号，修改时传入 */
+  id?: number;
+  /** 岗位编码 */
+  postCode: string;
+  /** 岗位名称 */
+  postName: string;
+  /** 显示顺序 */
+  postSort: number;
+  /** 状态（0停用 1正常） */
+  status?: string;
+  /** 备注 */
+  remark?: string;
 }

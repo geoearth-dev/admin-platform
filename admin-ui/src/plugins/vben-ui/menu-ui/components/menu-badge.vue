@@ -2,10 +2,10 @@
 import { computed } from 'vue';
 
 import BadgeDot from './menu-badge-dot.vue';
-import type { MenuRecordBadgeRaw } from '@/types/base/menu-record';
+import type { MenuBadgeOptions } from '@/types/base/menu-record';
 import { isValidColor } from 'reka-ui';
 
-interface Props extends MenuRecordBadgeRaw {
+interface Props extends MenuBadgeOptions {
   hasChildren?: boolean;
 }
 

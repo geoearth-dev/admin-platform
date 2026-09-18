@@ -1,198 +1,177 @@
-<template>
-  <VbenPopover v-model:open="open" content-class="relative right-2 w-90 p-0">
-    <template #trigger>
-      <div class="mr-2 flex-center h-full" @click.stop="toggle()">
-        <VbenIconButton class="bell-button relative text-foreground">
-          <span v-if="dot" class="absolute top-0.5 right-0.5 size-2 rounded-sm bg-primary"></span>
-          <Bell class="size-4" />
-        </VbenIconButton>
-      </div>
-    </template>
+<script setup lang="ts">
+import type { NotificationItem } from '@/components/HeaderNotice/types'
+import type { SysNotice } from '@/types/base/api/system/notice'
 
-    <div class="relative">
-      <div class="flex items-center justify-between p-4 py-3">
-        <div class="text-foreground">{{ $t('ui.widgets.notifications') }}</div>
-        <VbenIconButton
-          :disabled="notifications.length <= 0"
-          :tooltip="$t('ui.widgets.markAllAsRead')"
-          @click="handleMakeAll"
-        >
-          <MailCheck class="size-4" />
-        </VbenIconButton>
-      </div>
-      <VbenScrollbar v-if="notifications.length > 0">
-        <ul class="flex! max-h-90 w-full flex-col">
-          <template v-for="item in notifications" :key="item.id ?? item.title">
-            <li
-              class="relative flex w-full cursor-pointer items-start gap-5 border-t border-border p-3 hover:bg-accent"
-              @click="emit('onClick', item)"
-            >
-              <slot name="content" :item="item">
-                <span
-                  v-if="!item.isRead"
-                  class="absolute top-2 right-2 size-2 rounded-sm bg-primary"
-                ></span>
-
-                <span class="relative flex size-10 shrink-0 overflow-hidden rounded-full">
-                  <img :src="item.avatar" class="aspect-square size-full object-cover" />
-                </span>
-                <div class="flex flex-col gap-1 leading-none">
-                  <p class="font-semibold">{{ item.title }}</p>
-                  <p class="my-1 line-clamp-2 text-xs text-muted-foreground">
-                    {{ item.message }}
-                  </p>
-                  <p class="line-clamp-2 text-xs text-muted-foreground">
-                    {{ item.date }}
-                  </p>
-                </div>
-                <div class="absolute top-1/2 right-3 flex -translate-y-1/2 flex-row gap-1">
-                  <slot name="action" :item="item">
-                    <slot name="action-prepend" :item="item"></slot>
-                    <VbenIconButton
-                      v-if="!item.isRead"
-                      size="xs"
-                      variant="ghost"
-                      class="h-6 px-2"
-                      :tooltip="$t('common.confirm')"
-                      @click.stop="emit('read', item)"
-                    >
-                      <CircleCheckBig class="size-4" />
-                    </VbenIconButton>
-                    <VbenIconButton
-                      v-if="item.isRead"
-                      size="xs"
-                      variant="ghost"
-                      class="h-6 px-2 text-destructive"
-                      :tooltip="$t('common.delete')"
-                      @click.stop="emit('remove', item)"
-                    >
-                      <CircleX class="size-4" />
-                    </VbenIconButton>
-                    <slot name="action-append" :item="item"></slot>
-                  </slot>
-                </div>
-              </slot>
-            </li>
-          </template>
-        </ul>
-      </VbenScrollbar>
-
-      <template v-else>
-        <div class="flex-center min-h-37.5 w-full text-muted-foreground">
-          {{ $t('common.noData') }}
-        </div>
-      </template>
-
-      <div class="flex items-center justify-between border-t border-border px-4 py-3">
-        <VbenButton
-          :disabled="notifications.length <= 0"
-          size="sm"
-          variant="ghost"
-          @click="handleClear"
-        >
-          {{ $t('ui.widgets.clearNotifications') }}
-        </VbenButton>
-        <VbenButton size="sm" @click="handleViewAll">
-          {{ $t('ui.widgets.viewAll') }}
-        </VbenButton>
-      </div>
-    </div>
-  </VbenPopover>
-</template>
-<script lang="ts" setup>
-import type { NotificationItem } from './types';
-
-import { Bell, CircleCheckBig, CircleX, MailCheck } from '@/assets/icons';
-import { $t } from '@/plugins/locale';
-
+import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import {
-  VbenButton,
-  VbenIconButton,
-  VbenPopover,
-  VbenScrollbar,
-} from '@/plugins/vben-ui/shadcn-ui';
+  listNoticeTop,
+  markNoticeRead,
+  markNoticeReadAll,
+} from '@/api/system/notice'
+import HeaderNotice from '@/components/HeaderNotice/index.vue'
+import { $t } from '@/plugins/locale'
+import { preferences } from '@/plugins/preference'
+import { formatDate } from '@/utils/date'
+import { useDict } from '@/utils/dict'
 
-import { useToggle } from '@vueuse/core';
+const router = useRouter()
+const headerRef = ref<InstanceType<typeof HeaderNotice>>()
+const { sys_notice_type, sys_notice_status } = useDict(
+  'sys_notice_type',
+  'sys_notice_status',
+)
+const notices = ref<SysNotice[]>([])
+const unreadCount = ref(0)
+const loading = ref(false)
+const marking = ref(false)
+const errorKey = ref('')
+const busy = computed(() => loading.value || marking.value)
 
-defineOptions({ name: 'NotificationPopup' });
+function getSummary(content = '') {
+  if (!content) return ''
+  const template = document.createElement('template')
+  template.innerHTML = content
+  template.content
+    .querySelectorAll('script, style, iframe, object, template')
+    .forEach((node) => node.remove())
+  template.content
+    .querySelectorAll('br')
+    .forEach((node) => node.replaceWith(' '))
+  template.content
+    .querySelectorAll('p, div, li, h1, h2, h3, h4, blockquote')
+    .forEach((node) => node.append(' '))
+  return (template.content.textContent ?? '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 120)
+}
 
-withDefaults(
-  defineProps<{
-    /** 显示圆点 */
-    dot?: boolean;
-    /** 消息列表 */
-    notifications?: NotificationItem[];
-  }>(),
-  {
-    dot: false,
-    notifications: () => [],
-  },
-);
+const notifications = computed<NotificationItem[]>(() =>
+  notices.value.map((notice) => ({
+    id: notice.id,
+    title: notice.noticeTitle,
+    avatar: notice.avatar || preferences.app.defaultAvatar,
+    message: getSummary(notice.noticeContent ?? ''),
+    date: formatDate(notice.createTime, 'YYYY-MM-DD HH:mm'),
+    isRead: notice.isRead,
+    typeLabel: sys_notice_type.value.find(
+      (option) => option.value === notice.noticeType,
+    )?.label,
+  })),
+)
 
-const emit = defineEmits<{
-  clear: [];
-  makeAll: [];
-  onClick: [NotificationItem];
-  read: [NotificationItem];
-  remove: [NotificationItem];
-  viewAll: [];
-}>();
+async function loadNotices() {
+  if (loading.value) return
+  loading.value = true
+  errorKey.value = ''
+  try {
+    const result = await listNoticeTop()
+    notices.value = result.sysNotice
+    unreadCount.value = result.unreadCount
+  } catch {
+    errorKey.value = 'system.notice.loadFailed'
+  } finally {
+    loading.value = false
+  }
+}
 
-const [open, toggle] = useToggle();
+function handleOpenChange(open: boolean) {
+  if (open && !busy.value) void loadNotices()
+}
 
-const close = () => {
-  open.value = false;
-};
+async function markRead(ids: number[]) {
+  const firstId = ids[0]
+  if (busy.value || firstId === undefined) return
+  marking.value = true
+  errorKey.value = ''
+  try {
+    if (ids.length === 1) await markNoticeRead(firstId)
+    else await markNoticeReadAll(ids)
 
-function handleViewAll() {
-  emit('viewAll');
-  close();
+    const selected = new Set(ids)
+    const changed = notices.value.filter(
+      (notice) => selected.has(notice.id) && !notice.isRead,
+    )
+    changed.forEach((notice) => {
+      notice.isRead = true
+    })
+    unreadCount.value = Math.max(0, unreadCount.value - changed.length)
+    await loadNotices()
+  } catch {
+    errorKey.value = 'system.notice.markFailed'
+  } finally {
+    marking.value = false
+  }
+}
+
+function handleRead(item: NotificationItem) {
+  const notice = notices.value.find((row) => row.id === item.id)
+  if (notice && !notice.isRead) void markRead([notice.id])
 }
 
 function handleMakeAll() {
-  emit('makeAll');
+  // 顶部仅展示最新几条，批量已读不影响列表之外的公告。
+  void markRead(
+    notices.value.filter((notice) => !notice.isRead).map((notice) => notice.id),
+  )
 }
 
-function handleClear() {
-  emit('clear');
+async function handleClick(item: NotificationItem) {
+  if (busy.value) return
+  const notice = notices.value.find((row) => row.id === item.id)
+  if (!notice) return
+
+  const link = notice.link?.trim()
+  errorKey.value = ''
+
+  if (link) {
+    try {
+      const url = new URL(link, window.location.origin)
+      if (!['http:', 'https:'].includes(url.protocol))
+        throw new Error('Invalid notice link')
+      if (url.origin === window.location.origin) {
+        await router.push(url.pathname + url.search + url.hash)
+      } else {
+        window.open(url.href, '_blank', 'noopener,noreferrer')
+      }
+      headerRef.value?.close()
+    } catch {
+      errorKey.value = 'system.notice.openFailed'
+      return
+    }
+  } else {
+    // 顶部接口已返回正文，阅读公告无需访问管理端详情接口。
+    headerRef.value?.openDetail({
+      ...notice,
+      typeLabel: item.typeLabel,
+      statusLabel: sys_notice_status.value.find(
+        (option) => option.value === notice.status,
+      )?.label,
+    })
+  }
+
+  if (!notice.isRead) await markRead([notice.id])
 }
 
-defineExpose({ toggle });
+onMounted(() => {
+  void loadNotices()
+})
 </script>
 
-<style scoped>
-:deep(.bell-button) {
-  &:hover {
-    svg {
-      animation: bell-ring 1s both;
-    }
-  }
-}
-
-@keyframes bell-ring {
-  0%,
-  100% {
-    transform-origin: top;
-  }
-
-  15% {
-    transform: rotateZ(10deg);
-  }
-
-  30% {
-    transform: rotateZ(-10deg);
-  }
-
-  45% {
-    transform: rotateZ(5deg);
-  }
-
-  60% {
-    transform: rotateZ(-5deg);
-  }
-
-  75% {
-    transform: rotateZ(2deg);
-  }
-}
-</style>
+<template>
+  <HeaderNotice
+    ref="headerRef"
+    :notifications="notifications"
+    :dot="unreadCount > 0"
+    :unread-count="unreadCount"
+    :loading="loading"
+    :marking="marking"
+    :error="errorKey ? $t(errorKey) : ''"
+    @click="handleClick"
+    @read="handleRead"
+    @make-all="handleMakeAll"
+    @refresh="loadNotices"
+    @open-change="handleOpenChange"
+  />
+</template>

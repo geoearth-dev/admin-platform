@@ -93,4 +93,8 @@ export {
   UserRoundPen,
   X,
   ShieldCheck,
+  Edit,
+  Trash2,
+  UploadIcon,
+  DownloadIcon,
 } from '@lucide/vue';

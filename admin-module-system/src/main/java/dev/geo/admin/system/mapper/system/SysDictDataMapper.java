@@ -20,9 +20,7 @@ public interface SysDictDataMapper extends BaseMapperX<SysDictData> {
                 .eq(StrUtil.isNotBlank(query.getDictType()), SysDictData::getDictType, query.getDictType())
                 .like(StrUtil.isNotBlank(query.getDictLabel()), SysDictData::getDictLabel, query.getDictLabel())
                 .eq(StrUtil.isNotBlank(query.getStatus()), SysDictData::getStatus, query.getStatus())
-                .orderByAsc(SysDictData::getDictSort)
-                .orderByDesc(SysDictData::getCreateTime)
-                .orderByDesc(SysDictData::getId));
+                .orderByAsc(SysDictData::getId));
     }
     /**
      * 根据条件分页查询字典数据
@@ -35,8 +33,7 @@ public interface SysDictDataMapper extends BaseMapperX<SysDictData> {
                 .eq(StrUtil.isNotBlank(query.getDictType()), SysDictData::getDictType, query.getDictType())
                 .like(StrUtil.isNotBlank(query.getDictLabel()), SysDictData::getDictLabel, query.getDictLabel())
                 .eq(StrUtil.isNotBlank(query.getStatus()), SysDictData::getStatus, query.getStatus())
-                .orderByAsc(SysDictData::getDictSort)
-                .orderByDesc(SysDictData::getId));
+                .orderByAsc(SysDictData::getId));
     }
 
     /**
@@ -50,7 +47,7 @@ public interface SysDictDataMapper extends BaseMapperX<SysDictData> {
                 .eq(SysDictData::getDictType, dictType)
                 .eq(SysDictData::getStatus, UserConstants.DICT_NORMAL)
                 .orderByAsc(SysDictData::getDictSort)
-                .orderByDesc(SysDictData::getId));
+                .orderByAsc(SysDictData::getId));
     }
 
     /**

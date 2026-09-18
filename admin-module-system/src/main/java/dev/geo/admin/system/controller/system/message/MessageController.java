@@ -17,8 +17,11 @@ import dev.geo.admin.system.model.message.vo.MessageVO;
 import dev.geo.admin.system.service.message.ISysMessageService;
 import dev.geo.admin.system.service.message.MessageSseService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -62,8 +65,30 @@ public class MessageController extends BaseController {
      */
     @PreAuthorize("@se.hasPermission('system:message:list')")
     @GetMapping(value = "/stream", produces = "text/event-stream")
-    public SseEmitter stream() {
-        return messageSseService.connect(SecurityUtils.getUserId());
+    public SseEmitter stream(JwtAuthenticationToken authentication,
+                             HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("X-Accel-Buffering", "no");
+        return messageSseService.connect(authentication.getToken().getId());
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/pong")
+    public ApiResult<Boolean> pong(
+            JwtAuthenticationToken authentication,
+            @Valid @RequestBody PongRequest request
+    ) {
+        return success(messageSseService.pong(
+                authentication.getToken().getId(),
+                request.connectionId(),
+                request.pingId()
+        ));
+    }
+
+    public record PongRequest(
+            @NotBlank String connectionId,
+            @NotBlank String pingId
+    ) {
     }
 
     @PreAuthorize("@se.hasPermission('system:message:read')")

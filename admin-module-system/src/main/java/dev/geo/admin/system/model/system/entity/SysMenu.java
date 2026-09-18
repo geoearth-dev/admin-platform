@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.Fastjson2TypeHandler;
 import dev.geo.admin.mybatis.model.BaseEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,13 +16,14 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 菜单权限表 sys_menu
  */
 @Setter
 @Getter
-@TableName("sys_menu")
+@TableName(value = "sys_menu", autoResultMap = true)
 public class SysMenu extends BaseEntity {
 
     /**
@@ -69,10 +71,10 @@ public class SysMenu extends BaseEntity {
     private String component;
 
     /**
-     * 路由参数
+     * 路由查询参数对象，由 JSON 类型处理器负责数据库读写。
      */
-    @TableField("`query`")
-    private String query;
+    @TableField(value = "`query`", typeHandler = Fastjson2TypeHandler.class)
+    private Map<String, Object> query;
 
     /**
      * 路由名称，默认和路由地址相同的驼峰格式（注意：因为vue3版本的router会删除名称相同路由，为避免名字的冲突，特殊情况可以自定义）
@@ -97,7 +99,7 @@ public class SysMenu extends BaseEntity {
     private Boolean keepAlive;
 
     /**
-     * 类型（M目录 C菜单 F按钮）
+     * 类型（catalog目录 menu菜单 embedded内嵌 link外链 button按钮）
      */
     @NotBlank(message = "菜单类型不能为空")
     private String menuType;
@@ -129,6 +131,48 @@ public class SysMenu extends BaseEntity {
     @TableField(exist = false)
     private List<SysMenu> children = new ArrayList<SysMenu>();
 
+
+    /** 激活图标。 */
+    private String activeIcon;
+
+    /** 激活菜单路径。 */
+    private String activePath;
+
+    /** 固定标签。 */
+    private Boolean affixTab;
+
+    /** 固定标签顺序。 */
+    private Integer affixTabOrder;
+
+    /** 徽标内容。 */
+    private String badge;
+
+    /** 徽标类型 dot/normal。 */
+    private String badgeType;
+
+    /** 徽标样式。 */
+    private String badgeVariants;
+
+    /** 隐藏子菜单。 */
+    private Boolean hideChildrenInMenu;
+
+    /** 隐藏面包屑。 */
+    private Boolean hideInBreadcrumb;
+
+    /** 隐藏标签。 */
+    private Boolean hideInTab;
+
+    /** 内部重定向路径。 */
+    private String redirect;
+
+    /** 新窗口打开。 */
+    private Boolean openInNewWindow;
+
+    /** 不使用基础布局。 */
+    private Boolean noBasicLayout;
+
+    /** 同一路由最多标签数 -1不限。 */
+    private Integer maxNumOfOpenTab;
 
     @Override
     public String toString() {

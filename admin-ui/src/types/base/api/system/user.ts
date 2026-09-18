@@ -1,10 +1,12 @@
 import type { SysRole } from './role';
 import type { SysDept } from './dept';
-import type { SysPost } from './post';
 import type { PageParam, BaseEntity } from '../common';
+import type { SysPost } from './post';
 
 /** 用户分页查询参数 */
 export interface UserQueryParams extends PageParam {
+  /**用户id */
+  id?: number;
   /** 创建开始日期，格式 yyyy-MM-dd */
   startTime?: string;
   /** 创建结束日期，格式 yyyy-MM-dd */
@@ -12,8 +14,8 @@ export interface UserQueryParams extends PageParam {
   /** 用户名称 */
   userName?: string;
   /** 手机号码 */
-  phonenumber?: string;
-  /** 状态（0正常 1停用） */
+  phoneNumber?: string;
+  /** 状态（0停用 1正常） */
   status?: string;
   /** 部门编号 */
   deptId?: number;
@@ -32,20 +34,20 @@ export interface SysUser extends BaseEntity {
   /** 部门ID */
   deptId?: number;
   /** 用户账号 */
-  userName?: string;
+  userName: string;
   /** 用户昵称 */
   nickName?: string;
   /** 用户邮箱 */
   email?: string;
   /** 手机号码 */
-  phonenumber?: string;
+  phoneNumber?: string;
   /** 用户性别（0男 1女 2未知） */
   sex?: string;
   /** 用户头像 */
   avatar?: string;
   /** 密码 */
   password?: string;
-  /** 账号状态（0正常 1停用） */
+  /** 账号状态（0停用 1正常） */
   status?: string;
   /** 部门对象 */
   dept?: SysDept;
@@ -55,6 +57,12 @@ export interface SysUser extends BaseEntity {
   roleIds?: number[];
   /** 岗位组 */
   postIds?: number[];
+  /** 岗位对象 */
+  posts?: SysPost[];
+  /** 最后登录 IP */
+  lastLoginIp?: string;
+  /** 最后登录时间 */
+  lastLoginTime?: string;
 }
 
 /** 注册信息 */
@@ -67,20 +75,6 @@ export interface SysRegister {
   code?: string;
   /** 唯一标识 */
   uuid?: string;
-}
-
-/** 用户详情查询响应 */
-export interface UserFormDataResult {
-  /** 用户信息 */
-  data?: SysUser;
-  /** 用户的岗位ID列表 */
-  postIds?: number[];
-  /** 用户的角色ID列表 */
-  roleIds?: number[];
-  /** 所有角色列表 */
-  roles: SysRole[];
-  /** 所有岗位列表 */
-  posts: SysPost[];
 }
 
 /** 用户个人资料响应 */
@@ -103,4 +97,20 @@ export interface UserAuthRoleResult {
   user: SysUser;
   /** 角色列表 */
   roles: SysRole[];
+}
+
+/** 新增、修改用户 请求参数 */
+export interface UserSaveParams {
+  id?: number;
+  userName: string;
+  nickName?: string;
+  deptId?: number;
+  email?: string;
+  phoneNumber?: string;
+  sex?: string;
+  password?: string;
+  status?: string;
+  roleIds?: number[];
+  postIds?: number[];
+  remark?: string;
 }

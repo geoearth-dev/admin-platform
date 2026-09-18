@@ -1,82 +1,30 @@
 import type { Component } from 'vue';
-import type { RouteRecordRaw } from 'vue-router';
+import type { LocationQueryRaw } from 'vue-router';
 
-import type { Recordable } from './helper';
+export type MenuBadgeType = 'dot' | 'normal';
+/** 菜单管理允许保存的徽标样式。 */
+export type MenuBadgeVariant = 'default' | 'destructive' | 'primary' | 'success' | 'warning';
 
-/**
- * 扩展路由原始对象
- */
-type ExRouteRecordRaw = RouteRecordRaw & {
-  parent?: string;
-  parents?: string[];
-  path?: unknown;
-};
-
-interface MenuRecordBadgeRaw {
-  /**
-   * 徽标
-   */
+export interface MenuBadgeOptions {
   badge?: string;
-  /**
-   * 徽标类型
-   */
-  badgeType?: 'dot' | 'normal';
-  /**
-   * 徽标颜色
-   */
-  badgeVariants?: 'destructive' | 'primary' | string;
+  badgeType?: MenuBadgeType;
+  /** 支持预设样式；本地路由还可以传 CSS 颜色或类名。 */
+  badgeVariants?: string;
 }
 
-/**
- * 菜单原始对象
- */
-interface MenuRecordRaw extends MenuRecordBadgeRaw {
-  /**
-   * 激活时的图标名
-   */
+/** 从路由生成的导航菜单，供侧栏、搜索等组件使用，不是菜单管理 DTO。 */
+export interface NavigationMenu extends MenuBadgeOptions {
   activeIcon?: string;
-  /**
-   * 子菜单
-   */
-  children?: MenuRecordRaw[];
-  /**
-   * 是否禁用菜单
-   * @default false
-   */
+  children?: NavigationMenu[];
   disabled?: boolean;
-  /**
-   * 图标名
-   */
   icon?: Component | string;
-  /**
-   * 菜单名
-   */
+  /** 展示标题，支持国际化 key；不是路由 name。 */
   name: string;
-  /**
-   * 排序号
-   */
   order?: number;
-  /**
-   * 父级路径
-   */
   parent?: string;
-  /**
-   * 所有父级路径
-   */
   parents?: string[];
-  /**
-   * 菜单路径，唯一，可当作key
-   */
+  /** 最终导航地址，可以是内部完整路径或外部 URL。 */
   path: string;
-  /**
-   * 菜单参数
-   */
-  query?: Recordable<unknown>;
-  /**
-   * 是否显示菜单
-   * @default true
-   */
+  query?: LocationQueryRaw;
   show?: boolean;
 }
-
-export type { ExRouteRecordRaw, MenuRecordBadgeRaw, MenuRecordRaw };

@@ -25,15 +25,21 @@
       <button
         type="button"
         :disabled="disabled"
-        :aria-label="expanded.length ? '收起全部' : '展开全部'"
-        :title="expanded.length ? '收起全部' : '展开全部'"
-        class="flex size-5 shrink-0 items-center justify-center disabled:cursor-not-allowed disabled:opacity-50"
+        :aria-label="expandToggleLabel"
+        :title="expandToggleLabel"
+        :class="
+          cn(
+            'flex h-5 shrink-0 items-center justify-center disabled:cursor-not-allowed disabled:opacity-50',
+            expandAllLabel || collapseAllLabel ? 'gap-1 px-1' : 'w-5',
+          )
+        "
         @click="expanded.length ? collapseAll() : expandAll()"
       >
         <ChevronRight
           class="size-4 transition-transform"
           :class="{ 'rotate-90': expanded.length > 0 }"
         />
+        <span v-if="expandAllLabel || collapseAllLabel">{{ expandToggleLabel }}</span>
       </button>
       <Checkbox
         v-if="multiple"
@@ -146,6 +152,11 @@ if (modelValue.value === undefined && props.defaultValue !== undefined) {
     : props.defaultValue;
 }
 const expanded = ref<string[]>(props.defaultExpandedKeys.map(toInternalKey));
+const expandToggleLabel = computed(() =>
+  expanded.value.length
+    ? props.collapseAllLabel || '收起全部'
+    : props.expandAllLabel || '展开全部',
+);
 
 // Reka 使用字符串键；加上类型前缀，避免数字 1 和字符串 '1' 混淆。
 function toInternalKey(value: TreeKey) {

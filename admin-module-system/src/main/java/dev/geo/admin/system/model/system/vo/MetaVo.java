@@ -7,7 +7,7 @@ import lombok.Setter;
 import java.util.Map;
 
 /**
- * Vben 路由的菜单与页面配置。
+ * 路由的菜单与页面配置。
  */
 @Setter
 @Getter
@@ -44,5 +44,44 @@ public class MetaVo {
 
     /** iframe 内嵌地址。 */
     private String iframeSrc;
+
+    /** 激活图标。 */
+    private String activeIcon;
+
+    /** 激活菜单路径。 */
+    private String activePath;
+
+    /** 固定标签。 */
+    private Boolean affixTab;
+
+    /** 固定标签顺序。 */
+    private Integer affixTabOrder;
+
+    /** 徽标内容。 */
+    private String badge;
+
+    /** 徽标类型 dot/normal。 */
+    private String badgeType;
+
+    /** 徽标样式。 */
+    private String badgeVariants;
+
+    /** 隐藏子菜单。 */
+    private Boolean hideChildrenInMenu;
+
+    /** 隐藏面包屑。 */
+    private Boolean hideInBreadcrumb;
+
+    /** 隐藏标签。 */
+    private Boolean hideInTab;
+
+    /** 新窗口打开。 */
+    private Boolean openInNewWindow;
+
+    /** 不使用基础布局。 */
+    private Boolean noBasicLayout;
+
+    /** 同一路由最多标签数 -1不限。 */
+    private Integer maxNumOfOpenTab;
 
 }

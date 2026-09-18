@@ -15,7 +15,6 @@ import dev.geo.admin.system.model.system.entity.SysDept;
 import dev.geo.admin.system.model.system.entity.SysRole;
 import dev.geo.admin.system.model.system.entity.SysUser;
 import dev.geo.admin.system.model.system.vo.TreeSelect;
-import dev.geo.admin.system.model.system.vo.UserRoleGrantVO;
 import dev.geo.admin.system.service.system.ISysDeptService;
 import dev.geo.admin.system.service.system.ISysPostService;
 import dev.geo.admin.system.service.system.ISysRoleService;
@@ -163,21 +162,21 @@ public class SysUserController extends BaseController {
 
     @PreAuthorize("@se.hasPermission('system:user:query')")
     @GetMapping("/{id}/roles")
-    public ApiResult<UserRoleGrantVO> getUserRoles(@PathVariable Long id) {
+    public ApiResult<List<SysRole>> getUserRoles(@PathVariable Long id) {
         userService.checkUserDataScope(id);
         List<SysRole> roles = roleService.selectRolesByUserId(id).stream()
                 .filter(role -> SecurityUtils.isAdmin(id) || !role.isAdmin())
                 .toList();
-        return success(new UserRoleGrantVO(userService.selectUserById(id), roles));
+        return success(roles);
     }
 
     @PreAuthorize("@se.hasPermission('system:user:edit')")
     @Log(title = "用户角色授权", businessType = BusinessType.GRANT)
     @PutMapping("/{id}/roles")
-    public ApiResult<Void> updateUserRoles(@PathVariable Long id, @Validated @RequestBody RoleIdsDTO request) {
+    public ApiResult<Void> updateUserRoles(@PathVariable Long id, @Validated @RequestBody Long[] roleIds) {
         userService.checkUserDataScope(id);
-        roleService.checkRoleDataScope(request.getRoleIds());
-        userService.insertUserAuth(id, request.getRoleIds());
+        roleService.checkRoleDataScope(roleIds);
+        userService.insertUserAuth(id, roleIds);
         return success();
     }
 

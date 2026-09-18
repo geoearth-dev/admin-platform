@@ -23,6 +23,11 @@ public class NoticeSaveDTO {
     private String noticeType;
 
     private String noticeContent;
+
+    private String link;
+
+    @Size(max = 2048, message = "头像地址不能超过2048个字符")
+    private String avatar;
     private String status;
     private String remark;
 }

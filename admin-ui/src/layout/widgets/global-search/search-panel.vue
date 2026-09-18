@@ -7,7 +7,7 @@ import { $t } from '@/plugins/locale';
 
 import { VbenIcon, VbenScrollbar } from '@/plugins/vben-ui/shadcn-ui';
 import { onKeyStroke, useEventListener, useLocalStorage, useThrottleFn } from '@vueuse/core';
-import type { MenuRecordRaw } from '@/types';
+import type { NavigationMenu } from '@/types';
 import { mapTree, traverseTreeValues } from '@/utils/tree';
 import { isHttpUrl } from '@/utils/inference';
 import { uniqueByField } from '@/utils/unique';
@@ -16,20 +16,20 @@ defineOptions({
   name: 'SearchPanel',
 });
 
-const props = withDefaults(defineProps<{ keyword?: string; menus?: MenuRecordRaw[] }>(), {
+const props = withDefaults(defineProps<{ keyword?: string; menus?: NavigationMenu[] }>(), {
   keyword: '',
   menus: () => [],
 });
 const emit = defineEmits<{ close: [] }>();
 
 const router = useRouter();
-const searchHistory = useLocalStorage<MenuRecordRaw[]>(
+const searchHistory = useLocalStorage<NavigationMenu[]>(
   `__search-history-${location.hostname}__`,
   [],
 );
 const activeIndex = ref(-1);
-const searchItems = shallowRef<MenuRecordRaw[]>([]);
-const searchResults = ref<MenuRecordRaw[]>([]);
+const searchItems = shallowRef<NavigationMenu[]>([]);
+const searchResults = ref<NavigationMenu[]>([]);
 const isNavigating = ref(false);
 
 const handleSearch = useThrottleFn(search, 200);
@@ -51,7 +51,7 @@ function search(searchKey: string) {
   const reg = createSearchReg(searchKey);
 
   // 初始化结果数组
-  const results: MenuRecordRaw[] = [];
+  const results: NavigationMenu[] = [];
 
   // 遍历搜索项
   traverseTreeValues(searchItems.value, (item) => {

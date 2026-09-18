@@ -67,17 +67,21 @@ public class UserConstants {
     /**
      * 菜单类型（目录）
      */
-    public static final String TYPE_DIR = "M";
+    public static final String TYPE_DIR = "catalog";
 
     /**
      * 菜单类型（菜单）
      */
-    public static final String TYPE_MENU = "C";
+    public static final String TYPE_MENU = "menu";
 
     /**
      * 菜单类型（按钮）
      */
-    public static final String TYPE_BUTTON = "F";
+    public static final String TYPE_BUTTON = "button";
+
+    public static final String TYPE_EMBEDDED = "embedded";
+
+    public static final String TYPE_LINK = "link";
 
     /**
      * Layout组件标识

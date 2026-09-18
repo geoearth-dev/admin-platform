@@ -6,10 +6,10 @@ import { useRoute } from 'vue-router';
 import { useNavigation } from './use-navigation';
 import { preferences } from '@/plugins/preference';
 import { useAccessStore } from '@/store';
-import type { MenuRecordRaw } from '@/types';
+import type { NavigationMenu } from '@/types';
 import { findRootMenuByPath } from '@/utils/find-menu-by-path';
 
-function useExtraMenu(useRootMenus?: ComputedRef<MenuRecordRaw[]>) {
+function useExtraMenu(useRootMenus?: ComputedRef<NavigationMenu[]>) {
   const accessStore = useAccessStore();
   const { navigation, willOpenedByWindow } = useNavigation();
 
@@ -17,9 +17,9 @@ function useExtraMenu(useRootMenus?: ComputedRef<MenuRecordRaw[]>) {
 
   /** 记录当前顶级菜单下哪个子菜单最后激活 */
   const defaultSubMap = new Map<string, string>();
-  const extraRootMenus = ref<MenuRecordRaw[]>([]);
+  const extraRootMenus = ref<NavigationMenu[]>([]);
   const route = useRoute();
-  const extraMenus = ref<MenuRecordRaw[]>([]);
+  const extraMenus = ref<NavigationMenu[]>([]);
   const sidebarExtraVisible = ref<boolean>(false);
   const extraActiveMenu = ref('');
   const parentLevel = computed(() => (preferences.app.layout === 'header-mixed-nav' ? 1 : 0));
@@ -28,7 +28,7 @@ function useExtraMenu(useRootMenus?: ComputedRef<MenuRecordRaw[]>) {
    * 选择混合菜单事件
    * @param menu
    */
-  const handleMixedMenuSelect = async (menu: MenuRecordRaw) => {
+  const handleMixedMenuSelect = async (menu: NavigationMenu) => {
     const _extraMenus = menu?.children ?? [];
     const hasChildren = _extraMenus.length > 0;
 
@@ -52,7 +52,7 @@ function useExtraMenu(useRootMenus?: ComputedRef<MenuRecordRaw[]>) {
    * @param menu
    * @param rootMenu
    */
-  const handleDefaultSelect = async (menu: MenuRecordRaw, rootMenu?: MenuRecordRaw) => {
+  const handleDefaultSelect = async (menu: NavigationMenu, rootMenu?: NavigationMenu) => {
     extraMenus.value = rootMenu?.children ?? extraRootMenus.value ?? [];
     extraActiveMenu.value = menu.parents?.[parentLevel.value] ?? menu.path;
 
@@ -74,7 +74,7 @@ function useExtraMenu(useRootMenus?: ComputedRef<MenuRecordRaw[]>) {
     extraMenus.value = rootMenu?.children ?? [];
   };
 
-  const handleMenuMouseEnter = (menu: MenuRecordRaw) => {
+  const handleMenuMouseEnter = (menu: NavigationMenu) => {
     if (!preferences.sidebar.expandOnHover) {
       const { findMenu } = findRootMenuByPath(menus.value, menu.path);
       extraMenus.value = findMenu?.children ?? [];

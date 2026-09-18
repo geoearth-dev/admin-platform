@@ -2,9 +2,11 @@ package dev.geo.admin.security.session.impl;
 
 import dev.geo.admin.common.constant.CacheConstants;
 import dev.geo.admin.redis.RedisCache;
+import dev.geo.admin.security.event.LoginSessionDeletedEvent;
 import dev.geo.admin.security.model.LoginSession;
 import dev.geo.admin.security.session.LoginSessionStore;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +17,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class RedisLoginSessionStore implements LoginSessionStore {
     private final RedisCache redisCache;
-
+    private final ApplicationEventPublisher eventPublisher;
     @Override
     public void create(LoginSession session, String refreshTokenHash, Duration ttl) {
         Map<String, Object> values = new LinkedHashMap<>();
@@ -41,7 +43,7 @@ public class RedisLoginSessionStore implements LoginSessionStore {
             return List.of();
         }
         return keys.stream()
-                .map(key -> redisCache.<LoginSession>getCacheMapValue(key, "session", LoginSession.class))
+                .map(key -> redisCache.getCacheMapValue(key, "session", LoginSession.class))
                 .filter(Objects::nonNull)
                 .toList();
     }
@@ -80,6 +82,8 @@ public class RedisLoginSessionStore implements LoginSessionStore {
     @Override
     public void delete(String sessionId) {
         redisCache.deleteObject(key(sessionId));
+        eventPublisher.publishEvent(new LoginSessionDeletedEvent(sessionId));
+
     }
 
     private String key(String sessionId) {

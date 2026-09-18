@@ -26,8 +26,10 @@ public class RoleSaveDTO {
     private Integer roleSort;
 
     private String dataScope;
-    private boolean menuCheckStrictly;
-    private boolean deptCheckStrictly;
+    /** 菜单树勾选是否父子联动，true 表示联动。 */
+    private boolean menuCheckLinked;
+    /** 部门树勾选是否父子联动，true 表示联动。 */
+    private boolean deptCheckLinked;
     private String status;
     private Long[] menuIds;
     private Long[] deptIds;

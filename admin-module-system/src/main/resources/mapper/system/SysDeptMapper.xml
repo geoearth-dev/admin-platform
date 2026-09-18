@@ -48,7 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>
 		<!-- 数据范围过滤 -->
 		${params.dataScope}
-		order by d.parent_id, d.order_num
+		order by d.parent_id asc, d.order_num asc, d.id asc
     </select>
     
     <select id="selectDeptListByRoleId" resultType="Long">
@@ -56,10 +56,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		from sys_dept d
             left join sys_role_dept rd on d.id = rd.dept_id
         where rd.role_id = #{roleId}
-            <if test="deptCheckStrictly">
+            <if test="deptCheckLinked">
               and d.id not in (select d.parent_id from sys_dept d inner join sys_role_dept rd on d.id = rd.dept_id and rd.role_id = #{roleId})
             </if>
-		order by d.parent_id, d.order_num
+		order by d.parent_id asc, d.order_num asc, d.id asc
 	</select>
     
     <select id="selectDeptById" parameterType="Long" resultMap="SysDeptResult">

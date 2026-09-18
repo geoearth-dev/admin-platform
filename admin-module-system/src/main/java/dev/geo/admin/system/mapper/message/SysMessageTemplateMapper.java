@@ -34,7 +34,6 @@ public interface SysMessageTemplateMapper extends BaseMapperX<SysMessageTemplate
                         SysMessageTemplate::getTemplateName, query.getTemplateName())
                 .eq(query.getCategory() != null, SysMessageTemplate::getCategory, query.getCategory())
                 .eq(StrUtil.isNotBlank(query.getStatus()), SysMessageTemplate::getStatus, query.getStatus())
-                .orderByDesc(SysMessageTemplate::getCreateTime)
-                .orderByDesc(SysMessageTemplate::getId);
+                .orderByAsc(SysMessageTemplate::getId);
     }
 }

@@ -56,6 +56,11 @@
   /* --vxe-ui-table-fixed-scrolling-box-shadow-color: rgb(0 0 0 / 80%); */
 }
 
+/* 深色表头下，复选框轮廓使用次级文字色，避免与分隔线一样暗。 */
+.dark .vxe-grid .vxe-cell--checkbox {
+  --vxe-ui-input-border-color: hsl(var(--muted-foreground));
+}
+
 .vxe-pager {
   .vxe-pager--prev-btn:not(.is--disabled):active,
   .vxe-pager--next-btn:not(.is--disabled):active,

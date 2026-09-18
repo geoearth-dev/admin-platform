@@ -1,9 +1,11 @@
 package dev.geo.admin.system.service.system;
 
 import dev.geo.admin.system.model.system.entity.SysNotice;
+import dev.geo.admin.common.core.model.PageResult;
+import dev.geo.admin.system.model.system.dto.NoticeReadUserPageReqDTO;
+import dev.geo.admin.system.model.system.vo.NoticeReadUserVO;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 公告已读记录 服务层
@@ -47,11 +49,10 @@ public interface ISysNoticeReadService
     /**
      * 查询已阅读某公告的用户列表
      *
-     * @param noticeId  公告ID
-     * @param searchValue 搜索值
+     * @param query 分页和查询条件
      * @return 已读用户列表
      */
-    List<Map<String, Object>> selectReadUsersByNoticeId(Long noticeId, String searchValue);
+    PageResult<NoticeReadUserVO> selectReadUsersPage(NoticeReadUserPageReqDTO query);
 
     /**
      * 删除公告时清理对应已读记录

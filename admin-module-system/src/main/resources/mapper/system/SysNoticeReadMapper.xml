@@ -31,10 +31,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <!-- 查询带已读状态的公告列表（直接在SQL中限制条数） -->
     <select id="selectNoticeListWithReadStatus" resultType="SysNotice">
         select
-            n.id    as noticeId,
+            n.id,
             n.notice_title as noticeTitle,
             n.notice_type  as noticeType,
+            n.notice_content as noticeContent,
             n.status,
+            n.avatar,
+            n.link,
             n.create_by    as createBy,
             n.create_time  as createTime,
             case when r.notice_id is not null then true else false end as isRead
@@ -64,7 +67,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <!-- 查询已阅读某公告的用户列表，支持按登录名/用户名模糊筛选 -->
-    <select id="selectReadUsersByNoticeId" resultType="java.util.Map">
+    <select id="selectReadUsersPage" resultType="dev.geo.admin.system.model.system.vo.NoticeReadUserVO">
         select
             u.id      as userId,
             u.user_name    as userName,
@@ -75,14 +78,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         from sys_notice_read r
         inner join sys_user u on u.id = r.user_id and u.del_flag = '0'
         left join sys_dept d on d.id = u.dept_id
-        where r.notice_id = #{noticeId}
-        <if test="searchValue != null and searchValue != ''">
+        where r.notice_id = #{query.noticeId}
+        <if test="query.searchValue != null and query.searchValue != ''">
             and (
-                u.user_name like concat('%', #{searchValue}, '%')
-                or u.nick_name like concat('%', #{searchValue}, '%')
+                u.user_name like concat('%', #{query.searchValue}, '%')
+                or u.nick_name like concat('%', #{query.searchValue}, '%')
             )
         </if>
-        order by r.read_time desc
+        order by r.read_time desc, u.id asc
     </select>
 
 </mapper>

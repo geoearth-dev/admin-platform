@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.geo.admin.quartz.mapper.SysJobMapper">
+    <resultMap id="SysJobResult" type="dev.geo.admin.quartz.model.SysJob">
+        <id property="id" column="id"/>
+        <result property="jobName" column="job_name"/>
+        <result property="jobGroup" column="job_group"/>
+        <result property="invokeTarget" column="invoke_target"/>
+        <result property="cronExpression" column="cron_expression"/>
+        <result property="misfirePolicy" column="misfire_policy"/>
+        <result property="concurrent" column="concurrent"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="columns">
+        select id,
+               job_name,
+               job_group,
+               invoke_target,
+               cron_expression,
+               misfire_policy,
+               concurrent,
+               status,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark
+        from sys_job
+    </sql>
+    <sql id="filters">
+        <where>
+            <if test="query.jobName != null and query.jobName != ''">
+                and job_name like concat('%', #{query.jobName}, '%')
+            </if>
+            <if test="query.jobGroup != null and query.jobGroup != ''">
+                and job_group = #{query.jobGroup}
+            </if>
+            <if test="query.status != null and query.status != ''">
+                and status = #{query.status}
+            </if>
+            <if test="query.invokeTarget != null and query.invokeTarget != ''">
+                and invoke_target like concat('%', #{query.invokeTarget}, '%')
+            </if>
+        </where>
+    </sql>
+    <select id="selectJobPage" resultMap="SysJobResult">
+        <include refid="columns"/>
+        <include refid="filters"/>
+        order by id
+    </select>
+    <select id="selectJobList" resultMap="SysJobResult">
+        <include refid="columns"/>
+        <include refid="filters"/>
+        order by id
+    </select>
+    <select id="selectJobAll" resultMap="SysJobResult">
+        <include refid="columns"/>
+        order by id
+    </select>
+    <select id="selectJobById" resultMap="SysJobResult">
+        <include refid="columns"/>
+        where id = #{id}
+    </select>
+    <delete id="deleteJobById">
+        delete
+        from sys_job
+        where id = #{id}
+    </delete>
+    <update id="updateJob">
+        update sys_job
+        <set>
+            <if test="jobName != null">job_name = #{jobName},</if>
+            <if test="jobGroup != null">job_group = #{jobGroup},</if>
+            <if test="invokeTarget != null">invoke_target = #{invokeTarget},</if>
+            <if test="cronExpression != null">cron_expression = #{cronExpression},</if>
+            <if test="misfirePolicy != null">misfire_policy = #{misfirePolicy},</if>
+            <if test="concurrent != null">concurrent = #{concurrent},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = current_timestamp(3)
+        </set>
+        where id = #{id}
+    </update>
+    <insert id="insertJob" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into sys_job
+        (job_name, job_group, invoke_target, cron_expression, misfire_policy, concurrent,
+         status, create_by, create_time, remark)
+        values (#{jobName}, #{jobGroup}, #{invokeTarget}, #{cronExpression}, #{misfirePolicy},
+                #{concurrent}, #{status}, #{createBy}, current_timestamp(3), #{remark})
+    </insert>
+</mapper>

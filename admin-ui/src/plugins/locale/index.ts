@@ -30,7 +30,7 @@ async function setupI18n(app: App, options: LocaleSetupOptions = {}) {
   });
 }
 const $t = i18n.global.t;
-
+const $te = i18n.global.te;
 export { type ImportLocaleFn, type LocaleSetupOptions, type SupportedLanguagesType } from './type';
-export { $t, i18n, setupI18n, elementLocale, loadLocaleMessages };
+export { $t, $te, i18n, setupI18n, elementLocale, loadLocaleMessages };
 export { useI18n } from 'vue-i18n';

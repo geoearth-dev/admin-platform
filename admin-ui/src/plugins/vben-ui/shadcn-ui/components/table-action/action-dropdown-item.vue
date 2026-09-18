@@ -15,7 +15,11 @@ const { $t } = useSimpleLocale();
 const open = ref(false);
 
 const itemClass = computed(() =>
-  cn('cursor-pointer gap-2', props.action.danger && 'text-destructive focus:text-destructive'),
+  cn(
+    'cursor-pointer gap-2',
+    props.action.danger && 'text-destructive focus:text-destructive',
+    props.action.class,
+  ),
 );
 
 /**
@@ -65,7 +69,7 @@ function onCancel() {
         @select="preventDefault"
       >
         <div>
-          <VbenIcon v-if="action.icon" :icon="action.icon" class="size-4" />
+          <VbenIcon v-if="action.icon" :icon="action.icon" class="size-[1em] shrink-0" />
           {{ action.text }}
         </div>
       </DropdownMenuItem>
@@ -96,7 +100,7 @@ function onCancel() {
 
   <!-- 普通下拉项 -->
   <DropdownMenuItem v-else :class="itemClass" :disabled="action.disabled" @click="onClick">
-    <VbenIcon v-if="action.icon" :icon="action.icon" class="size-4" />
+    <VbenIcon v-if="action.icon" :icon="action.icon" class="size-[1em] shrink-0" />
     {{ action.text }}
   </DropdownMenuItem>
 </template>

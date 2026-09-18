@@ -36,11 +36,17 @@
         <poi.version>5.5.1</poi.version>
         <yauaa.version>8.2.0</yauaa.version>
         <fastjson.version>2.0.64</fastjson.version>
+        <oshi.version>7.6.1</oshi.version>
     </properties>
 
     <!-- 依赖声明 -->
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>dev.geo</groupId>
+                <artifactId>admin-quartz</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- ==================== 内部模块 ==================== -->
             <dependency>
                 <groupId>dev.geo</groupId>
@@ -139,6 +145,12 @@
                 <groupId>nl.basjes.parse.useragent</groupId>
                 <artifactId>yauaa</artifactId>
                 <version>${yauaa.version}</version>
+            </dependency>
+            <!-- 获取系统信息 -->
+            <dependency>
+                <groupId>com.github.oshi</groupId>
+                <artifactId>oshi-core</artifactId>
+                <version>${oshi.version}</version>
             </dependency>
             <!-- 阿里JSON解析器 -->
             <dependency>

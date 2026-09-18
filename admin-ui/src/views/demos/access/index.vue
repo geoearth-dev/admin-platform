@@ -7,7 +7,7 @@ import { resetAllStores, useUserStore, useAuthStore } from '@/store';
 import { Button, Card } from '@/plugins/vben-ui/shadcn-ui';
 
 import { useAccess } from '@/plugins/effects/access/use-access';
-import type { LoginParams } from '@/api/system/auth/auth';
+import type { LoginParams } from '@/api/admin/auth';
 
 const accounts: Record<string, LoginParams> = {
   admin: {

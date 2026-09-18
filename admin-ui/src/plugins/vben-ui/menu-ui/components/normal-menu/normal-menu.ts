@@ -1,4 +1,4 @@
-import type { MenuRecordRaw } from '@/types';
+import type { NavigationMenu } from '@/types';
 
 interface NormalMenuProps {
   /**
@@ -12,7 +12,7 @@ interface NormalMenuProps {
   /**
    * 菜单项
    */
-  menus?: MenuRecordRaw[];
+  menus?: NavigationMenu[];
   /**
    * @zh_CN 是否圆润风格
    * @default true

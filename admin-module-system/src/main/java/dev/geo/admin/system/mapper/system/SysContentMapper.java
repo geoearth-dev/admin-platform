@@ -18,8 +18,7 @@ public interface SysContentMapper extends BaseMapperX<SysContent> {
                 .eq(query.getId() != null, SysContent::getId, query.getId())
                 .like(StrUtil.isNotBlank(query.getSysName()), SysContent::getSysName, query.getSysName())
                 .eq(query.getStatus() != null, SysContent::getStatus, query.getStatus())
-                .orderByDesc(SysContent::getCreateTime)
-                .orderByDesc(SysContent::getId);
+                .orderByAsc(SysContent::getId);
         return selectPage(query, wrapper);
     }
 }

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { NormalMenuProps } from '@/plugins/vben-ui/menu-ui';
-import type { MenuRecordRaw } from '@/types';
+import type { NavigationMenu } from '@/types';
 import { findMenuByPath } from '@/utils/find-menu-by-path';
 
 import { onBeforeMount } from 'vue';
@@ -9,9 +9,9 @@ import { useRoute } from 'vue-router';
 const props = defineProps<NormalMenuProps>();
 
 const emit = defineEmits<{
-  defaultSelect: [MenuRecordRaw, MenuRecordRaw?];
-  enter: [MenuRecordRaw];
-  select: [MenuRecordRaw];
+  defaultSelect: [NavigationMenu, NavigationMenu?];
+  enter: [NavigationMenu];
+  select: [NavigationMenu];
 }>();
 
 const route = useRoute();
@@ -32,7 +32,7 @@ onBeforeMount(() => {
     :menus="menus"
     :rounded="rounded"
     :theme="theme"
-    @enter="(menu: MenuRecordRaw) => emit('enter', menu)"
-    @select="(menu: MenuRecordRaw) => emit('select', menu)"
+    @enter="(menu: NavigationMenu) => emit('enter', menu)"
+    @select="(menu: NavigationMenu) => emit('select', menu)"
   />
 </template>

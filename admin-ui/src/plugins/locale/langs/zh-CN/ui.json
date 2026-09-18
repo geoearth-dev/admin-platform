@@ -15,7 +15,9 @@
     "edit": "修改{0}",
     "create": "新增{0}",
     "delete": "删除{0}",
-    "view": "查看{0}"
+    "view": "查看{0}",
+    "import": "导入{0}",
+    "export": "导出{0}"
   },
   "actionMessage": {
     "deleteConfirm": "确定删除 {0} 吗？",
@@ -135,6 +137,7 @@
     "notifications": "通知",
     "markAllAsRead": "全部标记为已读",
     "clearNotifications": "清空",
+    "loadingNotifications": "正在加载通知…",
     "checkUpdatesTitle": "新版本可用",
     "checkUpdatesDescription": "点击刷新以获取最新版本",
     "search": {

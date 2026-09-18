@@ -8,7 +8,7 @@ import { useMagicKeys, whenever } from '@vueuse/core';
 
 import SearchPanel from './search-panel.vue';
 import { isWindowsOs } from '@/utils/inference';
-import type { MenuRecordRaw } from '@/types/index.ts';
+import type { NavigationMenu } from '@/types/index.ts';
 import { useVbenModal } from '@/plugins/vben-ui/popup-ui';
 
 defineOptions({
@@ -18,7 +18,7 @@ defineOptions({
 const props = withDefaults(
   defineProps<{
     enableShortcutKey?: boolean;
-    menus?: MenuRecordRaw[];
+    menus?: NavigationMenu[];
     /** 是否显示触发按钮（嵌在 dropdown 等容器里时可关掉） */
     showButton?: boolean;
   }>(),

@@ -23,7 +23,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Date;
 
 /**
  * 认证业务服务。
@@ -101,6 +100,7 @@ public class AuthService {
             throw new BlackListException();
         }
     }
+
     public void logoutByRefreshToken(String refreshToken) {
         tokenService.revokeByRefreshToken(refreshToken);
     }

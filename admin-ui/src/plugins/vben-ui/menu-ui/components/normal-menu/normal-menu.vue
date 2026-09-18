@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MenuRecordRaw } from '@/types';
+import type { NavigationMenu } from '@/types';
 import { useNamespace } from 'element-plus';
 import type { NormalMenuProps } from './normal-menu';
 
@@ -15,13 +15,13 @@ const props = withDefaults(defineProps<NormalMenuProps>(), {
 });
 
 const emit = defineEmits<{
-  enter: [MenuRecordRaw];
-  select: [MenuRecordRaw];
+  enter: [NavigationMenu];
+  select: [NavigationMenu];
 }>();
 
 const { b, e, is } = useNamespace('normal-menu');
 
-function menuIcon(menu: MenuRecordRaw) {
+function menuIcon(menu: NavigationMenu) {
   return props.activePath === menu.path ? menu.activeIcon || menu.icon : menu.icon;
 }
 </script>

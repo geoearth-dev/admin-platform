@@ -137,7 +137,7 @@ public class JwtTokenService {
                 .subject(session.userInfo().username())
                 .audience(List.of(properties.audience()))
                 .issuedAt(issuedAt)
-            .expiresAt(expiresAt)
+                .expiresAt(expiresAt)
                 .id(session.sessionId())
                 .claim(Constants.JWT_USERID, session.userInfo().userId())
                 .build();

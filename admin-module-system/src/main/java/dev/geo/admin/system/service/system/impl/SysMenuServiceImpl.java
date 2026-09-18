@@ -1,9 +1,7 @@
 package dev.geo.admin.system.service.system.impl;
 
-import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson2.JSON;
 import dev.geo.admin.common.constant.UserConstants;
 import dev.geo.admin.common.exception.ServiceException;
 import dev.geo.admin.security.utils.SecurityUtils;
@@ -137,7 +135,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
     @Override
     public List<Long> selectMenuListByRoleId(Long roleId) {
         SysRole role = roleMapper.selectRoleById(roleId);
-        return menuMapper.selectMenuListByRoleId(roleId, role.isMenuCheckStrictly());
+        return menuMapper.selectMenuListByRoleId(roleId, role.isMenuCheckLinked());
     }
 
     /**
@@ -158,6 +156,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
             router.setName(getRouteName(menu));
             router.setPath(getRouterPath(menu));
             router.setComponent(getComponent(menu));
+            router.setRedirect(StrUtil.trimToNull(menu.getRedirect()));
             MetaVo meta = new MetaVo();
             meta.setTitle(menu.getMenuName());
             meta.setIcon(menu.getIcon());
@@ -166,9 +165,20 @@ public class SysMenuServiceImpl implements ISysMenuService {
             meta.setKeepAlive(Boolean.TRUE.equals(menu.getKeepAlive()));
             meta.setLink(StrUtil.trimToNull(menu.getLink()));
             meta.setIframeSrc(StrUtil.trimToNull(menu.getIframeSrc()));
-            if (StrUtil.isNotBlank(menu.getQuery())) {
-                meta.setQuery(JSON.parseObject(menu.getQuery()));
-            }
+            meta.setQuery(menu.getQuery());
+            meta.setActiveIcon(menu.getActiveIcon());
+            meta.setActivePath(menu.getActivePath());
+            meta.setAffixTab(menu.getAffixTab());
+            meta.setAffixTabOrder(menu.getAffixTabOrder());
+            meta.setBadge(menu.getBadge());
+            meta.setBadgeType(menu.getBadgeType());
+            meta.setBadgeVariants(menu.getBadgeVariants());
+            meta.setHideChildrenInMenu(menu.getHideChildrenInMenu());
+            meta.setHideInBreadcrumb(menu.getHideInBreadcrumb());
+            meta.setHideInTab(menu.getHideInTab());
+            meta.setOpenInNewWindow(menu.getOpenInNewWindow());
+            meta.setNoBasicLayout(menu.getNoBasicLayout());
+            meta.setMaxNumOfOpenTab(menu.getMaxNumOfOpenTab());
             router.setMeta(meta);
             if (ObjectUtil.isNotEmpty(menu.getChildren())) {
                 router.setChildren(buildMenus(menu.getChildren()));
@@ -256,6 +266,8 @@ public class SysMenuServiceImpl implements ISysMenuService {
      */
     @Override
     public int insertMenu(SysMenu menu) {
+        MenuConfigValidator.validate(menu, menuMapper.selectMenuList(new SysMenu()));
+        menu.setId(null);
         return menuMapper.insertMenu(menu);
     }
 
@@ -267,6 +279,10 @@ public class SysMenuServiceImpl implements ISysMenuService {
      */
     @Override
     public int updateMenu(SysMenu menu) {
+        if (menu.getId() == null || menuMapper.selectMenuById(menu.getId()) == null) {
+            throw new ServiceException("菜单不存在，请刷新后重试");
+        }
+        MenuConfigValidator.validate(menu, menuMapper.selectMenuList(new SysMenu()));
         return menuMapper.updateMenu(menu);
     }
 
@@ -279,16 +295,27 @@ public class SysMenuServiceImpl implements ISysMenuService {
     @Override
     @Transactional
     public void updateMenuSort(String[] menuIds, String[] orders) {
-        try {
-            for (int i = 0; i < menuIds.length; i++) {
-                SysMenu menu = new SysMenu();
-                menu.setId(Convert.toLong(menuIds[i]));
-                menu.setOrder(Convert.toInt(orders[i]));
-                menuMapper.updateMenuSort(menu);
+        if (menuIds.length != orders.length) throw new ServiceException("菜单ID和排序数量不一致");
+        Set<Long> ids = new HashSet<>();
+        List<SysMenu> updates = new ArrayList<>();
+        for (int i = 0; i < menuIds.length; i++) {
+            Long id;
+            Integer order;
+            try {
+                id = Long.valueOf(menuIds[i].trim());
+                order = Integer.valueOf(orders[i].trim());
+            } catch (NumberFormatException exception) {
+                throw new ServiceException("菜单ID和排序必须是整数");
             }
-        } catch (Exception e) {
-            throw new ServiceException("保存排序异常，请联系管理员");
+            if (id <= 0 || order < 0 || !ids.add(id) || menuMapper.selectMenuById(id) == null) {
+                throw new ServiceException("菜单不存在、ID重复或排序无效");
+            }
+            SysMenu menu = new SysMenu();
+            menu.setId(id);
+            menu.setOrder(order);
+            updates.add(menu);
         }
+        updates.forEach(menuMapper::updateMenuSort);
     }
 
     /**
@@ -326,29 +353,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
      */
     @Override
     public boolean checkRouteConfigUnique(SysMenu menu) {
-        long menuId = ObjectUtil.isNull(menu.getId()) ? -1L : menu.getId();
-        Long parentId = menu.getParentId();
-        String path = menu.getPath();
-        String routeName = StrUtil.isEmpty(menu.getRouteName()) ? path : menu.getRouteName();
-        List<SysMenu> sysMenuList = menuMapper.selectMenusByPathOrRouteName(path, routeName);
-        for (SysMenu sysMenu : sysMenuList) {
-            if (sysMenu.getId() != menuId) {
-                Long dbParentId = sysMenu.getParentId();
-                String dbPath = sysMenu.getPath();
-                String dbRouteName = StrUtil.isEmpty(sysMenu.getRouteName()) ? dbPath : sysMenu.getRouteName();
-                if (StrUtil.equalsAnyIgnoreCase(path, dbPath) && parentId.longValue() == dbParentId.longValue()) {
-                    log.warn("[同级路由冲突] 同级下已存在相同路由路径 '{}'，冲突菜单：{}", dbPath, sysMenu.getMenuName());
-                    return UserConstants.NOT_UNIQUE;
-                } else if (StrUtil.equalsAnyIgnoreCase(path, dbPath) && parentId.longValue() == MENU_ROOT_ID) {
-                    log.warn("[根目录路由冲突] 根目录下路由 '{}' 必须唯一，已被菜单 '{}' 占用", path, sysMenu.getMenuName());
-                    return UserConstants.NOT_UNIQUE;
-                } else if (StrUtil.equalsAnyIgnoreCase(routeName, dbRouteName)) {
-                    log.warn("[路由名称冲突] 路由名称 '{}' 需全局唯一，已被菜单 '{}' 使用", routeName, sysMenu.getMenuName());
-                    return UserConstants.NOT_UNIQUE;
-                }
-            }
-        }
-        return UserConstants.UNIQUE;
+        return MenuConfigValidator.isRouteUnique(menu, menuMapper.selectMenuList(new SysMenu()));
     }
 
     /**
@@ -395,10 +400,10 @@ public class SysMenuServiceImpl implements ISysMenuService {
      * @return 组件信息
      */
     public String getComponent(SysMenu menu) {
-        if (UserConstants.TYPE_DIR.equals(menu.getMenuType()) || StrUtil.isNotBlank(menu.getLink())) {
+        if (UserConstants.TYPE_DIR.equals(menu.getMenuType()) || UserConstants.TYPE_LINK.equals(menu.getMenuType())) {
             return null;
         }
-        if (StrUtil.isNotBlank(menu.getIframeSrc())) {
+        if (UserConstants.TYPE_EMBEDDED.equals(menu.getMenuType())) {
             return "IFrameView";
         }
         return menu.getComponent();

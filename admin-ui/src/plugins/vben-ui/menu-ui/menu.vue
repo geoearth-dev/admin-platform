@@ -3,11 +3,11 @@ import type { MenuProps } from './types';
 
 import { Menu } from './components';
 import SubMenu from './sub-menu.vue';
-import type { MenuRecordRaw } from '@/types/index.ts';
+import type { NavigationMenu } from '@/types/index.ts';
 import { useForwardProps } from 'reka-ui';
 
 interface Props extends MenuProps {
-  menus: MenuRecordRaw[];
+  menus: NavigationMenu[];
 }
 
 defineOptions({

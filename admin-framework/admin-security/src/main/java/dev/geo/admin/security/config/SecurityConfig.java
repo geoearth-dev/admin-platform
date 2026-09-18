@@ -107,15 +107,19 @@ public class SecurityConfig {
                                     "/register",
                                     "/captcha")
                             .permitAll()
-                            // 静态资源，可匿名访问
+                            .requestMatchers(request ->
+                                    request.getDispatcherType() == jakarta.servlet.DispatcherType.ASYNC
+                                            && "/system/messages/stream".equals(request.getServletPath())
+                            ).permitAll()
+                    // 静态资源，可匿名访问
                             .requestMatchers(
-                                    HttpMethod.GET,
-                                    "/",
-                                    "/*.html",
-                                    "/**.html",
-                                    "/**.css",
-                                    "/**.js",
-                                    "/profile/**")
+                            HttpMethod.GET,
+                            "/",
+                            "/*.html",
+                            "/**.html",
+                            "/**.css",
+                            "/**.js",
+                            "/profile/**")
                             .permitAll()
                             .requestMatchers(
                                     "/api",
