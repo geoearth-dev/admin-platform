@@ -4,7 +4,7 @@ app:
   # 版本
   version: 0.1.0-SNAPSHOT
   # author
-  author: geoearth.dev
+  author: geo
   # description
   description: Admin Platform
   # 版权年份
@@ -34,6 +34,7 @@ spring:
     import:
       # 引入业务模块配置文件
       - optional:classpath:application-system.yml
+      - optional:classpath:generator.yml
   # 文件上传
   servlet:
     multipart:

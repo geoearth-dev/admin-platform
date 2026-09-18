@@ -21,5 +21,6 @@
         <module>admin-websocket</module>
         <module>admin-excel</module>
         <module>admin-quartz</module>
+        <module>admin-generator</module>
     </modules>
 </project>

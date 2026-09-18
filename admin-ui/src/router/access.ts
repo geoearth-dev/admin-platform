@@ -6,7 +6,7 @@ import type { NavigationMenu } from '@/types'
 import type { MenuRoute } from '@/types/base/api/system/menu'
 import type { Component } from 'vue'
 import { completeMenuRedirects } from './menu-routes'
-import { generateMenus } from '@/utils/generate/generate-menus'
+import { generateMenus } from '@/utils/menu/generate-menus'
 import { useAccessStore, useUserStore } from '@/store'
 import { dynamicRoutes } from './routes'
 

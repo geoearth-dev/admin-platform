@@ -37,6 +37,7 @@
         <yauaa.version>8.2.0</yauaa.version>
         <fastjson.version>2.0.64</fastjson.version>
         <oshi.version>7.6.1</oshi.version>
+        <velocity.version>2.4.1</velocity.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -158,7 +159,12 @@
                 <artifactId>fastjson2</artifactId>
                 <version>${fastjson.version}</version>
             </dependency>
-
+            <!-- velocity代码生成使用模板 -->
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity-engine-core</artifactId>
+                <version>${velocity.version}</version>
+            </dependency>
         </dependencies>
 
     </dependencyManagement>

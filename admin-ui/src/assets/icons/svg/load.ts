@@ -49,6 +49,7 @@ async function loadSvgIcons() {
     typeof Node === 'undefined' ||
     typeof XMLSerializer === 'undefined'
   ) {
+  
     return;
   }
 
