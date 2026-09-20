@@ -5,7 +5,6 @@ import dev.geo.admin.system.mapper.system.SysNoticeMapper;
 import dev.geo.admin.system.model.system.dto.NoticePageReqDTO;
 import dev.geo.admin.system.model.system.entity.SysNotice;
 import dev.geo.admin.system.service.system.ISysNoticeService;
-import dev.geo.admin.system.service.system.ISysNoticeReadService;
 import dev.geo.admin.common.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,9 +26,6 @@ public class SysNoticeServiceImpl implements ISysNoticeService
 
     @Autowired
     private SysNoticeMapper noticeMapper;
-
-    @Autowired
-    private ISysNoticeReadService noticeReadService;
 
     /**
      * 查询公告信息
@@ -106,7 +102,7 @@ public class SysNoticeServiceImpl implements ISysNoticeService
                 java.util.Arrays.stream(noticeIds).anyMatch(id -> id == null || id <= 0)) {
             throw new ServiceException("请选择有效的公告ID");
         }
-        noticeReadService.deleteByNoticeIds(noticeIds);
+        // 逻辑删除公告，保留已读历史；查询侧统一排除已删除公告。
         return noticeMapper.deleteNoticeByIds(noticeIds);
     }
 }

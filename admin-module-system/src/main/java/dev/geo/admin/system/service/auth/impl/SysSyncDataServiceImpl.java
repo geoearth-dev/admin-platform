@@ -42,6 +42,17 @@ public class SysSyncDataServiceImpl implements SysSyncDataService {
         }
         return status;
     }
+    /** 认证平台的旧删除标识 2 转为本地的 1。 */
+    static String fromLegacyDelFlag(String delFlag) {
+        if ("0".equals(delFlag)) {
+            return "0";
+        }
+        if ("1".equals(delFlag) || "2".equals(delFlag)) {
+            return "1";
+        }
+        throw new IllegalArgumentException("无效的删除标识");
+    }
+
     private static final Logger log = LoggerFactory.getLogger(SysSyncDataService.class);
     @Resource
     private SysDeptMapper sysDeptMapper;
@@ -128,7 +139,7 @@ public class SysSyncDataServiceImpl implements SysSyncDataService {
             sysUser.setSex(sex);
             sysUser.setPhoneNumber(phone);
             sysUser.setStatus(fromLegacyStatus(status));
-            sysUser.setDelFlag(delFlag);
+            sysUser.setDelFlag(fromLegacyDelFlag(delFlag));
 //            sysUser.setPassword("qdata@123");
             sysUser.setPassword(SecurityUtils.encryptPassword("qdata@123"));
             sysUser.setRoleId(Long.valueOf(3));
@@ -191,7 +202,7 @@ public class SysSyncDataServiceImpl implements SysSyncDataService {
             sysDept.setDeptName(deptName);
             sysDept.setOrderNum(StrUtil.isBlank(orderNum) ? null : Integer.valueOf(orderNum));
             sysDept.setStatus(fromLegacyStatus(status));
-            sysDept.setDelFlag(delFlag);
+            sysDept.setDelFlag(fromLegacyDelFlag(delFlag));
             sysDept.setParentName(simpleDeptName);
             sysIdHubDepts.add(sysDept);
         }

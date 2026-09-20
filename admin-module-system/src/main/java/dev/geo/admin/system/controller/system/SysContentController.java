@@ -14,8 +14,10 @@ import dev.geo.admin.system.model.system.vo.SysContentPublicVO;
 import dev.geo.admin.system.model.system.vo.SysContentRespVO;
 import dev.geo.admin.system.service.system.ISysContentService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +38,7 @@ public class SysContentController extends BaseController {
     @Operation(summary = "分页查询系统展示配置")
     @PreAuthorize("@se.hasPermission('system:content:list')")
     @GetMapping("/system/content/list")
-    public ApiResult<PageResult<SysContentRespVO>> list(@Validated SysContentPageReqDTO query) {
+    public ApiResult<PageResult<SysContentRespVO>> list(@Validated @ParameterObject SysContentPageReqDTO query) {
         PageResult<SysContent> page = contentService.getSystemContentPage(query);
         return success(page.convert(SysContentConverter::toRespVO));
     }
@@ -47,7 +49,7 @@ public class SysContentController extends BaseController {
     @Anonymous
     @Operation(summary = "查询系统展示配置详情")
     @GetMapping("/sys/content/{id}")
-    public ApiResult<SysContentPublicVO> getInfo(@PathVariable Long id) {
+    public ApiResult<SysContentPublicVO> getInfo(@Parameter(description = "系统展示配置 ID") @PathVariable Long id) {
         SysContent content = contentService.getSystemContentById(id);
         return success(SysContentConverter.toPublicVO(content));
     }

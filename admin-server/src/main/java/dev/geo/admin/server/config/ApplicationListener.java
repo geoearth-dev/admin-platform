@@ -8,11 +8,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.time.Duration;
-import java.util.Enumeration;
 
 @Component
 public class ApplicationListener {
@@ -32,7 +28,7 @@ public class ApplicationListener {
 
         // 获取本机 IP
         String externalIp = IpUtils.getHostIp();
-        String apiPath = env.getProperty("scalar.path", "/api");
+        String apiPath = env.getProperty("scalar.path", "/doc");
 
         // 获取激活的 profile（环境）
         String[] activeProfiles = env.getActiveProfiles();

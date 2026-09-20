@@ -8,6 +8,8 @@ import dev.geo.admin.security.utils.SecurityUtils;
 import dev.geo.admin.system.model.system.dto.ProfileUpdateDTO;
 import dev.geo.admin.system.model.system.entity.SysUser;
 import dev.geo.admin.system.service.system.ISysUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
@@ -17,6 +19,7 @@ import dev.geo.admin.system.model.system.dto.PasswordChangeDTO;
 /**
  * 当前用户个人资料接口。
  */
+@Tag(name = "个人资料")
 @RestController
 @RequestMapping("/system/profile")
 @RequiredArgsConstructor
@@ -25,12 +28,14 @@ public class SysProfileController extends BaseController {
     private final PasswordEncoder passwordEncoder;
 
     @GetMapping
+    @Operation(summary = "获取我的个人资料")
     public ApiResult<SysUser> profile() {
         return success(userService.selectUserById(SecurityUtils.getUserId()));
     }
 
     @Log(title = "个人资料", businessType = BusinessType.UPDATE)
     @PutMapping
+    @Operation(summary = "修改我的个人资料")
     public ApiResult<Void> updateProfile(@Validated @RequestBody ProfileUpdateDTO request) {
         SysUser user = new SysUser(SecurityUtils.getUserId());
         user.setNickName(request.nickName());
@@ -48,6 +53,7 @@ public class SysProfileController extends BaseController {
 
     @Log(title = "个人资料", businessType = BusinessType.UPDATE)
     @PutMapping("/password")
+    @Operation(summary = "修改我的密码")
     public ApiResult<Void> updatePassword(@Validated @RequestBody PasswordChangeDTO request) {
         SysUser current = userService.selectUserById(SecurityUtils.getUserId());
         if (!passwordEncoder.matches(request.oldPassword(), current.getPassword())) {

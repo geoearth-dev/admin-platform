@@ -2,6 +2,7 @@ package dev.geo.admin.system.controller.common;
 
 import dev.geo.admin.common.core.model.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MockController {
     @Operation(summary = "临时模拟HTTP错误状态码，用于测试前端拦截器")
     @GetMapping("/status")
-    public ApiResult<Void> mockStatus(@RequestParam("status") int status, HttpServletResponse response) {
+    public ApiResult<Void> mockStatus(@Parameter(description = "需要模拟的 HTTP 状态码") @RequestParam("status") int status, HttpServletResponse response) {
 
         // 此接口只用于模拟 4xx、5xx 错误。
         if (status < 400 || status > 599) {

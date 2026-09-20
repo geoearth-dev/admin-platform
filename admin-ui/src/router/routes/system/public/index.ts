@@ -1,5 +1,6 @@
 import { LOGIN_PATH } from '@/constants/core'
 import { AuthPageLayout, BasicLayout } from '@/layout'
+import { $t } from '@/plugins/locale'
 import type { RouteRecordRaw } from 'vue-router'
 
 /** 启动时注册的系统固定路由，包含根布局、登录页和 404。 */
@@ -22,7 +23,40 @@ const systemPublicRouter: RouteRecordRaw[] = [
         name: 'Login',
         path: 'login',
         component: () => import('@/views/sys/admin/authentication/login.vue'),
-        meta: { title: '登录' },
+        meta: { title: $t('page.auth.login') },
+      },
+        {
+        name: 'CodeLogin',
+        path: 'code-login',
+        component: () => import('@/views/sys/admin/authentication/code-login.vue'),
+        meta: {
+          title: $t('page.auth.codeLogin'),
+        },
+      },
+      {
+        name: 'QrCodeLogin',
+        path: 'qrcode-login',
+        component: () =>   import('@/views/sys/admin/authentication/qrcode-login.vue'),
+        meta: {
+          title: $t('page.auth.qrcodeLogin'),
+        },
+      },
+      {
+        name: 'ForgetPassword',
+        path: 'forget-password',
+        component: () =>
+          import('@/views/sys/admin/authentication/forget-password.vue'),
+        meta: {
+          title: $t('page.auth.forgetPassword'),
+        },
+      },
+      {
+        name: 'Register',
+        path: 'register',
+        component: () => import('@/views/sys/admin/authentication/register.vue'),
+        meta: {
+          title: $t('page.auth.register'),
+        },
       },
     ],
   },

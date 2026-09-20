@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import dev.geo.admin.excel.annotation.Excel;
 import dev.geo.admin.mybatis.model.BaseEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -19,6 +20,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @Setter
 @Getter
 @TableName("sys_dict_type")
+@Schema(description = "字典类型")
 public class SysDictType extends BaseEntity {
 
     /**
@@ -26,6 +28,7 @@ public class SysDictType extends BaseEntity {
      */
     @Excel(name = "字典主键", cellType = Excel.ColumnType.NUMERIC)
     @TableId(value = "id", type = IdType.AUTO)
+    @Schema(description = "字典类型 ID")
     private Long id;
 
     /**
@@ -34,6 +37,7 @@ public class SysDictType extends BaseEntity {
     @Excel(name = "字典名称")
     @NotBlank(message = "字典名称不能为空")
     @Size(max = 100, message = "字典类型名称长度不能超过100个字符")
+    @Schema(description = "字典名称")
     private String dictName;
 
     /**
@@ -43,12 +47,14 @@ public class SysDictType extends BaseEntity {
     @NotBlank(message = "字典类型不能为空")
     @Size(max = 100, message = "字典类型类型长度不能超过100个字符")
     @Pattern(regexp = "^[a-z][a-z0-9_]*$", message = "字典类型必须以字母开头，且只能为（小写字母，数字，下滑线）")
+    @Schema(description = "字典类型标识")
     private String dictType;
 
     /**
      * 状态（0停用 1正常）
      */
     @Excel(name = "状态", readConverterExp = "0=停用,1=正常")
+    @Schema(description = "状态：1启用，0停用")
     private String status;
 
 

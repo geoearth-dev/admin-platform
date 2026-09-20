@@ -52,7 +52,7 @@ public class UserConstants {
     /**
      * 是否为系统默认（是）
      */
-    public static final String YES = "Y";
+    public static final String YES = "1";
 
     /**
      * 是否菜单外链（是）

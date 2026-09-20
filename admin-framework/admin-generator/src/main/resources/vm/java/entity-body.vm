@@ -1,0 +1,46 @@
+package ${packageName}.model.${moduleName}.entity;
+
+import com.baomidou.mybatisplus.annotation.*;
+import dev.geo.admin.mybatis.model.BaseEntity;
+import dev.geo.admin.excel.annotation.Excel;
+import lombok.Getter;
+import lombok.Setter;
+import java.math.BigDecimal;
+import java.time.*;
+import java.util.*;
+
+/** ${functionName} — ${author}, ${datetime} */
+@Getter
+@Setter
+@TableName("${model.tableName}")
+#if($model.baseEntity)
+public class ${model.className} extends BaseEntity {
+#else
+public class ${model.className} {
+#end
+#foreach($column in $model.columns)
+#if(!$model.isSuperColumn($column.javaField))
+    /** ${column.javaComment} */
+#if($column.pk)
+#if($column.increment)
+    @TableId(value = "${column.columnName}", type = IdType.AUTO)
+#else
+    @TableId(value = "${column.columnName}", type = IdType.INPUT)
+#end
+#elseif($column.javaField == "createTime" || $column.javaField == "createBy" || $column.javaField == "creatorId")
+    @TableField(value = "`${column.columnName}`", fill = FieldFill.INSERT)
+#elseif($column.javaField == "updateTime" || $column.javaField == "updateBy" || $column.javaField == "updaterId")
+    @TableField(value = "`${column.columnName}`", fill = FieldFill.INSERT_UPDATE)
+#else
+    @TableField("`${column.columnName}`")
+#end
+    @Excel(name = ${column.labelLiteral})
+    private ${column.javaType} ${column.javaField};
+
+#end
+#end
+#if($mainModel && $table.sub)
+    @TableField(exist = false)
+    private List<${subClassName}> ${subclassName}List = new ArrayList<>();
+#end
+}

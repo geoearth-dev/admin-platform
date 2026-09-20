@@ -1,0 +1,6 @@
+package ${packageName}.mapper.${moduleName};
+import dev.geo.admin.mybatis.mapper.BaseMapperX;
+import ${packageName}.model.${moduleName}.entity.${subClassName};
+import org.apache.ibatis.annotations.Mapper;
+@Mapper
+public interface ${subClassName}Mapper extends BaseMapperX<${subClassName}> {}

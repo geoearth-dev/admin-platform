@@ -292,7 +292,7 @@ function createDefaultForm(): DictDataSaveParams {
     dictSort: 0,
     cssClass: '',
     listClass: 'default',
-    isDefault: 'N',
+    isDefault: '0',
     status: '1',
     remark: '',
   };
@@ -394,7 +394,7 @@ async function handleUpdate(row?: SysDictData) {
     dictSort: detail.dictSort,
     cssClass: detail.cssClass ?? '',
     listClass: detail.listClass ?? 'default',
-    isDefault: detail.isDefault ?? 'N',
+    isDefault: detail.isDefault ?? '0',
     status: detail.status,
     remark: detail.remark ?? '',
   };

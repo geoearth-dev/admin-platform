@@ -12,6 +12,9 @@ import dev.geo.admin.system.model.common.vo.ColumnRespVO;
 import dev.geo.admin.system.model.common.dto.CsvColumnReqDTO;
 import dev.geo.admin.system.model.common.dto.ExcelColumnReqDTO;
 import dev.geo.admin.system.model.common.vo.FileUploadVO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +33,7 @@ import java.util.UUID;
 /**
  * 通用请求处理
  */
+@Tag(name = "文件管理")
 @RestController
 @RequestMapping("/common")
 @RequiredArgsConstructor
@@ -52,7 +56,9 @@ public class CommonController {
      * @param delete   是否删除
      */
     @GetMapping("/download")
-    public void fileDownload(String fileName, Boolean delete, HttpServletResponse response, HttpServletRequest request) {
+    @Operation(summary = "下载临时文件", description = "从临时下载目录读取文件；delete=true 时下载后删除源文件。")
+    public void fileDownload(@Parameter(description = "临时下载目录中的文件名") String fileName,
+                             @Parameter(description = "下载后是否删除源文件") Boolean delete, HttpServletResponse response, HttpServletRequest request) {
         try {
             if (!FileUtils.isDownloadAllowed(fileName)) {
                 throw new Exception(StrUtil.format("文件名称({})非法，不允许下载。 ", fileName));
@@ -74,13 +80,14 @@ public class CommonController {
     /**
      * 通用上传请求（单个）
      */
-    @PostMapping("/upload")
-    public ApiResult<FileUploadVO> uploadFile(MultipartFile file) throws Exception {
+    @PostMapping(value = "/upload", consumes = "multipart/form-data")
+    @Operation(summary = "上传单个文件", description = "使用 multipart/form-data 提交 file，返回访问地址及保存路径。")
+    public ApiResult<FileUploadVO> uploadFile(@Parameter(description = "待上传的文件") @RequestParam("file") MultipartFile file) throws Exception {
         try {
             // 上传文件路径
             String filePath = AppConfig.getUploadPath();
             // 上传并返回新文件名称
-            String fileName = FileUploadUtils.upload(filePath, file);
+            String fileName = FileUploadUtils.upload(filePath, file, dev.geo.admin.common.utils.file.MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION, true);
             String url = ServletUtils.getUrl() + fileName;
             FileUploadVO result = new FileUploadVO(url, fileName, FileUtils.getName(fileName), file.getOriginalFilename());
             return ApiResult.success(result);
@@ -92,15 +99,16 @@ public class CommonController {
     /**
      * 通用上传请求（多个）
      */
-    @PostMapping("/uploads")
-    public ApiResult<List<FileUploadVO>> uploadFiles(List<MultipartFile> files) throws Exception {
+    @PostMapping(value = "/uploads", consumes = "multipart/form-data")
+    @Operation(summary = "批量上传文件", description = "使用 multipart/form-data 提交 files，按提交顺序返回上传结果。")
+    public ApiResult<List<FileUploadVO>> uploadFiles(@Parameter(description = "待上传的文件列表") @RequestParam("files") List<MultipartFile> files) throws Exception {
         try {
             List<FileUploadVO> results = new ArrayList<>();
             // 上传文件路径
             String filePath = AppConfig.getUploadPath();
             for (MultipartFile file : files) {
                 // 上传并返回新文件名称
-                String fileName = FileUploadUtils.upload(filePath, file);
+                String fileName = FileUploadUtils.upload(filePath, file, dev.geo.admin.common.utils.file.MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION, true);
                 String url = ServletUtils.getUrl() + fileName;
                 results.add(new FileUploadVO(url, fileName, FileUtils.getName(fileName), file.getOriginalFilename()));
             }
@@ -114,7 +122,8 @@ public class CommonController {
      * 本地资源通用下载
      */
     @GetMapping("/download/resource")
-    public void resourceDownload(String resource, HttpServletRequest request, HttpServletResponse response) {
+    @Operation(summary = "下载已上传的文件")
+    public void resourceDownload(@Parameter(description = "上传接口返回的 fileName 路径") String resource, HttpServletRequest request, HttpServletResponse response) {
         try {
             if (!FileUtils.isDownloadAllowed(resource)) {
                 throw new Exception(StrUtil.format("资源文件({})非法，不允许下载。 ", resource));
@@ -140,6 +149,7 @@ public class CommonController {
      * @return ApiResult
      */
     @PostMapping("/getExcelColumn")
+    @Operation(summary = "读取 Excel 列名并转为 CSV")
     public ApiResult<ColumnRespVO> getExcelColumn(@RequestBody ExcelColumnReqDTO excelColumnReq) {
         String excelFile = excelColumnReq.getExcelFile();
         excelFile = AppConfig.getProfile() + excelFile.replace(Constants.RESOURCE_PREFIX + "/", "");
@@ -167,6 +177,7 @@ public class CommonController {
      * @return ApiResult
      */
     @PostMapping("/getCsvColumn")
+    @Operation(summary = "读取 CSV 列名")
     public ApiResult<ColumnRespVO> getCsvColumn(@RequestBody CsvColumnReqDTO csvColumnReqVO) {
         String file = csvColumnReqVO.getFile();
         file = AppConfig.getProfile() + file.replace(Constants.RESOURCE_PREFIX + "/", "");
@@ -192,6 +203,7 @@ public class CommonController {
      * @return ApiResult
      */
     @PostMapping("/getTxtColumn")
+    @Operation(summary = "读取文本文件列名")
     public ApiResult<ColumnRespVO> getTxtColumn(@RequestBody CsvColumnReqDTO csvColumnReqVO) {
         String file = csvColumnReqVO.getFile();
         file = AppConfig.getProfile() + file.replace(Constants.RESOURCE_PREFIX + "/", "");

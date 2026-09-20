@@ -28,6 +28,18 @@ const systemDynamicRouter: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/tool/gen-edit',
+    meta: { title: '', hideInMenu: true, permissions: ['tool:gen:edit'] },
+    children: [
+      {
+        path: 'index/:id(\\d+)',
+        component: () => import('@/views/sys/tool/gen/editTable.vue'),
+        name: 'GenEdit',
+        meta: { title: '修改生成配置', activeMenu: '/tool/gen' },
+      },
+    ],
+  },
+  {
     path: '/dashboard',
     name: 'Dashboard',
     redirect: '/dashboard/analytics',

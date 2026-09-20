@@ -1,0 +1,33 @@
+package ${packageName}.model.${moduleName}.dto;
+
+import dev.geo.admin.mybatis.model.page.PageParam;
+import org.springframework.format.annotation.DateTimeFormat;
+import lombok.Getter;
+import lombok.Setter;
+import java.math.BigDecimal;
+import java.time.*;
+import java.util.Date;
+
+@Getter
+@Setter
+public class ${ClassName}PageReqDTO extends PageParam {
+#foreach($column in $table.queryColumns)
+#if($column.queryType == "BETWEEN")
+#set($suffixes = ["Start", "End"])
+#else
+#set($suffixes = [""])
+#end
+#foreach($suffix in $suffixes)
+#if($column.javaType == "LocalDateTime")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+#elseif($column.javaType == "LocalTime")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
+#elseif($column.javaType == "LocalDate")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+#elseif($column.timeType)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+#end
+    private ${column.javaType} ${column.javaField}${suffix};
+#end
+#end
+}

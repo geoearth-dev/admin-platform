@@ -74,6 +74,8 @@ public class SecurityConfig {
     private final RestAuthenticationEntryPoint authenticationEntryPoint;
     private final RestAccessDeniedHandler accessDeniedHandler;
 
+    @Value("${security.cors.allowed-origins:http://localhost:5173}")
+    private List<String> allowedOrigins;
 
     @Bean
     SecurityFilterChain securityFilterChain(
@@ -89,7 +91,10 @@ public class SecurityConfig {
                 .headers((headersCustomizer) -> {
                     headersCustomizer
                             .cacheControl(HeadersConfigurer.CacheControlConfig::disable)
-                            .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin);
+                            .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
+                            .contentSecurityPolicy(csp -> csp.policyDirectives(
+                                    "frame-ancestors 'self' " + String.join(" ", allowedOrigins)
+                            ));
                 })
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -111,18 +116,18 @@ public class SecurityConfig {
                                     request.getDispatcherType() == jakarta.servlet.DispatcherType.ASYNC
                                             && "/system/messages/stream".equals(request.getServletPath())
                             ).permitAll()
-                    // 静态资源，可匿名访问
+                            // 静态资源，可匿名访问
                             .requestMatchers(
-                            HttpMethod.GET,
-                            "/",
-                            "/*.html",
-                            "/**.html",
-                            "/**.css",
-                            "/**.js",
-                            "/profile/**")
+                                    HttpMethod.GET,
+                                    "/",
+                                    "/*.html",
+                                    "/**.html",
+                                    "/**.css",
+                                    "/**.js",
+                                    "/profile/**")
                             .permitAll()
                             .requestMatchers(
-                                    "/api",
+                                    "/doc/**",
                                     "/v3/api-docs/**",
                                     "/druid/**")
                             .permitAll()
@@ -200,9 +205,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource(
-            @Value("${security.cors.allowed-origins:http://localhost:5173}")
-            List<String> allowedOrigins) {
+    CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cors = new CorsConfiguration();
 
         cors.setAllowedOrigins(allowedOrigins);

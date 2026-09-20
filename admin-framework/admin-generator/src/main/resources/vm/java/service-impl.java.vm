@@ -1,0 +1,135 @@
+package ${packageName}.service.${moduleName}.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import dev.geo.admin.common.core.model.PageResult;
+import dev.geo.admin.common.exception.ServiceException;
+import ${packageName}.mapper.${moduleName}.${ClassName}Mapper;
+import ${packageName}.model.${moduleName}.entity.${ClassName};
+import ${packageName}.model.${moduleName}.dto.${ClassName}PageReqDTO;
+import ${packageName}.model.${moduleName}.dto.${ClassName}SaveDTO;
+import ${packageName}.service.${moduleName}.I${ClassName}Service;
+#if($table.sub)
+import ${packageName}.mapper.${moduleName}.${subClassName}Mapper;
+import ${packageName}.model.${moduleName}.entity.${subClassName};
+import ${packageName}.model.${moduleName}.dto.${subClassName}SaveDTO;
+#end
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.*;
+
+@Service
+@RequiredArgsConstructor
+public class ${ClassName}ServiceImpl implements I${ClassName}Service {
+    private final ${ClassName}Mapper mapper;
+#if($table.sub)
+    private final ${subClassName}Mapper subMapper;
+#end
+
+    @Override
+    public PageResult<${ClassName}> selectPage(${ClassName}PageReqDTO query) { return mapper.selectPage(query); }
+
+    @Override
+    public List<${ClassName}> selectList(${ClassName}PageReqDTO query) { return mapper.selectList(query); }
+
+    @Override
+    public ${ClassName} getById(${pkColumn.javaType} id) {
+        ${ClassName} entity = mapper.selectById(id);
+        if (entity == null) throw new ServiceException("数据不存在");
+#if($table.sub)
+        entity.set${subClassName}List(subMapper.selectList(${subClassName}::get${subFk.capJavaField}, id));
+#end
+        return entity;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ${pkColumn.javaType} create(${ClassName}SaveDTO request) {
+#if(!$pkColumn.increment)
+        if (request.get${pkColumn.capJavaField}() == null) throw new ServiceException("请输入主键");
+#end
+#if($table.tree)
+        validateParent(request);
+#end
+        ${ClassName} entity = new ${ClassName}();
+#foreach($column in $table.saveColumns)
+#if(($column.pk && !$column.increment) || (!$column.pk && ($column.insert || ($table.tree && $column.javaField == $treeParentCode))))
+        entity.set${column.capJavaField}(request.get${column.capJavaField}());
+#end
+#end
+        mapper.insert(entity);
+#if($table.sub)
+        saveChildren(entity.get${pkColumn.capJavaField}(), request.get${subClassName}List());
+#end
+        return entity.get${pkColumn.capJavaField}();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void update(${ClassName}SaveDTO request) {
+        if (request.get${pkColumn.capJavaField}() == null) throw new ServiceException("主键不能为空");
+        getById(request.get${pkColumn.capJavaField}());
+#if($table.tree)
+        validateParent(request);
+#end
+        ${ClassName} entity = new ${ClassName}();
+        entity.set${pkColumn.capJavaField}(request.get${pkColumn.capJavaField}());
+        LambdaUpdateWrapper<${ClassName}> update = new LambdaUpdateWrapper<${ClassName}>()
+                .eq(${ClassName}::get${pkColumn.capJavaField}, request.get${pkColumn.capJavaField}());
+#foreach($column in $table.saveColumns)
+#if(!$column.pk && ($column.edit || ($table.tree && $column.javaField == $treeParentCode)))
+        update.set(${ClassName}::get${column.capJavaField}, request.get${column.capJavaField}());
+#end
+#end
+        if (update.getSqlSet() != null) mapper.update(entity, update);
+#if($table.sub)
+        saveChildren(entity.get${pkColumn.capJavaField}(), request.get${subClassName}List());
+#end
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void delete(List<${pkColumn.javaType}> ids) {
+        if (ids == null || ids.isEmpty()) return;
+#if($table.tree)
+        if (mapper.selectCount(new LambdaQueryWrapper<${ClassName}>().in(${ClassName}::get${treeParentColumn.capJavaField}, ids)
+                .notIn(${ClassName}::get${pkColumn.capJavaField}, ids)) > 0) throw new ServiceException("请先删除下级数据");
+#end
+#if($table.sub)
+        subMapper.delete(new LambdaQueryWrapper<${subClassName}>().in(${subClassName}::get${subFk.capJavaField}, ids));
+#end
+        mapper.deleteByIds(ids);
+    }
+#if($table.tree)
+
+    private void validateParent(${ClassName}SaveDTO request) {
+        ${pkColumn.javaType} parentId = request.get${treeParentColumn.capJavaField}();
+        Set<${pkColumn.javaType}> visited = new HashSet<>();
+        while (parentId != null && !"0".equals(String.valueOf(parentId))) {
+            if (Objects.equals(parentId, request.get${pkColumn.capJavaField}()) || !visited.add(parentId)) throw new ServiceException("不能形成循环父子关系");
+            ${ClassName} parent = mapper.selectById(parentId);
+            if (parent == null) throw new ServiceException("上级数据不存在");
+            parentId = parent.get${treeParentColumn.capJavaField}();
+        }
+    }
+#end
+#if($table.sub)
+
+    private void saveChildren(${pkColumn.javaType} parentId, List<${subClassName}SaveDTO> children) {
+        // 主子表按提交的完整明细替换；外键由服务端设置。
+        subMapper.delete(${subClassName}::get${subFk.capJavaField}, parentId);
+        if (children == null) return;
+        for (${subClassName}SaveDTO child : children) {
+            ${subClassName} entity = new ${subClassName}();
+#foreach($column in $subTable.saveColumns)
+#if($column.javaField != $subFk.javaField && ((!$column.pk && ($column.insert || ($table.tree && $column.javaField == $treeParentCode))) || ($column.pk && !$column.increment)))
+            entity.set${column.capJavaField}(child.get${column.capJavaField}());
+#end
+#end
+            entity.set${subFk.capJavaField}(parentId);
+            subMapper.insert(entity);
+        }
+    }
+#end
+}

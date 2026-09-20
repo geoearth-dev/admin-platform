@@ -9,8 +9,12 @@ import dev.geo.admin.excel.core.ExcelService;
 import dev.geo.admin.quartz.model.SysJobLog;
 import dev.geo.admin.quartz.model.dto.JobLogPageReqDTO;
 import dev.geo.admin.quartz.service.ISysJobLogService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
  * 调度日志操作处理
  *
  */
+@Tag(name = "任务日志")
 @RestController
 @RequestMapping("/monitor/jobLog")
 @RequiredArgsConstructor
@@ -30,7 +35,8 @@ public class SysJobLogController extends BaseController {
      */
     @PreAuthorize("@se.hasPermission('monitor:job:list')")
     @GetMapping("/list")
-    public ApiResult<PageResult<SysJobLog>> list(@Validated JobLogPageReqDTO query) {
+    @Operation(summary = "分页查询任务日志")
+    public ApiResult<PageResult<SysJobLog>> list(@Validated @ParameterObject JobLogPageReqDTO query) {
         return success(jobLogService.selectJobLogPage(query));
     }
     /**
@@ -39,7 +45,8 @@ public class SysJobLogController extends BaseController {
     @PreAuthorize("@se.hasPermission('monitor:job:export')")
     @Log(title = "任务调度日志", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, @Validated JobLogPageReqDTO query) {
+    @Operation(summary = "导出任务日志")
+    public void export(HttpServletResponse response, @Validated @ParameterObject JobLogPageReqDTO query) {
         excelService.exportExcel(response, jobLogService.selectJobLogList(query), SysJobLog.class, "调度日志");
     }
     /**
@@ -47,7 +54,8 @@ public class SysJobLogController extends BaseController {
      */
     @PreAuthorize("@se.hasPermission('monitor:job:query')")
     @GetMapping("/{id}")
-    public ApiResult<SysJobLog> getInfo(@PathVariable Long id) {
+    @Operation(summary = "查询任务日志详情")
+    public ApiResult<SysJobLog> getInfo(@Parameter(description = "任务日志 ID") @PathVariable Long id) {
         return success(jobLogService.selectJobLogById(id));
     }
     /**
@@ -56,7 +64,8 @@ public class SysJobLogController extends BaseController {
     @PreAuthorize("@se.hasPermission('monitor:job:remove')")
     @Log(title = "定时任务调度日志", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public ApiResult<Void> remove(@PathVariable Long[] ids) {
+    @Operation(summary = "删除任务日志")
+    public ApiResult<Void> remove(@Parameter(description = "任务日志 ID 列表，多个用逗号分隔") @PathVariable Long[] ids) {
         return toApiResult(jobLogService.deleteJobLogByIds(ids));
     }
     /**
@@ -65,6 +74,7 @@ public class SysJobLogController extends BaseController {
     @PreAuthorize("@se.hasPermission('monitor:job:remove')")
     @Log(title = "调度日志", businessType = BusinessType.CLEAN)
     @DeleteMapping("/clean")
+    @Operation(summary = "清空任务日志")
     public ApiResult<Void> clean() {
         jobLogService.cleanJobLog();
         return success();

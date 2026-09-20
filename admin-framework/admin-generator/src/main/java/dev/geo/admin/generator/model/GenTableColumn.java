@@ -2,6 +2,7 @@ package dev.geo.admin.generator.model;
 
 import cn.hutool.core.util.StrUtil;
 import dev.geo.admin.mybatis.model.BaseEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import java.util.StringJoiner;
  */
 @Getter
 @Setter
+@Schema(description = "字段生成配置")
 public class GenTableColumn extends BaseEntity {
 
     /**
@@ -21,8 +23,7 @@ public class GenTableColumn extends BaseEntity {
      * <p>沿用原名单，包含基础实体和树实体属性，不根据模板类型区分。</p>
      */
     private static final String[] SUPER_COLUMNS = {
-            "createBy", "createTime", "updateBy", "updateTime", "remark",
-            "parentName", "parentId", "orderNum", "ancestors"
+            "creatorId", "createBy", "createTime", "updaterId", "updateBy", "updateTime", "remark"
     };
 
     /**
@@ -36,26 +37,31 @@ public class GenTableColumn extends BaseEntity {
     /**
      * 字段编号。
      */
-    private Long columnId;
+    @Schema(description = "生成字段配置 ID")
+    private Long id;
 
     /**
      * 归属表编号。
      */
+    @Schema(description = "所属生成表 ID")
     private Long tableId;
 
     /**
      * 数据库列名称。
      */
+    @Schema(description = "数据库字段名")
     private String columnName;
 
     /**
      * 数据库列描述。
      */
+    @Schema(description = "字段说明")
     private String columnComment;
 
     /**
      * 数据库列类型。
      */
+    @Schema(description = "数据库字段类型")
     private String columnType;
 
     // ==================== Java 属性映射 ====================
@@ -63,12 +69,14 @@ public class GenTableColumn extends BaseEntity {
     /**
      * Java 类型。
      */
+    @Schema(description = "Java 类型")
     private String javaType;
 
     /**
      * Java 属性名。
      */
     @NotBlank(message = "Java属性不能为空")
+    @Schema(description = "Java 属性名")
     private String javaField;
 
     // ==================== 字段生成标记 ====================
@@ -76,36 +84,43 @@ public class GenTableColumn extends BaseEntity {
     /**
      * 是否主键：1 表示是。
      */
+    @Schema(description = "是否主键：1是，0否")
     private String isPk;
 
     /**
      * 是否自增：1 表示是。
      */
+    @Schema(description = "是否自增：1是，0否")
     private String isIncrement;
 
     /**
      * 是否必填：1 表示是。
      */
+    @Schema(description = "是否必填：1是，0否")
     private String isRequired;
 
     /**
      * 是否为插入字段：1 表示是。
      */
+    @Schema(description = "新增时是否使用：1是，0否")
     private String isInsert;
 
     /**
      * 是否为编辑字段：1 表示是。
      */
+    @Schema(description = "编辑时是否使用：1是，0否")
     private String isEdit;
 
     /**
      * 是否为列表字段：1 表示是。
      */
+    @Schema(description = "是否显示在列表中：1是，0否")
     private String isList;
 
     /**
      * 是否为查询字段：1 表示是。
      */
+    @Schema(description = "是否作为查询条件：1是，0否")
     private String isQuery;
 
     // ==================== 查询与页面配置 ====================
@@ -115,6 +130,7 @@ public class GenTableColumn extends BaseEntity {
      *
      * <p>EQ：等于；NE：不等于；GT：大于；LT：小于；LIKE：模糊；BETWEEN：范围。</p>
      */
+    @Schema(description = "查询方式，如 EQ等于、LIKE模糊、BETWEEN范围")
     private String queryType;
 
     /**
@@ -124,16 +140,19 @@ public class GenTableColumn extends BaseEntity {
      * radio：单选框；datetime：日期控件；image：图片上传；upload：文件上传；
      * editor：富文本控件。</p>
      */
+    @Schema(description = "表单控件类型，如 input、select、datetime")
     private String htmlType;
 
     /**
      * 字典类型。
      */
+    @Schema(description = "字典类型标识")
     private String dictType;
 
     /**
      * 排序值。
      */
+    @Schema(description = "字段显示顺序")
     private Integer sort;
 
     // ==================== 属性名称转换 ====================
@@ -266,7 +285,7 @@ public class GenTableColumn extends BaseEntity {
      * @return 是否属于页面可用的父类属性白名单
      */
     public static boolean isUsableColumn(String javaField) {
-        return StrUtil.equalsAnyIgnoreCase(javaField, SUPER_COLUMNS);
+        return StrUtil.equalsAnyIgnoreCase(javaField, USABLE_COLUMNS);
     }
 
     // ==================== 注释转换 ====================
@@ -296,5 +315,43 @@ public class GenTableColumn extends BaseEntity {
         }
 
         return converter.toString();
+    }
+
+    public boolean isAuditColumn() {
+        return StrUtil.equalsAnyIgnoreCase(javaField, "creatorId", "createBy", "createTime", "updaterId", "updateBy", "updateTime");
+    }
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    public String getTsType() {
+        return switch (javaType) {
+            case "Long", "Integer", "Double", "BigDecimal" -> "number";
+            case "Boolean" -> "boolean";
+            default -> "string";
+        };
+    }
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    public boolean isTimeType() {
+        return java.util.List.of("Instant", "LocalDate", "LocalDateTime", "LocalTime", "Date").contains(javaType);
+    }
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    public String getLabelLiteral() {
+        return com.alibaba.fastjson2.JSON.toJSONString(columnComment == null || columnComment.isBlank() ? columnName : columnComment)
+                .replace("<", "\\u003c");
+    }
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    public String getJavaComment() {
+        return (columnComment == null ? columnName : columnComment).replace("*/", "* /").replace('\n', ' ').replace('\r', ' ');
+    }
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    public String getQueryMethod() {
+        return switch (queryType == null ? "EQ" : queryType) {
+            case "NE" -> "ne"; case "GT" -> "gt"; case "GE" -> "ge";
+            case "LT" -> "lt"; case "LE" -> "le"; case "LIKE" -> "like";
+            default -> "eq";
+        };
     }
 }

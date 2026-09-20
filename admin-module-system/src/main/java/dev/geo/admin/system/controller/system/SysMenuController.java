@@ -13,6 +13,9 @@ import dev.geo.admin.system.model.system.dto.MenuSaveDTO;
 import dev.geo.admin.system.model.system.vo.RoleMenuTreeVO;
 import dev.geo.admin.system.model.system.vo.TreeSelect;
 import dev.geo.admin.system.service.system.ISysMenuService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -25,6 +28,7 @@ import java.util.Objects;
 /**
  * 菜单管理接口。
  */
+@Tag(name = "菜单管理")
 @RestController
 @RequestMapping("/system/menu")
 @RequiredArgsConstructor
@@ -33,24 +37,28 @@ public class SysMenuController extends BaseController {
 
     @PreAuthorize("@se.hasPermission('system:menu:list')")
     @GetMapping("/list")
+    @Operation(summary = "查询菜单列表", description = "返回当前用户可见的菜单平铺列表，通过 id 和 parentId 组成树。")
     public ApiResult<List<SysMenu>> list(SysMenu query) {
         return success(menuService.selectMenuList(query, SecurityUtils.getUserId()));
     }
 
     @PreAuthorize("@se.hasPermission('system:menu:query')")
     @GetMapping("/{id}")
-    public ApiResult<SysMenu> getMenu(@PathVariable Long id) {
+    @Operation(summary = "查询菜单详情")
+    public ApiResult<SysMenu> getMenu(@Parameter(description = "菜单 ID") @PathVariable Long id) {
         return success(menuService.selectMenuById(id));
     }
 
     @GetMapping("/tree-select")
+    @Operation(summary = "查询菜单树选项")
     public ApiResult<List<TreeSelect>> treeSelect(SysMenu query) {
         List<SysMenu> menus = menuService.selectMenuList(query, SecurityUtils.getUserId());
         return success(menuService.buildMenuTreeSelect(menus));
     }
 
     @GetMapping("/role-tree/{roleId}")
-    public ApiResult<RoleMenuTreeVO> roleTree(@PathVariable Long roleId) {
+    @Operation(summary = "查询角色菜单树及已选项")
+    public ApiResult<RoleMenuTreeVO> roleTree(@Parameter(description = "角色 ID") @PathVariable Long roleId) {
         List<SysMenu> menus = menuService.selectMenuList(SecurityUtils.getUserId());
         RoleMenuTreeVO result = new RoleMenuTreeVO(
                 menuService.selectMenuListByRoleId(roleId),
@@ -62,6 +70,7 @@ public class SysMenuController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:menu:add')")
     @Log(title = "菜单管理", businessType = BusinessType.INSERT)
     @PostMapping
+    @Operation(summary = "新增菜单")
     public ApiResult<Void> add(@Validated @RequestBody MenuSaveDTO request) {
         SysMenu menu = BeanUtil.toBean(request, SysMenu.class);
         menu.setId(null);
@@ -72,6 +81,7 @@ public class SysMenuController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:menu:edit')")
     @Log(title = "菜单管理", businessType = BusinessType.UPDATE)
     @PutMapping
+    @Operation(summary = "修改菜单")
     public ApiResult<Void> edit(@Validated @RequestBody MenuSaveDTO request) {
         SysMenu menu = BeanUtil.toBean(request, SysMenu.class);
         ApiResult<Void> validation = validateMenu(menu, "修改");
@@ -89,6 +99,7 @@ public class SysMenuController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:menu:edit')")
     @Log(title = "保存菜单排序", businessType = BusinessType.UPDATE)
     @PutMapping("/update-sort")
+    @Operation(summary = "保存菜单排序", description = "menuIds 和 orderNums 均为逗号分隔的字符串，按位置一一对应。")
     public  ApiResult<Void> updateSort(@RequestBody Map<String, String> params)
     {
         if (StrUtil.isBlank(params.get("menuIds")) || StrUtil.isBlank(params.get("orderNums"))) {
@@ -103,7 +114,8 @@ public class SysMenuController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:menu:remove')")
     @Log(title = "菜单管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{id}")
-    public ApiResult<Void> remove(@PathVariable Long id) {
+    @Operation(summary = "删除菜单")
+    public ApiResult<Void> remove(@Parameter(description = "菜单 ID") @PathVariable Long id) {
         if (menuService.hasChildByMenuId(id)) {
             return warn("当前菜单存在子菜单，不能删除");
         }

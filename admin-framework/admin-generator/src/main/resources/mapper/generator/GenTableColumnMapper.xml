@@ -2,10 +2,10 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ruoyi.generator.mapper.GenTableColumnMapper">
+<mapper namespace="dev.geo.admin.generator.mapper.GenTableColumnMapper">
 
-    <resultMap type="GenTableColumn" id="GenTableColumnResult">
-        <id     property="columnId"       column="column_id"      />
+    <resultMap type="dev.geo.admin.generator.model.GenTableColumn" id="GenTableColumnResult">
+        <id     property="id"       column="id"      />
         <result property="tableId"        column="table_id"       />
         <result property="columnName"     column="column_name"    />
         <result property="columnComment"  column="column_comment" />
@@ -30,7 +30,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
 	<sql id="selectGenTableColumnVo">
-        select column_id, table_id, column_name, column_comment, column_type, java_type, java_field, is_pk, is_increment, is_required, is_insert, is_edit, is_list, is_query, query_type, html_type, dict_type, sort, create_by, create_time, update_by, update_time from gen_table_column
+        select id, table_id, column_name, column_comment, column_type, java_type, java_field, is_pk, is_increment, is_required, is_insert, is_edit, is_list, is_query, query_type, html_type, dict_type, sort, create_by, create_time, update_by, update_time from gen_table_column
     </sql>
 
     <select id="selectGenTableColumnListByTableId" parameterType="Long" resultMap="GenTableColumnResult">
@@ -45,9 +45,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		order by ordinal_position
 	</select>
 
-    <insert id="insertGenTableColumn" parameterType="GenTableColumn" useGeneratedKeys="true" keyProperty="columnId">
+    <insert id="insertGenTableColumn" parameterType="dev.geo.admin.generator.model.GenTableColumn" useGeneratedKeys="true" keyProperty="id">
         insert into gen_table_column (
-			<if test="tableId != null and tableId != ''">table_id,</if>
+			<if test="tableId != null">table_id,</if>
 			<if test="columnName != null and columnName != ''">column_name,</if>
 			<if test="columnComment != null and columnComment != ''">column_comment,</if>
 			<if test="columnType != null and columnType != ''">column_type,</if>
@@ -67,7 +67,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="createBy != null and createBy != ''">create_by,</if>
 			create_time
          )values(
-			<if test="tableId != null and tableId != ''">#{tableId},</if>
+			<if test="tableId != null">#{tableId},</if>
 			<if test="columnName != null and columnName != ''">#{columnName},</if>
 			<if test="columnComment != null and columnComment != ''">#{columnComment},</if>
 			<if test="columnType != null and columnType != ''">#{columnType},</if>
@@ -89,13 +89,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          )
     </insert>
 
-    <update id="updateGenTableColumn" parameterType="GenTableColumn">
+    <update id="updateGenTableColumn" parameterType="dev.geo.admin.generator.model.GenTableColumn">
         update gen_table_column
         <set>
             <if test="columnComment != null">column_comment = #{columnComment},</if>
             <if test="javaType != null">java_type = #{javaType},</if>
             <if test="columnType != null">column_type = #{columnType},</if>
             <if test="javaField != null">java_field = #{javaField},</if>
+            <if test="isPk != null">is_pk = #{isPk},</if>
+            <if test="isIncrement != null">is_increment = #{isIncrement},</if>
             <if test="isInsert != null">is_insert = #{isInsert},</if>
             <if test="isEdit != null">is_edit = #{isEdit},</if>
             <if test="isList != null">is_list = #{isList},</if>
@@ -108,7 +110,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             update_time = sysdate()
         </set>
-        where column_id = #{columnId}
+        where id = #{id}
     </update>
 
     <delete id="deleteGenTableColumnByIds" parameterType="Long">
@@ -119,9 +121,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteGenTableColumns">
-        delete from gen_table_column where column_id in
+        delete from gen_table_column where id in
         <foreach collection="list" item="item" open="(" separator="," close=")">
-            #{item.columnId}
+            #{item.id}
         </foreach>
     </delete>
 

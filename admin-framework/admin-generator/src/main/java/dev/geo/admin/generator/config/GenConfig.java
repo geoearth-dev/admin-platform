@@ -1,6 +1,7 @@
 package dev.geo.admin.generator.config;
 
 import lombok.Getter;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConfigurationProperties(prefix = "gen")
+@MapperScan("dev.geo.admin.generator.mapper")
 public class GenConfig {
     /**
      * 作者

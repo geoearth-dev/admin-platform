@@ -1,27 +1,16 @@
 import type { UploadRequestOptions } from 'element-plus'
 
-import { requestClient } from '@/utils/request'
-// 返回类型对应后端 FileUploadVO
-export interface FileUploadResult {
-  url: string
-  fileName: string
-  newFileName: string
-  originalFilename: string
-}
-/** 共用上传请求，保留失败状态和调用方的取消信号。 */
+import { uploadFile } from '@/api/common/file'
+import type { FileUploadResult } from '@/api/common/file'
+export type { FileUploadResult } from '@/api/common/file'
 function uploadFileRequest(
   file: File,
   signal?: AbortSignal,
   onProgress?: (progress: { percent: number }) => void,
 ): Promise<FileUploadResult> {
-  return requestClient.upload<FileUploadResult>('/common/upload', file, {
-    timeout: 120_000,
+  return uploadFile(file, {
     signal,
-    onUploadProgress(event) {
-      if (event.progress !== undefined) {
-        onProgress?.({ percent: Math.round(event.progress * 100) })
-      }
-    },
+    onProgress: (percent) => onProgress?.({ percent }),
   })
 }
 

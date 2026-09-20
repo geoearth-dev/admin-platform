@@ -24,7 +24,7 @@ public class SysConfigPageReqDTO extends PageParam {
     @Schema(description = "参数键名", example = "sys.account.captchaEnabled")
     private String configKey;
 
-    @Schema(description = "系统内置：Y-是，N-否", example = "Y")
+    @Schema(description = "系统内置：1-是，0-否", example = "1")
     private String configType;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)

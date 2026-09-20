@@ -1,51 +1,27 @@
-import request from '@/utils/request'
-import type { AjaxResult, TableDataInfo, ${BusinessName}QueryParams, ${ClassName} } from '@/types'
-
-// 查询${functionName}列表
-#if($table.tree)
-export function list${BusinessName}(query?: ${BusinessName}QueryParams): Promise<AjaxResult<${ClassName}[]>> {
-#else
-export function list${BusinessName}(query: ${BusinessName}QueryParams): Promise<TableDataInfo<${ClassName}[]>> {
+import type { ${ClassName}, ${ClassName}QueryParams, ${ClassName}SaveParams } from '@/types/base/api/${moduleName}/${businessName}';
+#if(!$table.tree)
+import type { PageResult } from '@/types/base/api/common';
 #end
-  return request({
-    url: '/${moduleName}/${businessName}/list',
-    method: 'get',
-    params: query
-  })
+import { requestClient } from '@/utils/request';
+export function list${BusinessName}(query: ${ClassName}QueryParams = {}) {
+#if($table.tree)
+  return requestClient.get<${ClassName}[]>('/${moduleName}/${businessName}/list', query);
+#else
+  return requestClient.get<PageResult<${ClassName}>>('/${moduleName}/${businessName}/list', query);
+#end
 }
-
-// 查询${functionName}详细
-export function get${BusinessName}(${pkColumn.javaField}: number): Promise<AjaxResult<${ClassName}>> {
-  return request({
-    url: '/${moduleName}/${businessName}/' + ${pkColumn.javaField},
-    method: 'get'
-  })
+export function get${BusinessName}(id: ${pkColumn.tsType}) {
+  return requestClient.get<${ClassName}>('/${moduleName}/${businessName}/' + encodeURIComponent(String(id)));
 }
-
-// 新增${functionName}
-export function add${BusinessName}(data: ${ClassName}): Promise<AjaxResult> {
-  return request({
-    url: '/${moduleName}/${businessName}',
-    method: 'post',
-    data: data
-  })
+export function add${BusinessName}(data: ${ClassName}SaveParams) {
+  return requestClient.post<${pkColumn.tsType}>('/${moduleName}/${businessName}', data);
 }
-
-// 修改${functionName}
-export function update${BusinessName}(data: ${ClassName}): Promise<AjaxResult> {
-  return request({
-    url: '/${moduleName}/${businessName}',
-    method: 'put',
-    data: data
-  })
+export function update${BusinessName}(data: ${ClassName}SaveParams) {
+  return requestClient.put<void>('/${moduleName}/${businessName}', data);
 }
-
-// 删除${functionName}
-export function del${BusinessName}(${pkColumn.javaField}: number | number[]): Promise<AjaxResult> {
-  return request({
-    url: '/${moduleName}/${businessName}/' + ${pkColumn.javaField},
-    method: 'delete'
-  })
+export function del${BusinessName}(ids: ${pkColumn.tsType}[]) {
+  return requestClient.delete<void>('/${moduleName}/${businessName}/' + ids.map(id => encodeURIComponent(String(id))).join(','));
 }
-
-
+export function export${BusinessName}(query: ${ClassName}QueryParams) {
+  return requestClient.download('/${moduleName}/${businessName}/export', { method: 'POST', params: query });
+}

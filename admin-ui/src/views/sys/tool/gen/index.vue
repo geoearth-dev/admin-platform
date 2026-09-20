@@ -1,7 +1,15 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
-      <el-form-item label="表名称" prop="tableName">
+    <el-form
+      :model="queryParams"
+      ref="queryRef"
+      :inline="true"
+      v-show="showSearch"
+    >
+      <el-form-item
+        label="表名称"
+        prop="tableName"
+      >
         <el-input
           v-model="queryParams.tableName"
           placeholder="请输入表名称"
@@ -10,7 +18,10 @@
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="表描述" prop="tableComment">
+      <el-form-item
+        label="表描述"
+        prop="tableComment"
+      >
         <el-input
           v-model="queryParams.tableComment"
           placeholder="请输入表描述"
@@ -19,7 +30,10 @@
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="创建时间" style="width: 308px">
+      <el-form-item
+        label="创建时间"
+        style="width: 308px"
+      >
         <el-date-picker
           v-model="dateRange"
           value-format="YYYY-MM-DD"
@@ -30,280 +44,428 @@
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+        <el-button
+          type="primary"
+          :icon="Search"
+          @click="handleQuery"
+          >搜索</el-button
+        >
+        <el-button
+          :icon="Refresh"
+          @click="resetQuery"
+          >重置</el-button
+        >
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <el-row
+      :gutter="10"
+      class="mb8"
+    >
       <el-col :span="1.5">
         <el-button
           type="primary"
           plain
-          icon="Download"
-          :disabled="multiple"
-          @click="handleGenTable"
-          v-hasPermi="['tool:gen:code']"
-        >生成</el-button>
+          :icon="Download"
+          :disabled="!selection.length"
+          @click="handleGenTable()"
+          v-access:code="['tool:gen:code']"
+          >生成</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
           type="primary"
           plain
-          icon="Plus"
-          @click="openCreateTable"
-          v-hasRole="['admin']"
-        >创建</el-button>
+          :icon="Plus"
+          @click="createRef?.show()"
+          v-access:role="['admin']"
+          >创建</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
           type="info"
           plain
-          icon="Upload"
-          @click="openImportTable"
-          v-hasPermi="['tool:gen:import']"
-        >导入</el-button>
+          :icon="Upload"
+          @click="importRef?.show()"
+          v-access:code="['tool:gen:import']"
+          >导入</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
           type="success"
           plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleEditTable"
-          v-hasPermi="['tool:gen:edit']"
-        >修改</el-button>
+          :icon="Edit"
+          :disabled="selection.length !== 1"
+          @click="handleEditTable()"
+          v-access:code="['tool:gen:edit']"
+          >修改</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
           type="danger"
           plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['tool:gen:remove']"
-        >删除</el-button>
+          :icon="Delete"
+          :disabled="!selection.length"
+          @click="handleDelete()"
+          v-access:code="['tool:gen:remove']"
+          >删除</el-button
+        >
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar
+        v-model:showSearch="showSearch"
+        @queryTable="getList"
+      ></right-toolbar>
     </el-row>
 
-    <el-table ref="genRef" v-loading="loading" :data="tableList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
-      <el-table-column type="selection" align="center" width="55"></el-table-column>
-      <el-table-column label="序号" type="index" width="50" align="center">
+    <el-table
+      ref="genRef"
+      v-loading="loading"
+      :data="tableList"
+      @selection-change="handleSelectionChange"
+      :default-sort="defaultSort"
+      @sort-change="handleSortChange"
+    >
+      <Column
+        type="selection"
+        align="center"
+        width="55"
+      ></Column>
+      <Column
+        label="序号"
+        type="index"
+        width="50"
+        align="center"
+      >
         <template #default="scope">
-          <span>{{(queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1}}</span>
+          <span>{{
+            (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1
+          }}</span>
         </template>
-      </el-table-column>
-      <el-table-column label="表名称" align="center" prop="tableName" :show-overflow-tooltip="true" />
-      <el-table-column label="表描述" align="center" prop="tableComment" :show-overflow-tooltip="true" />
-      <el-table-column label="实体" align="center" prop="className" :show-overflow-tooltip="true" />
-      <el-table-column label="创建时间" align="center" prop="createTime" width="160" sortable="custom" :sort-orders="['descending', 'ascending']" />
-      <el-table-column label="更新时间" align="center" prop="updateTime" width="160" sortable="custom" :sort-orders="['descending', 'ascending']" />
-      <el-table-column label="操作" align="center" width="330" class-name="small-padding fixed-width">
+      </Column>
+      <Column
+        label="表名称"
+        align="center"
+        prop="tableName"
+        :show-overflow-tooltip="true"
+      />
+      <Column
+        label="表描述"
+        align="center"
+        prop="tableComment"
+        :show-overflow-tooltip="true"
+      />
+      <Column
+        label="实体"
+        align="center"
+        prop="className"
+        :show-overflow-tooltip="true"
+      />
+      <Column
+        label="创建时间"
+        align="center"
+        prop="createTime"
+        width="160"
+        sortable="custom"
+        :sort-orders="['descending', 'ascending']"
+      />
+      <Column
+        label="更新时间"
+        align="center"
+        prop="updateTime"
+        width="160"
+        sortable="custom"
+        :sort-orders="['descending', 'ascending']"
+      />
+      <Column
+        label="操作"
+        align="center"
+        width="330"
+        class-name="small-padding fixed-width"
+      >
         <template #default="scope">
-          <el-tooltip content="预览" placement="top">
-            <el-button link type="primary" icon="View" @click="handlePreview(scope.row)" v-hasPermi="['tool:gen:preview']"></el-button>
+          <el-tooltip
+            content="预览"
+            placement="top"
+          >
+            <el-button
+              link
+              type="primary"
+              :icon="View"
+              @click="handlePreview(scope.row)"
+              v-access:code="['tool:gen:preview']"
+            ></el-button>
           </el-tooltip>
-          <el-tooltip content="编辑" placement="top">
-            <el-button link type="primary" icon="Edit" @click="handleEditTable(scope.row)" v-hasPermi="['tool:gen:edit']"></el-button>
+          <el-tooltip
+            content="编辑"
+            placement="top"
+          >
+            <el-button
+              link
+              type="primary"
+              :icon="Edit"
+              @click="handleEditTable(scope.row)"
+              v-access:code="['tool:gen:edit']"
+            ></el-button>
           </el-tooltip>
-          <el-tooltip content="删除" placement="top">
-            <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['tool:gen:remove']"></el-button>
+          <el-tooltip
+            content="删除"
+            placement="top"
+          >
+            <el-button
+              link
+              type="primary"
+              :icon="Delete"
+              @click="handleDelete(scope.row)"
+              v-access:code="['tool:gen:remove']"
+            ></el-button>
           </el-tooltip>
-          <el-tooltip content="同步" placement="top">
-            <el-button link type="primary" icon="Refresh" @click="handleSynchDb(scope.row)" v-hasPermi="['tool:gen:edit']"></el-button>
+          <el-tooltip
+            content="同步"
+            placement="top"
+          >
+            <el-button
+              link
+              type="primary"
+              :icon="Refresh"
+              @click="handleSynchDb(scope.row)"
+              v-access:code="['tool:gen:edit']"
+            ></el-button>
           </el-tooltip>
-          <el-tooltip content="生成代码" placement="top">
-            <el-button link type="primary" icon="Download" @click="handleGenTable(scope.row)" v-hasPermi="['tool:gen:code']"></el-button>
+          <el-tooltip
+            content="生成代码"
+            placement="top"
+          >
+            <el-button
+              link
+              type="primary"
+              :icon="Download"
+              @click="handleGenTable(scope.row)"
+              v-access:code="['tool:gen:code']"
+            ></el-button>
           </el-tooltip>
         </template>
-      </el-table-column>
+      </Column>
     </el-table>
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
       @pagination="getList"
     />
     <!-- 预览界面 -->
-    <el-dialog :title="preview.title" v-model="preview.open" width="80%" top="5vh" append-to-body class="scrollbar">
+    <el-dialog
+      :title="preview.title"
+      v-model="preview.open"
+      width="80%"
+      top="5vh"
+      append-to-body
+      class="scrollbar"
+    >
       <el-tabs v-model="preview.activeName">
         <el-tab-pane
           v-for="(value, key) in preview.data"
-          :label="String(key).substring(String(key).lastIndexOf('/')+1,String(key).indexOf('.vm'))"
-          :name="String(key).substring(String(key).lastIndexOf('/')+1,String(key).indexOf('.vm'))"
-          :key="value"
+          :label="String(key).split('/').pop()"
+          :name="String(key)"
+          :key="key"
         >
-          <el-link underline="never" icon="DocumentCopy" v-copyText="value" v-copyText:callback="copyTextSuccess" style="float:right">&nbsp;复制</el-link>
+          <el-link
+            underline="never"
+            :icon="DocumentCopy"
+            @click="copyCode(value)"
+            style="float: right"
+            >&nbsp;复制</el-link
+          >
           <pre>{{ value }}</pre>
         </el-tab-pane>
       </el-tabs>
     </el-dialog>
-    <import-table ref="importRef" @ok="handleQuery" />
-    <create-table ref="createRef" @ok="handleQuery" />
+    <import-table
+      ref="importRef"
+      @ok="handleQuery"
+    />
+    <create-table
+      ref="createRef"
+      @ok="handleQuery"
+    />
   </div>
 </template>
 
-<script setup lang="ts" name="Gen">
-import { listTable, previewTable, delTable, genCode, synchDb } from "@/api/tool/gen"
-import importTable from "./importTable.vue"
-import createTable from "./createTable.vue"
-import type { GenTable, GenQueryParams } from '@/types/api/tool/gen'
+<script setup lang="ts">
+import { ElTableColumn } from 'element-plus'
+const Column = ElTableColumn<GenTable>
+import { onActivated, onMounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import type { FormInstance } from 'element-plus'
+import {
+  Search,
+  Refresh,
+  Download,
+  Plus,
+  Upload,
+  Edit,
+  Delete,
+  View,
+  DocumentCopy,
+} from '@element-plus/icons-vue'
+import { useClipboard } from '@vueuse/core'
+import {
+  listTable,
+  previewTable,
+  delTable,
+  genCode,
+  synchDb,
+  downloadCode,
+} from '@/api/tool/gen'
+import type { GenTable, GenQueryParams } from '@/types/base/api/tool/gen'
+import { downloadFileFromBlob } from '@/utils/download'
+import ImportTable from './importTable.vue'
+import CreateTable from './createTable.vue'
 
-const route = useRoute()
-const { proxy } = getCurrentInstance()
-
+defineOptions({ name: 'Gen' })
+const router = useRouter()
+const { copy } = useClipboard({ legacy: true })
 const tableList = ref<GenTable[]>([])
-const loading = ref<boolean>(true)
-const showSearch = ref<boolean>(true)
-const ids = ref<number[]>([])
-const single = ref<boolean>(true)
-const multiple = ref<boolean>(true)
-const total = ref<number>(0)
-const tableNames = ref<string[]>([])
-const dateRange = ref<string[]>([])
-const uniqueId = ref<string>("")
-const defaultSort = ref({ prop: "createTime", order: "descending" })
-
-const data = reactive({
-  queryParams: {
-    pageNum: 1,
-    pageSize: 10,
-    tableName: undefined,
-    tableComment: undefined,
-    orderByColumn: defaultSort.value.prop,
-    isAsc: defaultSort.value.order
-  } as GenQueryParams,
-  preview: {
-    open: false,
-    title: "代码预览",
-    data: {},
-    activeName: "domain.java"
-  }
+const selection = ref<GenTable[]>([])
+const loading = ref(false)
+const showSearch = ref(true)
+const total = ref(0)
+const dateRange = ref<[string, string] | null>(null)
+const queryRef = ref<FormInstance>()
+const importRef = ref<InstanceType<typeof ImportTable>>()
+const createRef = ref<InstanceType<typeof CreateTable>>()
+const defaultSort = { prop: 'createTime', order: 'descending' as const }
+const queryParams = reactive<GenQueryParams>({
+  pageNum: 1,
+  pageSize: 10,
+  orderByColumn: 'createTime',
+  isAsc: 'descending',
 })
-
-const { queryParams, preview } = toRefs(data)
-
-onActivated(() => {
-  const time = route.query.t
-  if (time != null && time != uniqueId.value) {
-    uniqueId.value = time
-    queryParams.value.pageNum = Number(route.query.pageNum)
-    dateRange.value = []
-    proxy.resetForm("queryForm")
-    getList()
-  }
+const preview = reactive({
+  open: false,
+  title: '代码预览',
+  data: {} as Record<string, string>,
+  activeName: '',
 })
-
-/** 查询表集合 */
-function getList() {
+let requestId = 0
+let mounted = false
+async function getList(): Promise<void> {
+  const current = ++requestId
   loading.value = true
-  listTable(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
-    tableList.value = response.rows
-    total.value = response.total
-    loading.value = false
-  })
+  try {
+    const result = await listTable({
+      ...queryParams,
+      params: dateRange.value
+        ? { beginTime: dateRange.value[0], endTime: dateRange.value[1] }
+        : {},
+    })
+    if (current !== requestId) return
+    tableList.value = result.records
+    total.value = result.total
+    selection.value = []
+  } finally {
+    if (current === requestId) loading.value = false
+  }
 }
-
-/** 搜索按钮操作 */
-function handleQuery() {
-  queryParams.value.pageNum = 1
-  getList()
+function handleQuery(): void {
+  queryParams.pageNum = 1
+  void getList()
 }
-
-/** 生成代码操作 */
-function handleGenTable(row: GenTable) {
-  const tbNames = row.tableName || tableNames.value
-  if (tbNames == "") {
-    proxy.$modal.msgError("请选择要生成的数据")
+function resetQuery(): void {
+  queryRef.value?.resetFields()
+  dateRange.value = null
+  handleQuery()
+}
+function handleSelectionChange(rows: GenTable[]): void {
+  selection.value = rows
+}
+function handleSortChange(column: {
+  prop: string | null
+  order: 'ascending' | 'descending' | null
+}): void {
+  queryParams.orderByColumn =
+    column.prop === 'updateTime' ? 'updateTime' : 'createTime'
+  queryParams.isAsc = column.order ?? 'descending'
+  handleQuery()
+}
+async function handleGenTable(row?: GenTable): Promise<void> {
+  const rows = row ? [row] : selection.value
+  if (!rows.length) {
+    ElMessage.warning('请选择要生成的数据')
     return
   }
-  if (row.genType === "1") {
-    genCode(row.tableName!).then(() => {
-      proxy.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath)
-    })
+  if (row?.genType === '1') {
+    await genCode(row.tableName)
+    ElMessage.success(`已生成到服务端路径：${row.genPath}`)
   } else {
-    const zipName = Array.isArray(tbNames) ? "ruoyi.zip" : tbNames + ".zip"
-    proxy.$download.zip("/tool/gen/batchGenCode?tables=" + tbNames, zipName)
+    const blob = await downloadCode(rows.map((item) => item.tableName))
+    downloadFileFromBlob({
+      source: blob,
+      fileName:
+        rows.length === 1 ? `${rows[0]?.tableName}.zip` : 'generated-code.zip',
+    })
   }
 }
-
-/** 同步数据库操作 */
-function handleSynchDb(row: GenTable) {
-  const tableName = row.tableName
-  proxy.$modal.confirm('确认要强制同步"' + tableName + '"表结构吗？').then(function () {
-    return synchDb(tableName!)
-  }).then(() => {
-    proxy.$modal.msgSuccess("同步成功")
-  }).catch(() => {})
+async function handleSynchDb(row: GenTable): Promise<void> {
+  try {
+    await ElMessageBox.confirm(`确认同步“${row.tableName}”表结构？`, '提示', {
+      type: 'warning',
+    })
+  } catch {
+    return
+  }
+  await synchDb(row.tableName)
+  ElMessage.success('同步成功')
+  await getList()
 }
-
-/** 打开导入表弹窗 */
-function openImportTable() {
-  proxy.$refs["importRef"].show()
+async function handlePreview(row: GenTable): Promise<void> {
+  preview.data = await previewTable(row.id)
+  preview.activeName = Object.keys(preview.data)[0] ?? ''
+  preview.open = true
 }
-
-/** 打开创建表弹窗 */
-function openCreateTable() {
-  proxy.$refs["createRef"].show()
+async function copyCode(value: string): Promise<void> {
+  try {
+    await copy(value)
+    ElMessage.success('复制成功')
+  } catch {
+    ElMessage.error('复制失败，请手动选择代码复制')
+  }
 }
-
-/** 重置按钮操作 */
-function resetQuery() {
-  dateRange.value = []
-  proxy.resetForm("queryRef")
-  queryParams.value.pageNum = 1
-  proxy.$refs["genRef"].sort(defaultSort.value.prop, defaultSort.value.order)
+function handleEditTable(row?: GenTable): void {
+  const target = row ?? selection.value[0]
+  if (target)
+    void router.push({
+      name: 'GenEdit',
+      params: { id: target.id },
+      query: { pageNum: queryParams.pageNum },
+    })
 }
-
-/** 预览按钮 */
-function handlePreview(row: GenTable) {
-  previewTable(row.tableId!).then(response => {
-    preview.value.data = response.data
-    preview.value.open = true
-    preview.value.activeName = "domain.java"
-  })
+async function handleDelete(row?: GenTable): Promise<void> {
+  const rows = row ? [row] : selection.value
+  if (!rows.length) return
+  try {
+    await ElMessageBox.confirm(
+      '确认删除选中的生成配置？不会删除业务表。',
+      '提示',
+      { type: 'warning' },
+    )
+  } catch {
+    return
+  }
+  await delTable(rows.map((item) => item.id))
+  ElMessage.success('删除成功')
+  await getList()
 }
-
-/** 复制代码成功 */
-function copyTextSuccess() {
-  proxy.$modal.msgSuccess("复制成功")
-}
-
-// 多选框选中数据
-function handleSelectionChange(selection: GenTable[]) {
-  ids.value = selection.map(item => item.tableId)
-  tableNames.value = selection.map(item => item.tableName)
-  single.value = selection.length != 1
-  multiple.value = !selection.length
-}
-
-/** 排序触发事件 */
-function handleSortChange(column: any) {
-  queryParams.value.orderByColumn = column.prop
-  queryParams.value.isAsc = column.order
-  getList()
-}
-
-/** 修改按钮操作 */
-function handleEditTable(row?: GenTable) {
-  const tableId = row?.tableId || ids.value[0]
-  const tableName = row?.tableName || tableNames.value[0]
-  const params = { pageNum: queryParams.value.pageNum }
-  proxy.$tab.openPage("修改[" + tableName + "]生成配置", '/tool/gen-edit/index/' + tableId, params)
-}
-
-/** 删除按钮操作 */
-function handleDelete(row?: GenTable) {
-  const tableIds = row?.tableId || ids.value
-  proxy.$modal.confirm('是否确认删除表编号为"' + tableIds + '"的数据项？').then(function () {
-    return delTable(tableIds)
-  }).then(() => {
-    getList()
-    proxy.$modal.msgSuccess("删除成功")
-  }).catch(() => {})
-}
-
-getList()
+onMounted(() => {
+  mounted = true
+  void getList()
+})
+onActivated(() => {
+  if (mounted && !loading.value) void getList()
+})
 </script>

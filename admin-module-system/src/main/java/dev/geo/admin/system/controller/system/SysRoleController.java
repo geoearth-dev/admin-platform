@@ -22,8 +22,12 @@ import dev.geo.admin.system.model.system.vo.RoleDeptTreeVO;
 import dev.geo.admin.system.service.system.ISysDeptService;
 import dev.geo.admin.system.service.system.ISysRoleService;
 import dev.geo.admin.system.service.system.ISysUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +37,7 @@ import java.util.List;
 /**
  * 角色管理接口。
  */
+@Tag(name = "角色管理")
 @RestController
 @RequestMapping("/system/role")
 @RequiredArgsConstructor
@@ -44,14 +49,16 @@ public class SysRoleController extends BaseController {
 
     @PreAuthorize("@se.hasPermission('system:role:list')")
     @GetMapping("/list")
-    public ApiResult<PageResult<SysRole>> list(@Validated RolePageReqDTO query) {
+    @Operation(summary = "分页查询角色")
+    public ApiResult<PageResult<SysRole>> list(@Validated @ParameterObject RolePageReqDTO query) {
         return success(roleService.selectRolePage(query));
     }
 
     @Log(title = "角色管理", businessType = BusinessType.EXPORT)
     @PreAuthorize("@se.hasPermission('system:role:export')")
     @PostMapping("/export")
-    public void export(HttpServletResponse response, @Validated RolePageReqDTO query) {
+    @Operation(summary = "导出角色")
+    public void export(HttpServletResponse response, @Validated @ParameterObject RolePageReqDTO query) {
         query.setPageSize(PageParam.PAGE_SIZE_NONE);
         excelService.exportExcel(response, roleService.selectRolePage(query).getRecords(), SysRole.class, "角色数据");
     }
@@ -60,7 +67,8 @@ public class SysRoleController extends BaseController {
      */
     @PreAuthorize("@se.hasPermission('system:role:query')")
     @GetMapping("/{id}")
-    public ApiResult<SysRole> getRole(@PathVariable Long id) {
+    @Operation(summary = "查询角色详情")
+    public ApiResult<SysRole> getRole(@Parameter(description = "角色 ID") @PathVariable Long id) {
         roleService.checkRoleDataScope(id);
         return success(roleService.selectRoleById(id));
     }
@@ -70,6 +78,7 @@ public class SysRoleController extends BaseController {
     @PostMapping
     @PreAuthorize("@se.hasPermission('system:role:add')")
     @Log(title = "角色管理", businessType = BusinessType.INSERT)
+    @Operation(summary = "新增角色")
     public ApiResult<Void> add(@Validated @RequestBody RoleSaveDTO request) {
         SysRole role = BeanUtil.toBean(request, SysRole.class);
         ApiResult<Void> validation = validateRole(role, "新增");
@@ -81,6 +90,7 @@ public class SysRoleController extends BaseController {
     @PutMapping
     @PreAuthorize("@se.hasPermission('system:role:edit')")
     @Log(title = "角色管理", businessType = BusinessType.UPDATE)
+    @Operation(summary = "修改角色")
     public ApiResult<Void> edit(@Validated @RequestBody RoleSaveDTO request) {
         SysRole role = BeanUtil.toBean(request, SysRole.class);
         roleService.checkRoleAllowed(role);
@@ -94,6 +104,7 @@ public class SysRoleController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:role:edit')")
     @Log(title = "角色管理", businessType = BusinessType.UPDATE)
     @PutMapping("/data-scope")
+    @Operation(summary = "设置角色数据权限")
     public ApiResult<Void> dataScope(@Validated @RequestBody RoleDataScopeDTO request) {
         SysRole role = BeanUtil.toBean(request, SysRole.class);
         roleService.checkRoleAllowed(role);
@@ -106,6 +117,7 @@ public class SysRoleController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:role:edit')")
     @Log(title = "角色管理", businessType = BusinessType.UPDATE)
     @PutMapping("/status")
+    @Operation(summary = "修改角色状态")
     public ApiResult<Void> changeStatus(@Validated @RequestBody StatusUpdateDTO request) {
         SysRole role = BeanUtil.toBean(request, SysRole.class);
         roleService.checkRoleAllowed(role);
@@ -118,13 +130,15 @@ public class SysRoleController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:role:remove')")
     @Log(title = "角色管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public ApiResult<Void> remove(@PathVariable Long[] ids) {
+    @Operation(summary = "删除角色")
+    public ApiResult<Void> remove(@Parameter(description = "角色 ID 列表，多个用逗号分隔") @PathVariable Long[] ids) {
         return toApiResult(roleService.deleteRoleByIds(ids));
     }
     /**
      * 获取角色选择框列表
      */
     @GetMapping("/options")
+    @Operation(summary = "查询角色选项")
     public ApiResult<List<SysRole>> options() {
         return success(roleService.selectRoleAll());
     }
@@ -135,7 +149,8 @@ public class SysRoleController extends BaseController {
      */
     @PreAuthorize("@se.hasPermission('system:role:list')")
     @GetMapping("/users/allocated")
-    public ApiResult<PageResult<SysUser>> allocatedUsers(@Validated RoleUserPageReqDTO query) {
+    @Operation(summary = "分页查询角色已分配用户")
+    public ApiResult<PageResult<SysUser>> allocatedUsers(@Validated @ParameterObject RoleUserPageReqDTO query) {
         return success(userService.selectAllocatedPage(query));
     }
     /**
@@ -143,7 +158,8 @@ public class SysRoleController extends BaseController {
      */
     @PreAuthorize("@se.hasPermission('system:role:list')")
     @GetMapping("/users/unallocated")
-    public ApiResult<PageResult<SysUser>> unallocatedUsers(@Validated RoleUserPageReqDTO query) {
+    @Operation(summary = "分页查询角色未分配用户")
+    public ApiResult<PageResult<SysUser>> unallocatedUsers(@Validated @ParameterObject RoleUserPageReqDTO query) {
         return success(userService.selectUnallocatedPage(query));
     }
     /**
@@ -152,6 +168,7 @@ public class SysRoleController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:role:edit')")
     @Log(title = "角色授权", businessType = BusinessType.GRANT)
     @DeleteMapping("/users")
+    @Operation(summary = "取消用户的角色授权")
     public ApiResult<Void> cancelUser(@Validated @RequestBody RoleUserRelationDTO request) {
         SysUserRole userRole = BeanUtil.toBean(request, SysUserRole.class);
         return toApiResult(roleService.deleteAuthUser(userRole));
@@ -162,7 +179,8 @@ public class SysRoleController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:role:edit')")
     @Log(title = "角色授权", businessType = BusinessType.GRANT)
     @DeleteMapping("/{roleId}/users")
-    public ApiResult<Void> cancelUsers(@PathVariable Long roleId, @Validated @RequestBody Long[] userIds) {
+    @Operation(summary = "批量取消用户的角色授权")
+    public ApiResult<Void> cancelUsers(@Parameter(description = "角色 ID") @PathVariable Long roleId, @Validated @RequestBody Long[] userIds) {
         return toApiResult(roleService.deleteAuthUsers(roleId, userIds));
     }
     /**
@@ -171,7 +189,8 @@ public class SysRoleController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:role:edit')")
     @Log(title = "角色授权", businessType = BusinessType.GRANT)
     @PostMapping("/{roleId}/users")
-    public ApiResult<Void> selectUsers(@PathVariable Long roleId, @Validated @RequestBody Long[] userIds) {
+    @Operation(summary = "批量为用户分配角色")
+    public ApiResult<Void> selectUsers(@Parameter(description = "角色 ID") @PathVariable Long roleId, @Validated @RequestBody Long[] userIds) {
         roleService.checkRoleDataScope(roleId);
         return toApiResult(roleService.insertAuthUsers(roleId, userIds));
     }
@@ -180,7 +199,8 @@ public class SysRoleController extends BaseController {
      */
     @PreAuthorize("@se.hasPermission('system:role:query')")
     @GetMapping("/dept-tree/{roleId}")
-    public ApiResult<RoleDeptTreeVO> deptTree(@PathVariable Long roleId) {
+    @Operation(summary = "查询角色部门树及已选项")
+    public ApiResult<RoleDeptTreeVO> deptTree(@Parameter(description = "角色 ID") @PathVariable Long roleId) {
         List<SysDept> departments = deptService.selectDeptList(new SysDept());
         return success(new RoleDeptTreeVO(
                 deptService.selectDeptListByRoleId(roleId),

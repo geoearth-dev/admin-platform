@@ -14,18 +14,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <!-- 新增已读记录 -->
     <insert id="insertNoticeRead" parameterType="SysNoticeRead">
         insert ignore into sys_notice_read (notice_id, user_id, read_time)
-        values (#{noticeId}, #{userId}, sysdate())
+        select n.id, #{userId}, sysdate() from sys_notice n
+        where n.id = #{noticeId} and n.del_flag = 0 and n.status = '1'
     </insert>
 
     <!-- 查询未读数量：正常状态公告 减去 当前用户已读数 -->
     <select id="selectUnreadCount" resultType="int">
         select count(*) from sys_notice n
-        where n.status = '1' and not exists (select 1 from sys_notice_read r where r.notice_id = n.id and r.user_id = #{userId})
+        where n.del_flag = 0 and n.status = '1' and not exists (select 1 from sys_notice_read r where r.notice_id = n.id and r.user_id = #{userId})
     </select>
 
     <!-- 查询是否已读 -->
     <select id="selectIsRead" resultType="int">
-        select count(*) from sys_notice_read where notice_id = #{noticeId} and user_id = #{userId}
+        select count(*) from sys_notice_read r
+        inner join sys_notice n on n.id = r.notice_id and n.del_flag = 0
+        where r.notice_id = #{noticeId} and r.user_id = #{userId}
     </select>
 
     <!-- 查询带已读状态的公告列表（直接在SQL中限制条数） -->
@@ -44,7 +47,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         from sys_notice n
         left join sys_notice_read r
             on r.notice_id = n.id and r.user_id = #{userId}
-        where n.status = '1'
+        where n.del_flag = 0 and n.status = '1'
         order by n.id desc
         limit #{limit}
     </select>
@@ -52,19 +55,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <!-- 批量标记已读 -->
     <insert id="insertNoticeReadBatch">
         insert ignore into sys_notice_read (notice_id, user_id, read_time)
-        values
-        <foreach collection="noticeIds" item="noticeId" separator=",">
-            (#{noticeId}, #{userId}, sysdate())
-        </foreach>
-    </insert>
-
-    <!-- 删除公告时清理已读记录 -->
-    <delete id="deleteByNoticeIds">
-        delete from sys_notice_read where notice_id in
+        select n.id, #{userId}, sysdate() from sys_notice n
+        where n.del_flag = 0 and n.status = '1' and n.id in
         <foreach collection="noticeIds" item="noticeId" open="(" separator="," close=")">
             #{noticeId}
         </foreach>
-    </delete>
+    </insert>
 
     <!-- 查询已阅读某公告的用户列表，支持按登录名/用户名模糊筛选 -->
     <select id="selectReadUsersPage" resultType="dev.geo.admin.system.model.system.vo.NoticeReadUserVO">
@@ -76,6 +72,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             u.phone_number as phoneNumber,
             r.read_time    as readTime
         from sys_notice_read r
+        inner join sys_notice n on n.id = r.notice_id and n.del_flag = 0
         inner join sys_user u on u.id = r.user_id and u.del_flag = '0'
         left join sys_dept d on d.id = u.dept_id
         where r.notice_id = #{query.noticeId}

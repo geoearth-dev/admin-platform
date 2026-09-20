@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import dev.geo.admin.common.constant.UserConstants;
 import dev.geo.admin.system.model.system.entity.SysDept;
 import dev.geo.admin.system.model.system.entity.SysMenu;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,27 +17,32 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Setter
+@Schema(description = "树节点")
 public class TreeSelect {
 
     /**
      * 节点ID
      */
+    @Schema(description = "记录 ID")
     private Long id;
 
     /**
      * 节点名称
      */
+    @Schema(description = "节点名称")
     private String label;
 
     /**
      * 节点禁用
      */
+    @Schema(description = "是否禁用节点")
     private boolean disabled = false;
 
     /**
      * 子节点
      */
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @Schema(description = "子节点")
     private List<TreeSelect> children;
 
 

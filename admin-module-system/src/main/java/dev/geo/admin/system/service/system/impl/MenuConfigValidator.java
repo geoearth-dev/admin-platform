@@ -7,9 +7,12 @@ import dev.geo.admin.system.model.system.entity.SysMenu;
 import java.net.URI;
 import java.util.*;
 
-/** 菜单保存约束；同时用于新增、编辑和路由冲突检查。 */
+/**
+ * 菜单保存约束；同时用于新增、编辑和路由冲突检查。
+ */
 public final class MenuConfigValidator {
-    private MenuConfigValidator() {}
+    private MenuConfigValidator() {
+    }
 
     public static void validate(SysMenu menu, List<SysMenu> existing) {
         if (!Set.of("catalog", "menu", "embedded", "link", "button").contains(Objects.toString(menu.getMenuType(), ""))) {
@@ -56,8 +59,10 @@ public final class MenuConfigValidator {
         boolean internal = "menu".equals(menu.getMenuType());
         boolean page = internal || "embedded".equals(menu.getMenuType()) || "link".equals(menu.getMenuType());
         boolean external = "embedded".equals(menu.getMenuType()) || "link".equals(menu.getMenuType());
-        if ("link".equals(menu.getMenuType()) && menu.getLink() == null) throw new ServiceException("外链必须填写链接地址");
-        if ("embedded".equals(menu.getMenuType()) && menu.getIframeSrc() == null) throw new ServiceException("内嵌页面必须填写链接地址");
+        if ("link".equals(menu.getMenuType()) && menu.getLink() == null)
+            throw new ServiceException("外链必须填写链接地址");
+        if ("embedded".equals(menu.getMenuType()) && menu.getIframeSrc() == null)
+            throw new ServiceException("内嵌页面必须填写链接地址");
         if (!"link".equals(menu.getMenuType())) menu.setLink(null);
         if (!"embedded".equals(menu.getMenuType())) menu.setIframeSrc(null);
         boolean hasChildren = existing.stream().anyMatch(node -> Objects.equals(node.getParentId(), id));
@@ -82,7 +87,8 @@ public final class MenuConfigValidator {
             if (resolvedPath.equals("/") || resolvedPath.equals("/auth") || resolvedPath.startsWith("/auth/")) {
                 throw new ServiceException("该路由路径由系统保留");
             }
-            if (page && !external && menu.getComponent() == null) throw new ServiceException("普通菜单必须选择页面组件");
+            if (page && !external && menu.getComponent() == null)
+                throw new ServiceException("普通菜单必须选择页面组件");
             if (menu.getComponent() != null) {
                 menu.setComponent(menu.getComponent().replaceAll("^/+", "").replaceAll("\\.vue$", ""));
             }
@@ -90,7 +96,8 @@ public final class MenuConfigValidator {
         }
         if (menu.getQuery() != null) {
             for (Object value : menu.getQuery().values()) {
-                if (!isQueryValue(value)) throw new ServiceException("路由参数只能包含字符串、数字、null或这些值组成的数组");
+                if (!isQueryValue(value))
+                    throw new ServiceException("路由参数只能包含字符串、数字、null或这些值组成的数组");
             }
         }
         if (menu.getBadgeType() != null && !Set.of("dot", "normal").contains(menu.getBadgeType())) {
@@ -109,8 +116,13 @@ public final class MenuConfigValidator {
         }
         if (!"normal".equals(menu.getBadgeType())) menu.setBadge(null);
         if (menu.getBadgeType() == null) menu.setBadgeVariants(null);
+
+        // 内嵌、外链等类型不使用页面组件
         if (!page || external) {
             menu.setComponent(null);
+        }
+        // 只有普通菜单和内嵌页面支持缓存
+        if (!internal && !"embedded".equals(menu.getMenuType())) {
             menu.setKeepAlive(false);
         }
         if (!page || menu.getLink() != null) {
@@ -171,7 +183,8 @@ public final class MenuConfigValidator {
             if ("button".equals(node.getMenuType())) continue;
             String name = StrUtil.upperFirst(StrUtil.isNotBlank(node.getRouteName()) ? node.getRouteName().trim() : Objects.toString(node.getPath(), ""));
             String path = fullPath(node, nodes, new HashSet<>());
-            if (names.putIfAbsent(name, entry.getKey()) != null || paths.putIfAbsent(path, entry.getKey()) != null) return false;
+            if (names.putIfAbsent(name, entry.getKey()) != null || paths.putIfAbsent(path, entry.getKey()) != null)
+                return false;
         }
         return true;
     }
@@ -205,7 +218,8 @@ public final class MenuConfigValidator {
         if (value == null) return;
         try {
             URI uri = URI.create(value);
-            if (("http".equalsIgnoreCase(uri.getScheme()) || "https".equalsIgnoreCase(uri.getScheme())) && uri.getHost() != null) return;
+            if (("http".equalsIgnoreCase(uri.getScheme()) || "https".equalsIgnoreCase(uri.getScheme())) && uri.getHost() != null)
+                return;
         } catch (IllegalArgumentException ignored) {
             // 统一抛出业务提示。
         }

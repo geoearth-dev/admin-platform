@@ -12,6 +12,8 @@ import dev.geo.admin.system.model.system.vo.RouterVo;
 import dev.geo.admin.system.service.auth.AuthService;
 import dev.geo.admin.system.service.system.ISysConfigService;
 import dev.geo.admin.system.service.system.ISysMenuService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "登录认证")
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -46,6 +49,7 @@ public class AuthController {
     private final ISysMenuService menuService;
 
     @PostMapping("/login")
+    @Operation(summary = "登录", description = "返回 accessToken、tokenType 和 expiresIn（秒）；刷新令牌写入 HttpOnly Cookie。")
     public ResponseEntity<ApiResult<Map<String, Object>>> login(@Valid @RequestBody LoginRequest request) {
         TokenResponse token = authService.login(
                 request.username(),
@@ -60,6 +64,7 @@ public class AuthController {
 
 
     @PostMapping("/refresh")
+    @Operation(summary = "刷新访问令牌", description = "使用 refresh_token Cookie 换取新的访问令牌，并更新刷新令牌 Cookie。")
     public ResponseEntity<ApiResult<Map<String, Object>>> refresh(
             @CookieValue(
                     name = REFRESH_COOKIE_NAME,
@@ -71,6 +76,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
+    @Operation(summary = "退出登录", description = "注销刷新令牌对应的会话，并清除 refresh_token Cookie。")
     public ResponseEntity<ApiResult<Void>> logout(
             @CookieValue(
                     name = REFRESH_COOKIE_NAME,
@@ -90,6 +96,7 @@ public class AuthController {
      * 获取当前用户、角色和权限信息。
      */
     @GetMapping("/getInfo")
+    @Operation(summary = "获取当前用户信息", description = "返回当前用户资料、角色标识、权限标识及密码提示。")
     public ApiResult<UserInfoVO> getInfo() {
         LoginPrincipal principal = SecurityUtils.getLoginPrincipal();
         String passwordCharRange = configService.selectConfigByKey("sys.account.passwordCharRange");
@@ -111,6 +118,7 @@ public class AuthController {
      * 获取当前用户可访问的前端路由。
      */
     @GetMapping("/getRouters")
+    @Operation(summary = "获取当前用户路由", description = "返回当前用户可访问的菜单路由；内嵌页面地址位于 meta.iframeSrc。")
     public ApiResult<List<RouterVo>> getRouters() {
         List<SysMenu> menus = menuService.selectMenuTreeByUserId(SecurityUtils.getUserId());
         return ApiResult.success(menuService.buildMenus(menus));

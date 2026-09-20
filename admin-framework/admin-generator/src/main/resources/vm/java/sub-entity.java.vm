@@ -1,0 +1,3 @@
+#set($model = $subTable)
+#set($mainModel = false)
+#parse("vm/java/entity-body.vm")

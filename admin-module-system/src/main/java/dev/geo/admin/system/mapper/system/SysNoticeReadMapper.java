@@ -66,11 +66,4 @@ public interface SysNoticeReadMapper {
     IPage<NoticeReadUserVO> selectReadUsersPage(IPage<NoticeReadUserVO> page,
                                               @Param("query") NoticeReadUserPageReqDTO query);
 
-    /**
-     * 公告删除时清理对应已读记录
-     *
-     * @param noticeIds 公告ID数组
-     * @return 结果
-     */
-    int deleteByNoticeIds(@Param("noticeIds") Long[] noticeIds);
 }

@@ -16,6 +16,10 @@
     <dependencies>
         <dependency>
             <groupId>dev.geo</groupId>
+            <artifactId>admin-generator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.geo</groupId>
             <artifactId>admin-quartz</artifactId>
         </dependency>
         <!-- ==================== 平台模块 ==================== -->

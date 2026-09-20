@@ -48,6 +48,11 @@
                 <artifactId>admin-quartz</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>dev.geo</groupId>
+                <artifactId>admin-generator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- ==================== 内部模块 ==================== -->
             <dependency>
                 <groupId>dev.geo</groupId>

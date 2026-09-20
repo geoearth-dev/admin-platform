@@ -26,6 +26,10 @@ public class GenUtils {
         genTable.setFunctionName(replaceText(genTable.getTableComment()));
         genTable.setFunctionAuthor(GenConfig.getAuthor());
         genTable.setCreateBy(operName);
+        genTable.setTplCategory("crud");
+        genTable.setFormColNum(1);
+        genTable.setGenType("0");
+        genTable.setGenPath("/");
     }
 
     /**
@@ -34,13 +38,15 @@ public class GenUtils {
     public static void initColumnField(GenTableColumn column, GenTable table) {
         String dataType = getDbType(column.getColumnType());
         String columnName = column.getColumnName();
-        column.setTableId(table.getTableId());
+        column.setTableId(table.getId());
         column.setCreateBy(table.getCreateBy());
         // 设置java字段名
         column.setJavaField(StrUtil.toCamelCase(columnName));
         // 设置默认类型
         column.setJavaType(GenConstants.TYPE_STRING);
         column.setQueryType(GenConstants.QUERY_EQ);
+        column.setHtmlType(GenConstants.HTML_INPUT);
+        column.setIsInsert("0"); column.setIsEdit("0"); column.setIsList("0"); column.setIsQuery("0");
 
         if (arraysContains(GenConstants.COLUMNTYPE_STR, dataType) || arraysContains(GenConstants.COLUMNTYPE_TEXT, dataType)) {
             // 字符串长度超过500设置为文本域
@@ -48,24 +54,17 @@ public class GenUtils {
             String htmlType = columnLength >= 500 || arraysContains(GenConstants.COLUMNTYPE_TEXT, dataType) ? GenConstants.HTML_TEXTAREA : GenConstants.HTML_INPUT;
             column.setHtmlType(htmlType);
         } else if (arraysContains(GenConstants.COLUMNTYPE_TIME, dataType)) {
-            column.setJavaType(GenConstants.TYPE_DATE);
+            column.setJavaType("date".equals(dataType) ? "LocalDate" : "time".equals(dataType) ? "LocalTime" : "Instant");
             column.setHtmlType(GenConstants.HTML_DATETIME);
         } else if (arraysContains(GenConstants.COLUMNTYPE_NUMBER, dataType)) {
             column.setHtmlType(GenConstants.HTML_INPUT);
-
-            // 如果是浮点型 统一用BigDecimal
-            String[] str = StringUtils.split(StringUtils.substringBetween(column.getColumnType(), "(", ")"), ",");
-            if (str != null && str.length == 2 && Integer.parseInt(str[1]) > 0) {
-                column.setJavaType(GenConstants.TYPE_BIGDECIMAL);
-            }
-            // 如果是整形
-            else if (str != null && str.length == 1 && Integer.parseInt(str[0]) <= 10) {
-                column.setJavaType(GenConstants.TYPE_INTEGER);
-            }
-            // 长整形
-            else {
-                column.setJavaType(GenConstants.TYPE_LONG);
-            }
+            column.setJavaType(switch (dataType) {
+                case "bigint" -> "Long";
+                case "decimal", "number" -> "BigDecimal";
+                case "float", "double" -> "Double";
+                case "bit" -> "Boolean";
+                default -> "Integer";
+            });
         }
 
         // 插入字段（默认所有字段都需要插入）
@@ -84,29 +83,33 @@ public class GenUtils {
             column.setIsQuery(GenConstants.REQUIRE);
         }
 
+        if (column.isAuditColumn()) {
+            column.setIsInsert("0"); column.setIsEdit("0"); column.setIsQuery("0");
+        }
+
         // 查询字段类型
-        if (Strings.CS.endsWithIgnoreCase(columnName, "name")) {
+        if (StrUtil.endWithIgnoreCase(columnName, "name")) {
             column.setQueryType(GenConstants.QUERY_LIKE);
         }
         // 状态字段设置单选框
-        if (StringUtils.endsWithIgnoreCase(columnName, "status")) {
+        if (StrUtil.endWithIgnoreCase(columnName, "status")) {
             column.setHtmlType(GenConstants.HTML_RADIO);
         }
         // 类型&性别字段设置下拉框
-        else if (StringUtils.endsWithIgnoreCase(columnName, "type")
-                || StringUtils.endsWithIgnoreCase(columnName, "sex")) {
+        else if (StrUtil.endWithIgnoreCase(columnName, "type")
+                || StrUtil.endWithIgnoreCase(columnName, "sex")) {
             column.setHtmlType(GenConstants.HTML_SELECT);
         }
         // 图片字段设置图片上传控件
-        else if (StringUtils.endsWithIgnoreCase(columnName, "image")) {
+        else if (StrUtil.endWithIgnoreCase(columnName, "image")) {
             column.setHtmlType(GenConstants.HTML_IMAGE_UPLOAD);
         }
         // 文件字段设置文件上传控件
-        else if (StringUtils.endsWithIgnoreCase(columnName, "file")) {
+        else if (StrUtil.endWithIgnoreCase(columnName, "file")) {
             column.setHtmlType(GenConstants.HTML_FILE_UPLOAD);
         }
         // 内容字段设置富文本控件
-        else if (StringUtils.endsWithIgnoreCase(columnName, "content")) {
+        else if (StrUtil.endWithIgnoreCase(columnName, "content")) {
             column.setHtmlType(GenConstants.HTML_EDITOR);
         }
     }
@@ -153,13 +156,13 @@ public class GenUtils {
      * @return 类名
      */
     public static String convertClassName(String tableName) {
-        boolean autoRemovePre = GenConfig.getAutoRemovePre();
+        boolean autoRemovePre = GenConfig.isAutoRemovePre();
         String tablePrefix = GenConfig.getTablePrefix();
         if (autoRemovePre && StringUtils.isNotEmpty(tablePrefix)) {
             String[] searchList = StringUtils.split(tablePrefix, ",");
             tableName = replaceFirst(tableName, searchList);
         }
-        return StringUtils.convertToCamelCase(tableName);
+        return StrUtil.upperFirst(StrUtil.toCamelCase(tableName));
     }
 
     /**
@@ -167,7 +170,7 @@ public class GenUtils {
      *
      * @param replacementm 替换值
      * @param searchList   替换列表
-     * @return
+     * @return String
      */
     public static String replaceFirst(String replacementm, String[] searchList) {
         String text = replacementm;
@@ -197,7 +200,7 @@ public class GenUtils {
      * @return 截取后的列类型
      */
     public static String getDbType(String columnType) {
-        if (StringUtils.indexOf(columnType, "(") > 0) {
+        if (Strings.CS.indexOf(columnType, "(") > 0) {
             return StringUtils.substringBefore(columnType, "(");
         } else {
             return columnType;
@@ -211,7 +214,7 @@ public class GenUtils {
      * @return 截取后的列类型
      */
     public static Integer getColumnLength(String columnType) {
-        if (StringUtils.indexOf(columnType, "(") > 0) {
+        if (Strings.CS.indexOf(columnType, "(") > 0) {
             String length = StringUtils.substringBetween(columnType, "(", ")");
             return Integer.valueOf(length);
         } else {

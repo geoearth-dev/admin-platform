@@ -10,6 +10,9 @@ import dev.geo.admin.common.enums.BusinessType;
 import dev.geo.admin.system.model.system.entity.SysDept;
 import dev.geo.admin.system.model.system.dto.DepartmentSaveDTO;
 import dev.geo.admin.system.service.system.ISysDeptService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -21,6 +24,7 @@ import java.util.Objects;
 /**
  * 部门管理接口。
  */
+@Tag(name = "部门管理")
 @RestController
 @RequestMapping("/system/dept")
 @RequiredArgsConstructor
@@ -29,6 +33,7 @@ public class SysDeptController extends BaseController {
 
     @PreAuthorize("@se.hasPermission('system:dept:list')")
     @GetMapping("/list")
+    @Operation(summary = "查询部门列表")
     public ApiResult<List<SysDept>> list(SysDept query) {
         return success(deptService.selectDeptList(query));
     }
@@ -38,7 +43,8 @@ public class SysDeptController extends BaseController {
      */
     @PreAuthorize("@se.hasPermission('system:dept:list')")
     @GetMapping("/list/exclude/{id}")
-    public ApiResult<List<SysDept>> excludeChild(@PathVariable Long id) {
+    @Operation(summary = "查询可选上级部门", description = "排除当前部门及其下级，避免把部门移动到自身分支下。")
+    public ApiResult<List<SysDept>> excludeChild(@Parameter(description = "部门 ID") @PathVariable Long id) {
         List<SysDept> departments = deptService.selectDeptList(new SysDept());
         departments.removeIf(dept -> Objects.equals(dept.getId(), id)
                 || StrUtil.split(dept.getAncestors(), ',').contains(String.valueOf(id)));
@@ -47,7 +53,8 @@ public class SysDeptController extends BaseController {
 
     @PreAuthorize("@se.hasPermission('system:dept:query')")
     @GetMapping("/{id}")
-    public ApiResult<SysDept> getInfo(@PathVariable Long id) {
+    @Operation(summary = "查询部门详情")
+    public ApiResult<SysDept> getInfo(@Parameter(description = "部门 ID") @PathVariable Long id) {
         deptService.checkDeptDataScope(id);
         return success(deptService.selectDeptById(id));
     }
@@ -55,6 +62,7 @@ public class SysDeptController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:dept:add')")
     @Log(title = "部门管理", businessType = BusinessType.INSERT)
     @PostMapping
+    @Operation(summary = "新增部门")
     public ApiResult<Void> add(@Validated @RequestBody DepartmentSaveDTO request) {
         SysDept dept = BeanUtil.toBean(request, SysDept.class);
         if (!deptService.checkDeptNameUnique(dept)) {
@@ -66,6 +74,7 @@ public class SysDeptController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:dept:edit')")
     @Log(title = "部门管理", businessType = BusinessType.UPDATE)
     @PutMapping
+    @Operation(summary = "修改部门")
     public ApiResult<Void> edit(@Validated @RequestBody DepartmentSaveDTO request) {
         SysDept dept = BeanUtil.toBean(request, SysDept.class);
         Long id = dept.getId();
@@ -86,7 +95,8 @@ public class SysDeptController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:dept:remove')")
     @Log(title = "部门管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{id}")
-    public ApiResult<Void> remove(@PathVariable Long id) {
+    @Operation(summary = "删除部门")
+    public ApiResult<Void> remove(@Parameter(description = "部门 ID") @PathVariable Long id) {
         if (deptService.hasChildByDeptId(id)) {
             return warn("当前部门存在下级部门，不能删除");
         }

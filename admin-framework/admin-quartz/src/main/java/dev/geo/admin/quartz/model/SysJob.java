@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import dev.geo.admin.excel.annotation.Excel;
 import dev.geo.admin.mybatis.model.BaseEntity;
 import dev.geo.admin.quartz.util.CronUtils;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
@@ -21,12 +22,14 @@ import java.util.Date;
  */
 @Getter
 @Setter
+@Schema(description = "定时任务")
 public class SysJob extends BaseEntity {
 
     /**
      * 任务ID
      */
     @Excel(name = "任务序号", cellType = Excel.ColumnType.NUMERIC)
+    @Schema(description = "记录 ID")
     private Long id;
 
     /**
@@ -35,6 +38,7 @@ public class SysJob extends BaseEntity {
     @Excel(name = "任务名称")
     @NotBlank(message = "任务名称不能为空")
     @Size(min = 0, max = 64, message = "任务名称不能超过64个字符")
+    @Schema(description = "任务名称")
     private String jobName;
 
     /**
@@ -42,6 +46,7 @@ public class SysJob extends BaseEntity {
      */
     @Excel(name = "任务组名")
     @Size(max = 64, message = "任务组名不能超过64个字符")
+    @Schema(description = "任务分组")
     private String jobGroup;
 
     /**
@@ -50,6 +55,7 @@ public class SysJob extends BaseEntity {
     @Excel(name = "调用目标字符串")
     @NotBlank(message = "调用目标字符串不能为空")
     @Size(min = 0, max = 500, message = "调用目标字符串长度不能超过500个字符")
+    @Schema(description = "调用目标，如 beanName.methodName()")
     private String invokeTarget;
 
     /**
@@ -58,6 +64,7 @@ public class SysJob extends BaseEntity {
     @Excel(name = "执行表达式 ")
     @NotBlank(message = "Cron执行表达式不能为空")
     @Size(min = 0, max = 255, message = "Cron执行表达式不能超过255个字符")
+    @Schema(description = "Cron 执行表达式")
     private String cronExpression;
 
     /**
@@ -65,6 +72,7 @@ public class SysJob extends BaseEntity {
      */
     @Excel(name = "计划策略 ", readConverterExp = "0=默认,1=立即触发执行,2=触发一次执行,3=不触发立即执行")
     @Pattern(regexp = "[0-3]", message = "计划策略只能为0、1、2或3")
+    @Schema(description = "错过执行时的处理：0默认，1立即补偿，2执行一次，3跳过")
     private String misfirePolicy;
 
     /**
@@ -72,6 +80,7 @@ public class SysJob extends BaseEntity {
      */
     @Excel(name = "并发执行", readConverterExp = "1=允许,0=禁止")
     @Pattern(regexp = "[01]", message = "是否并发只能为0或1")
+    @Schema(description = "是否允许并发执行：1允许，0禁止")
     private String concurrent;
 
     /**
@@ -79,6 +88,7 @@ public class SysJob extends BaseEntity {
      */
     @Excel(name = "任务状态", readConverterExp = "1=正常,0=暂停")
     @Pattern(regexp = "[01]", message = "状态只能为0或1")
+    @Schema(description = "任务状态：1运行，0暂停")
     private String status;
 
 

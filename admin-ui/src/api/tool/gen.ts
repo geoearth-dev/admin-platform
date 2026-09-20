@@ -1,69 +1,33 @@
-import type { PageResult } from '@/types/base/api/common';
-import type { GenQueryParams, GenTable, GenTableInfoResult } from '@/types/base/api/tool/gen';
-import { requestClient } from '@/utils/request';
+import type { PageResult } from '@/types/base/api/common'
+import type {
+  DbTable,
+  GenQueryParams,
+  GenTable,
+  GenTableInfoResult,
+} from '@/types/base/api/tool/gen'
+import { requestClient } from '@/utils/request'
 
-// 查询生成表数据
-export function listTable(params: GenQueryParams) {
-  return requestClient.get<PageResult<GenTable>>('/tool/gen/list', params);
-}
-
-// 查询db数据库列表
-export function listDbTable(params: GenQueryParams) {
-  return requestClient.get<PageResult<GenTable>>('/tool/gen/db/list', params);
-}
-
-// 查询表详细信息
-export function getGenTable(tableId: number) {
-  return requestClient.get<GenTableInfoResult>('/tool/gen/' + tableId);
-}
-
-// 修改代码生成信息
-export function updateGenTable(data: GenTable) {
-  return requestClient.put<void>('/tool/gen', data);
-}
-
-// 导入表
-export function importTable(data: any) {
-  return requestClient.post<void>('/tool/gen/importTable', data);
-}
-
-// 创建表
-export function createTable(data: any): Promise<AjaxResult> {
-  return request({
-    url: '/tool/gen/createTable',
-    method: 'post',
-    params: data,
-  });
-}
-
-// 预览生成代码
-export function previewTable(tableId: number): Promise<AjaxResult<any>> {
-  return request({
-    url: '/tool/gen/preview/' + tableId,
-    method: 'get',
-  });
-}
-
-// 删除表数据
-export function delTable(tableId: number | number[]): Promise<AjaxResult> {
-  return request({
-    url: '/tool/gen/' + tableId,
-    method: 'delete',
-  });
-}
-
-// 生成代码（自定义路径）
-export function genCode(tableName: string): Promise<AjaxResult> {
-  return request({
-    url: '/tool/gen/genCode/' + tableName,
-    method: 'get',
-  });
-}
-
-// 同步数据库
-export function synchDb(tableName: string): Promise<AjaxResult> {
-  return request({
-    url: '/tool/gen/synchDb/' + tableName,
-    method: 'get',
-  });
-}
+export const listTable = (params: GenQueryParams) =>
+  requestClient.get<PageResult<GenTable>>('/tool/gen/list', params)
+export const listDbTable = (params: GenQueryParams) =>
+  requestClient.get<PageResult<DbTable>>('/tool/gen/db/list', params)
+export const getGenTable = (id: number) =>
+  requestClient.get<GenTableInfoResult>(`/tool/gen/${id}`)
+export const updateGenTable = (data: GenTable) =>
+  requestClient.put<void>('/tool/gen', data)
+export const importTable = (tables: string[]) =>
+  requestClient.post<void>('/tool/gen/importTable', { tables })
+export const createTable = (sql: string) =>
+  requestClient.post<void>('/tool/gen/createTable', { sql })
+export const previewTable = (id: number) =>
+  requestClient.get<Record<string, string>>(`/tool/gen/preview/${id}`)
+export const delTable = (ids: number[]) =>
+  requestClient.delete<void>(`/tool/gen/${ids.join(',')}`)
+export const genCode = (tableName: string) =>
+  requestClient.get<void>(`/tool/gen/genCode/${encodeURIComponent(tableName)}`)
+export const synchDb = (tableName: string) =>
+  requestClient.get<void>(`/tool/gen/synchDb/${encodeURIComponent(tableName)}`)
+export const downloadCode = (tables: string[]) =>
+  requestClient.download('/tool/gen/batchGenCode', {
+    params: { tables: tables.join(',') },
+  })

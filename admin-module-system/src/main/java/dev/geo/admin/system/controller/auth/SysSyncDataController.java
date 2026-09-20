@@ -3,6 +3,8 @@ package dev.geo.admin.system.controller.auth;
 import com.alibaba.fastjson2.JSONObject;
 import dev.geo.admin.common.core.model.ApiResult;
 import dev.geo.admin.system.service.auth.SysSyncDataService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 接收认证平台推送的数据
  */
+@Tag(name = "账号同步")
 @RestController
 @RequestMapping("/syncData")
 public class SysSyncDataController {
@@ -30,6 +33,7 @@ public class SysSyncDataController {
      */
     @PostMapping
     @Transactional
+    @Operation(summary = "接收认证平台同步数据")
     public ApiResult<Void> syncData(@RequestBody JSONObject jsonObject) {
         log.info("接收认证平台推送的数据:{}", jsonObject);
         return sysSyncDataService.syncData(jsonObject);

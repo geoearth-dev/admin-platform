@@ -11,8 +11,10 @@ import dev.geo.admin.system.model.system.entity.SysPost;
 import dev.geo.admin.system.service.system.ISysPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Arrays;
 
 /**
  * 岗位信息 服务层处理
@@ -134,9 +136,10 @@ public class SysPostServiceImpl implements ISysPostService
      * @return 结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int deletePostById(Long postId)
     {
-        return postMapper.deletePostById(postId);
+        return deletePostByIds(new Long[]{postId});
     }
 
     /**
@@ -146,11 +149,19 @@ public class SysPostServiceImpl implements ISysPostService
      * @return 结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int deletePostByIds(Long[] postIds)
     {
+        if (postIds == null || postIds.length == 0 ||
+                Arrays.stream(postIds).anyMatch(id -> id == null || id <= 0)) {
+            throw new ServiceException("请选择有效的岗位ID");
+        }
         for (Long postId : postIds)
         {
             SysPost post = selectPostById(postId);
+            if (post == null) {
+                throw new ServiceException("岗位不存在或已被删除");
+            }
             if (countUserPostById(postId) > 0)
             {
                 throw new ServiceException(String.format("%1$s已分配,不能删除", post.getPostName()));

@@ -1,7 +1,8 @@
 import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import errorCode from './errorCode';
 import { ElMessage } from 'element-plus';
-import type { ApiResponse, RequestAuthOptions, RequestConfig } from './types';
+import type { RequestAuthOptions, RequestConfig } from './types';
+import type { ApiResult as ApiResponse } from '@/types/base/api/common';
 import axios from 'axios';
 
 const MAX_REQUEST_SIGNATURE_LENGTH = 1024 * 1024; //限制存放数据5M

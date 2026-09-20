@@ -45,7 +45,7 @@ export interface SysDictData extends BaseEntity {
   dictType: string
   cssClass?: string | null
   listClass?: string | null
-  isDefault?: 'N' | 'Y'
+  isDefault?: '0' | '1'
   default?: boolean
   status: DictStatus
 }
@@ -59,7 +59,7 @@ export interface DictDataSaveParams {
   dictType: string
   cssClass?: string
   listClass?: string
-  isDefault?: 'N' | 'Y'
+  isDefault?: '0' | '1'
   status?: DictStatus
   remark?: string
 }

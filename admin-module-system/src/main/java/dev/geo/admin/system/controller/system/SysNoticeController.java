@@ -13,10 +13,14 @@ import dev.geo.admin.system.model.system.dto.NoticeReadUserPageReqDTO;
 import dev.geo.admin.system.model.system.entity.SysNotice;
 import dev.geo.admin.system.model.system.vo.NoticeReadVO;
 import dev.geo.admin.system.model.system.vo.NoticeReadUserVO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
 import dev.geo.admin.system.service.system.ISysNoticeReadService;
 import dev.geo.admin.system.service.system.ISysNoticeService;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +30,7 @@ import java.util.List;
 /**
  * 通知公告管理接口。
  */
+@Tag(name = "通知公告")
 @RestController
 @RequestMapping("/system/notice")
 @RequiredArgsConstructor
@@ -36,19 +41,22 @@ public class SysNoticeController extends BaseController {
 
     @PreAuthorize("@se.hasPermission('system:notice:list')")
     @GetMapping("/list")
-    public ApiResult<PageResult<SysNotice>> list(@Validated NoticePageReqDTO query) {
+    @Operation(summary = "分页查询通知公告")
+    public ApiResult<PageResult<SysNotice>> list(@Validated @ParameterObject NoticePageReqDTO query) {
         return success(noticeService.selectNoticePage(query));
     }
 
     @PreAuthorize("@se.hasPermission('system:notice:query')")
     @GetMapping("/{id}")
-    public ApiResult<SysNotice> getInfo(@PathVariable Long id) {
+    @Operation(summary = "查询通知公告详情")
+    public ApiResult<SysNotice> getInfo(@Parameter(description = "公告 ID") @PathVariable Long id) {
         return success(noticeService.selectNoticeById(id));
     }
 
     @PreAuthorize("@se.hasPermission('system:notice:add')")
     @Log(title = "通知公告", businessType = BusinessType.INSERT)
     @PostMapping
+    @Operation(summary = "新增通知公告")
     public ApiResult<Void> add(@Validated @RequestBody NoticeSaveDTO request) {
         SysNotice notice = BeanUtil.toBean(request, SysNotice.class);
         return toApiResult(noticeService.insertNotice(notice));
@@ -57,6 +65,7 @@ public class SysNoticeController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:notice:edit')")
     @Log(title = "通知公告", businessType = BusinessType.UPDATE)
     @PutMapping
+    @Operation(summary = "修改通知公告")
     public ApiResult<Void> edit(@Validated @RequestBody NoticeSaveDTO request) {
         SysNotice notice = BeanUtil.toBean(request, SysNotice.class);
         return toApiResult(noticeService.updateNotice(notice));
@@ -65,7 +74,8 @@ public class SysNoticeController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:notice:remove')")
     @Log(title = "通知公告", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public ApiResult<Void> remove(@PathVariable Long[] ids) {
+    @Operation(summary = "删除通知公告")
+    public ApiResult<Void> remove(@Parameter(description = "公告 ID 列表，多个用逗号分隔") @PathVariable Long[] ids) {
         return toApiResult(noticeService.deleteNoticeByIds(ids));
     }
 
@@ -74,6 +84,7 @@ public class SysNoticeController extends BaseController {
      */
     @GetMapping("/listTop")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "查询首页通知公告")
     public ApiResult<NoticeReadVO> listTop() {
         Long userId = SecurityUtils.getUserId();
         List<SysNotice> list = noticeReadService.selectNoticeListWithReadStatus(userId, 5);
@@ -87,7 +98,8 @@ public class SysNoticeController extends BaseController {
      */
     @PostMapping("/markRead")
     @PreAuthorize("isAuthenticated()")
-    public ApiResult<Void> markRead(@RequestParam @Positive Long noticeId) {
+    @Operation(summary = "将公告标为已读")
+    public ApiResult<Void> markRead(@Parameter(description = "公告 ID") @RequestParam @Positive Long noticeId) {
         Long userId = SecurityUtils.getUserId();
         noticeReadService.markRead(noticeId, userId);
         return success();
@@ -97,7 +109,8 @@ public class SysNoticeController extends BaseController {
      */
     @PostMapping("/markReadAll")
     @PreAuthorize("isAuthenticated()")
-    public ApiResult<Void> markReadAll(@RequestParam Long[] ids)
+    @Operation(summary = "批量将公告标为已读")
+    public ApiResult<Void> markReadAll(@Parameter(description = "公告 ID 列表，多个用逗号分隔") @RequestParam Long[] ids)
     {
         Long userId = SecurityUtils.getUserId();
         noticeReadService.markReadBatch(userId, ids);
@@ -108,7 +121,8 @@ public class SysNoticeController extends BaseController {
      */
     @PreAuthorize("@se.hasPermission('system:notice:list')")
     @GetMapping("/readUsers/list")
-    public ApiResult<PageResult<NoticeReadUserVO>> readUsersList(@Validated NoticeReadUserPageReqDTO query)
+    @Operation(summary = "分页查询公告阅读记录")
+    public ApiResult<PageResult<NoticeReadUserVO>> readUsersList(@Validated @ParameterObject NoticeReadUserPageReqDTO query)
     {
         return success(noticeReadService.selectReadUsersPage(query));
     }

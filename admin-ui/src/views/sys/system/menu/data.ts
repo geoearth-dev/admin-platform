@@ -1,22 +1,22 @@
-import { parseMenuQuery } from './menu-model'
-import type { TagProps } from 'element-plus'
-import type { MenuType } from '@/types/base/api/system/menu'
-import { z } from 'zod'
-import type { VxeTableGridColumns } from '@/components/vxe-table'
-import { $t, $te } from '@/plugins/locale'
-import type { VbenFormSchema } from '@/plugins/vben-ui/form-ui'
-import type { TreeSelect } from '@/types/base/api/common'
-import type { SysMenu } from '@/types/base/api/system/menu'
-import { formatDateTime } from '@/utils/date'
+import { parseMenuQuery } from './menu-model';
+import type { TagProps } from 'element-plus';
+import type { MenuType } from '@/types/base/api/system/menu';
+import { z } from 'zod';
+import type { VxeTableGridColumns } from '@/components/vxe-table';
+import { $t, $te } from '@/plugins/locale';
+import type { VbenFormSchema } from '@/plugins/vben-ui/form-ui';
+import type { TreeSelect } from '@/types/base/api/common';
+import type { SysMenu } from '@/types/base/api/system/menu';
+import { formatDateTime } from '@/utils/date';
 
 export function menuTitle(name: string) {
-  return name && $te(name) ? $t(name) : name
+  return name && $te(name) ? $t(name) : name;
 }
 
 export function getMenuTypeOptions(): Array<{
-  label: string
-  value: MenuType
-  type: TagProps['type']
+  label: string;
+  value: MenuType;
+  type: TagProps['type'];
 }> {
   return [
     { label: $t('system.menu.typeCatalog'), value: 'catalog', type: 'warning' },
@@ -28,7 +28,7 @@ export function getMenuTypeOptions(): Array<{
     },
     { label: $t('system.menu.typeLink'), value: 'link', type: 'primary' },
     { label: $t('system.menu.typeButton'), value: 'button', type: 'info' },
-  ]
+  ];
 }
 
 export function useGridFormSchema(): VbenFormSchema[] {
@@ -50,7 +50,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
         ],
       },
     },
-  ]
+  ];
 }
 
 export function useColumns(): VxeTableGridColumns<SysMenu> {
@@ -69,8 +69,7 @@ export function useColumns(): VxeTableGridColumns<SysMenu> {
       title: $t('system.menu.routeName'),
       minWidth: 160,
       formatter: ({ row }) =>
-        row.routeName ||
-        (row.path ? row.path.charAt(0).toUpperCase() + row.path.slice(1) : '—'),
+        row.routeName || (row.path ? row.path.charAt(0).toUpperCase() + row.path.slice(1) : '—'),
     },
     { field: 'order', title: $t('system.menu.order'), width: 90 },
     {
@@ -109,8 +108,7 @@ export function useColumns(): VxeTableGridColumns<SysMenu> {
       field: 'createTime',
       title: $t('system.menu.createTime'),
       width: 180,
-      formatter: ({ cellValue }) =>
-        cellValue ? formatDateTime(cellValue) : '—',
+      formatter: ({ cellValue }) => (cellValue ? formatDateTime(cellValue) : '—'),
     },
     {
       field: 'operation',
@@ -120,7 +118,7 @@ export function useColumns(): VxeTableGridColumns<SysMenu> {
       align: 'center',
       slots: { default: 'action' },
     },
-  ]
+  ];
 }
 
 export function useFormSchema(): VbenFormSchema[] {
@@ -129,57 +127,50 @@ export function useFormSchema(): VbenFormSchema[] {
       .string()
       .trim()
       .min(1, $t('ui.formRules.required', [label]))
-      .max(max)
+      .max(max);
   const show = (types: string[], extra: string[] = []) => ({
     triggerFields: ['menuType', ...extra],
     resolve: ({ values }: { values: Record<string, unknown> }) => ({
       if: types.includes(String(values.menuType)),
     }),
-  })
-  const routes = ['catalog', 'menu', 'embedded', 'link']
-  const pages = ['menu', 'embedded']
+  });
+  const routes = ['catalog', 'menu', 'embedded', 'link'];
+  const pages = ['menu', 'embedded'];
   const urlRule = z
     .string()
     .trim()
     .refine((value) => {
       try {
-        return ['http:', 'https:'].includes(new URL(value).protocol)
+        return ['http:', 'https:'].includes(new URL(value).protocol);
       } catch {
-        return false
+        return false;
       }
     }, $t('system.menu.urlInvalid'))
-    .max(200)
+    .max(200);
   const pathRule = requiredText($t('system.menu.path'), 200).refine(
     (value) => !value.includes('://') && !/[?#\\\s]/.test(value),
     $t('system.menu.pathHelp'),
-  )
+  );
   const internalPath = z
     .string()
     .trim()
     .max(200)
     .refine(
       (value) =>
-        !value ||
-        (value.startsWith('/') &&
-          !value.startsWith('//') &&
-          !value.includes('://')),
+        !value || (value.startsWith('/') && !value.startsWith('//') && !value.includes('://')),
       $t('system.menu.internalPathHelp'),
     )
-    .nullish()
+    .nullish();
   const components = Object.keys(import.meta.glob('/src/views/**/*.vue'))
     .map((path) => path.replace('/src/views/', '').replace(/\.vue$/, ''))
-    .sort()
-  const checkbox = (
-    fieldName: string,
-    label: string,
-    types: string[],
-  ): VbenFormSchema => ({
+    .sort();
+  const checkbox = (fieldName: string, label: string, types: string[]): VbenFormSchema => ({
     component: 'Checkbox',
     fieldName,
     defaultValue: false,
     dependencies: show(types),
     renderComponentContent: () => ({ default: () => $t(label) }),
-  })
+  });
   return [
     {
       component: 'RadioGroup',
@@ -276,9 +267,7 @@ export function useFormSchema(): VbenFormSchema[] {
         resolve: ({ values }) => ({
           if: values.menuType === 'menu',
           rules:
-            values.menuType === 'menu'
-              ? requiredText($t('system.menu.component'), 255)
-              : undefined,
+            values.menuType === 'menu' ? requiredText($t('system.menu.component'), 255) : undefined,
         }),
       },
     },
@@ -290,9 +279,8 @@ export function useFormSchema(): VbenFormSchema[] {
       dependencies: {
         triggerFields: ['menuType'],
         resolve: ({ values }) => {
-          const visible =
-            values.menuType === 'link' || values.menuType === 'embedded'
-          return { if: visible, rules: visible ? urlRule : undefined }
+          const visible = values.menuType === 'link' || values.menuType === 'embedded';
+          return { if: visible, rules: visible ? urlRule : undefined };
         },
       },
     },
@@ -358,13 +346,10 @@ export function useFormSchema(): VbenFormSchema[] {
       label: $t('system.menu.badgeVariants'),
       componentProps: {
         clearable: true,
-        options: [
-          'default',
-          'destructive',
-          'primary',
-          'success',
-          'warning',
-        ].map((value) => ({ label: value, value })),
+        options: ['default', 'destructive', 'primary', 'success', 'warning'].map((value) => ({
+          label: value,
+          value,
+        })),
       },
       dependencies: show(routes),
     },
@@ -396,22 +381,19 @@ export function useFormSchema(): VbenFormSchema[] {
         .string()
         .refine((value) => {
           try {
-            parseMenuQuery(value)
-            return true
+            parseMenuQuery(value);
+            return true;
           } catch {
-            return false
+            return false;
           }
         }, $t('system.menu.queryInvalid'))
         .nullish(),
       dependencies: show(routes),
     },
-    checkbox('keepAlive', 'system.menu.keepAlive', ['menu']),
+    checkbox('keepAlive', 'system.menu.keepAlive', ['menu', 'embedded']),
     checkbox('affixTab', 'system.menu.affixTab', pages),
     checkbox('hideInMenu', 'system.menu.hideInMenu', routes),
-    checkbox('hideChildrenInMenu', 'system.menu.hideChildrenInMenu', [
-      'catalog',
-      'menu',
-    ]),
+    checkbox('hideChildrenInMenu', 'system.menu.hideChildrenInMenu', ['catalog', 'menu']),
     checkbox('hideInBreadcrumb', 'system.menu.hideInBreadcrumb', routes),
     checkbox('hideInTab', 'system.menu.hideInTab', pages),
     checkbox('openInNewWindow', 'system.menu.openInNewWindow', pages),
@@ -448,51 +430,39 @@ export function useFormSchema(): VbenFormSchema[] {
       rules: z
         .number()
         .int()
-        .refine(
-          (value) => value === -1 || value > 0,
-          $t('system.menu.maxNumOfOpenTabHelp'),
-        ),
+        .refine((value) => value === -1 || value > 0, $t('system.menu.maxNumOfOpenTabHelp')),
       dependencies: show(pages),
     },
-  ]
+  ];
 }
 
 /** 排除按钮、当前菜单及其后代，避免把菜单移动到自己下面。 */
-export function getParentMenuTree(
-  menus: SysMenu[],
-  currentId?: number,
-): TreeSelect[] {
-  const excluded = new Set<number>()
-  const descendants = currentId == null ? [] : [currentId]
+export function getParentMenuTree(menus: SysMenu[], currentId?: number): TreeSelect[] {
+  const excluded = new Set<number>();
+  const descendants = currentId == null ? [] : [currentId];
   while (descendants.length) {
-    const id = descendants.pop()!
-    if (excluded.has(id)) continue
-    excluded.add(id)
-    descendants.push(
-      ...menus.filter((menu) => menu.parentId === id).map((menu) => menu.id),
-    )
+    const id = descendants.pop()!;
+    if (excluded.has(id)) continue;
+    excluded.add(id);
+    descendants.push(...menus.filter((menu) => menu.parentId === id).map((menu) => menu.id));
   }
   const candidates = menus.filter(
-    (menu) =>
-      menu.menuType !== 'button' &&
-      !menu.link &&
-      !menu.iframeSrc &&
-      !excluded.has(menu.id),
-  )
+    (menu) => menu.menuType !== 'button' && !menu.link && !menu.iframeSrc && !excluded.has(menu.id),
+  );
   const nodes = new Map<number, TreeSelect>(
     candidates.map((menu) => [
       menu.id,
       { id: menu.id, label: menuTitle(menu.menuName), children: [] },
     ]),
-  )
+  );
   const root: TreeSelect = {
     id: 0,
     label: $t('system.menu.root'),
     children: [],
-  }
+  };
   for (const menu of candidates) {
-    const parent = nodes.get(menu.parentId) ?? root
-    parent.children!.push(nodes.get(menu.id)!)
+    const parent = nodes.get(menu.parentId) ?? root;
+    parent.children!.push(nodes.get(menu.id)!);
   }
-  return [root]
+  return [root];
 }

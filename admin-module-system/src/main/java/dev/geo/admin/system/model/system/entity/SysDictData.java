@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import dev.geo.admin.excel.annotation.Excel;
 import dev.geo.admin.common.constant.UserConstants;
 import dev.geo.admin.mybatis.model.BaseEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -15,58 +16,68 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * 字典数据表 sys_dict_data
  */
 @TableName("sys_dict_data")
+@Schema(description = "字典数据")
 public class SysDictData extends BaseEntity {
     /**
      * 字典编码
      */
     @Excel(name = "字典编码", cellType = Excel.ColumnType.NUMERIC)
     @TableId(value = "id", type = IdType.AUTO)
+    @Schema(description = "字典数据 ID")
     private Long id;
 
     /**
      * 字典排序
      */
     @Excel(name = "字典排序", cellType = Excel.ColumnType.NUMERIC)
+    @Schema(description = "显示顺序，越小越靠前")
     private Long dictSort;
 
     /**
      * 字典标签
      */
     @Excel(name = "字典标签")
+    @Schema(description = "显示文本")
     private String dictLabel;
 
     /**
      * 字典键值
      */
     @Excel(name = "字典键值")
+    @Schema(description = "字典值")
     private String dictValue;
 
     /**
      * 字典类型
      */
     @Excel(name = "字典类型")
+    @Schema(description = "字典类型标识")
     private String dictType;
 
     /**
      * 样式属性（其他样式扩展）
      */
+    @Schema(description = "自定义样式类名")
     private String cssClass;
 
     /**
      * 表格字典样式
      */
+    @Schema(description = "标签样式")
     private String listClass;
 
     /**
-     * 是否默认（Y是 N否）
+     * 是否默认（1是 0否）
      */
-    @Excel(name = "是否默认", readConverterExp = "Y=是,N=否")
+    @Excel(name = "是否默认", readConverterExp = "1=是,0=否")
+    @Schema(description = "是否默认选项：1是，0否")
     private String isDefault;
 
     /**
      * 状态（0停用 1正常）
      */
     @Excel(name = "状态", readConverterExp = "0=停用,1=正常")
+    @Schema(description = "状态：1启用，0停用")
     private String status;
 
     public Long getId() {
@@ -132,6 +143,7 @@ public class SysDictData extends BaseEntity {
         this.listClass = listClass;
     }
 
+    @Schema(description = "是否为默认选项")
     public boolean getDefault() {
         return UserConstants.YES.equals(this.isDefault);
     }

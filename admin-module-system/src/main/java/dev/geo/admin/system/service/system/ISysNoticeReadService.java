@@ -54,10 +54,4 @@ public interface ISysNoticeReadService
      */
     PageResult<NoticeReadUserVO> selectReadUsersPage(NoticeReadUserPageReqDTO query);
 
-    /**
-     * 删除公告时清理对应已读记录
-     *
-     * @param noticeIds 公告ID数组
-     */
-    void deleteByNoticeIds(Long[] noticeIds);
 }

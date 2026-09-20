@@ -16,10 +16,10 @@ public record LoginRequest(
         @Schema(description = "用户密码")
         String password,
 
-        @Schema(description = "验证码")
+        @Schema(description = "图形验证码，启用验证码时填写")
         String code,
 
-        @Schema(description = "唯一标识")
+        @Schema(description = "验证码标识，由 /captcha 返回")
         String uuid,
 
         @Schema(description = "是否保持长期登录")

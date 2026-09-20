@@ -19,8 +19,12 @@ import dev.geo.admin.system.service.system.ISysDeptService;
 import dev.geo.admin.system.service.system.ISysPostService;
 import dev.geo.admin.system.service.system.ISysRoleService;
 import dev.geo.admin.system.service.system.ISysUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
@@ -34,6 +38,7 @@ import java.util.List;
 /**
  * 用户管理接口。
  */
+@Tag(name = "用户管理")
 @RestController
 @RequestMapping("/system/user")
 @RequiredArgsConstructor
@@ -47,28 +52,32 @@ public class SysUserController extends BaseController {
 
     @PreAuthorize("@se.hasPermission('system:user:list')")
     @GetMapping("/list")
-    public ApiResult<PageResult<SysUser>> list(@Validated UserPageReqDTO query) {
+    @Operation(summary = "分页查询用户")
+    public ApiResult<PageResult<SysUser>> list(@Validated @ParameterObject UserPageReqDTO query) {
         return success(userService.selectUserPage(query));
     }
 
     @Log(title = "用户管理", businessType = BusinessType.EXPORT)
     @PreAuthorize("@se.hasPermission('system:user:export')")
     @PostMapping("/export")
-    public void export(HttpServletResponse response, @Validated UserPageReqDTO query) {
+    @Operation(summary = "导出用户")
+    public void export(HttpServletResponse response, @Validated @ParameterObject UserPageReqDTO query) {
         query.setPageSize(PageParam.PAGE_SIZE_NONE);
         excelService.exportExcel(response, userService.selectUserPage(query).getRecords(), SysUser.class, "用户数据");
     }
 
     @Log(title = "用户管理", businessType = BusinessType.IMPORT)
     @PreAuthorize("@se.hasPermission('system:user:import')")
-    @PostMapping("/import")
-    public ApiResult<Void> importData(@RequestPart MultipartFile file,
-                                      @RequestParam(defaultValue = "false") boolean updateSupport) throws IOException {
+    @PostMapping(value = "/import", consumes = "multipart/form-data")
+    @Operation(summary = "导入用户", description = "上传用户 Excel；updateSupport 控制是否更新已存在的用户。")
+    public ApiResult<Void> importData(@Parameter(description = "待上传的文件") @RequestPart MultipartFile file,
+                                      @Parameter(description = "是否更新已存在的用户，默认 false") @RequestParam(defaultValue = "false") boolean updateSupport) throws IOException {
         List<SysUser> users = excelService.importExcel(file.getInputStream(), SysUser.class);
         return success(userService.importUser(users, updateSupport, SecurityUtils.getUsername()));
     }
 
     @GetMapping("/import-template")
+    @Operation(summary = "下载用户导入模板")
     public void importTemplate(HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         excelService.exportTemplate(response.getOutputStream(), SysUser.class, "用户数据", "用户导入模板");
@@ -76,7 +85,8 @@ public class SysUserController extends BaseController {
 
     @PreAuthorize("@se.hasPermission('system:user:query')")
     @GetMapping({"/detail", "/detail/{id}"})
-    public ApiResult<SysUser> getInfo(@PathVariable(required = false) Long id) {
+    @Operation(summary = "获取用户编辑信息", description = "返回用户资料、可选角色和已选角色及岗位 ID；不传 id 时 data 为空。")
+    public ApiResult<SysUser> getInfo(@Parameter(description = "用户 ID") @PathVariable(required = false) Long id) {
         SysUser user = null;
         List<Long> roleIds = List.of();
         List<Long> postIds = List.of();
@@ -103,6 +113,7 @@ public class SysUserController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:user:add')")
     @Log(title = "用户管理", businessType = BusinessType.INSERT)
     @PostMapping
+    @Operation(summary = "新增用户")
     public ApiResult<Void> add(@Validated @RequestBody UserSaveDTO request) {
         SysUser user = BeanUtil.toBean(request, SysUser.class);
         if (StrUtil.isBlank(user.getPassword())) {
@@ -120,6 +131,7 @@ public class SysUserController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:user:edit')")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PutMapping
+    @Operation(summary = "修改用户")
     public ApiResult<Void> edit(@Validated @RequestBody UserSaveDTO request) {
         SysUser user = BeanUtil.toBean(request, SysUser.class);
         userService.checkUserAllowed(user);
@@ -132,7 +144,8 @@ public class SysUserController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:user:remove')")
     @Log(title = "用户管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public ApiResult<Void> remove(@PathVariable Long[] ids) {
+    @Operation(summary = "删除用户")
+    public ApiResult<Void> remove(@Parameter(description = "用户 ID 列表，多个用逗号分隔") @PathVariable Long[] ids) {
         if (Arrays.asList(ids).contains(SecurityUtils.getUserId())) {
             return error("不能删除当前登录用户");
         }
@@ -142,6 +155,7 @@ public class SysUserController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:user:reset-password')")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PutMapping("/password")
+    @Operation(summary = "重置用户密码")
     public ApiResult<Void> resetPassword(@Validated @RequestBody PasswordResetDTO request) {
         SysUser user = BeanUtil.toBean(request, SysUser.class);
         userService.checkUserAllowed(user);
@@ -153,6 +167,7 @@ public class SysUserController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:user:edit')")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PutMapping("/status")
+    @Operation(summary = "修改用户状态")
     public ApiResult<Void> changeStatus(@Validated @RequestBody StatusUpdateDTO request) {
         SysUser user = BeanUtil.toBean(request, SysUser.class);
         userService.checkUserAllowed(user);
@@ -162,7 +177,8 @@ public class SysUserController extends BaseController {
 
     @PreAuthorize("@se.hasPermission('system:user:query')")
     @GetMapping("/{id}/roles")
-    public ApiResult<List<SysRole>> getUserRoles(@PathVariable Long id) {
+    @Operation(summary = "查询用户角色")
+    public ApiResult<List<SysRole>> getUserRoles(@Parameter(description = "用户 ID") @PathVariable Long id) {
         userService.checkUserDataScope(id);
         List<SysRole> roles = roleService.selectRolesByUserId(id).stream()
                 .filter(role -> SecurityUtils.isAdmin(id) || !role.isAdmin())
@@ -173,7 +189,8 @@ public class SysUserController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:user:edit')")
     @Log(title = "用户角色授权", businessType = BusinessType.GRANT)
     @PutMapping("/{id}/roles")
-    public ApiResult<Void> updateUserRoles(@PathVariable Long id, @Validated @RequestBody Long[] roleIds) {
+    @Operation(summary = "设置用户角色")
+    public ApiResult<Void> updateUserRoles(@Parameter(description = "用户 ID") @PathVariable Long id, @Validated @RequestBody Long[] roleIds) {
         userService.checkUserDataScope(id);
         roleService.checkRoleDataScope(roleIds);
         userService.insertUserAuth(id, roleIds);
@@ -182,6 +199,7 @@ public class SysUserController extends BaseController {
 
     @PreAuthorize("@se.hasPermission('system:user:list')")
     @GetMapping("/dept-tree")
+    @Operation(summary = "查询部门树选项")
     public ApiResult<List<TreeSelect>> deptTree(SysDept query) {
         return success(deptService.selectDeptTreeList(query));
     }

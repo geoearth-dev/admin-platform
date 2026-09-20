@@ -70,12 +70,14 @@ mybatis-plus-join:
   banner: false
 scalar:
   enabled: false
-  path: /api
+  path: /doc
   url: /v3/api-docs
   page-title: Admin后台接口文档
   favicon: /favicon.ico
   # 隐藏开发者工具 always localhost never
   show-developer-tools: never
+  # 显示深浅色切换按钮
+  hide-dark-mode-toggle: false
   default-http-client:
     target-key: node
     client-key: axios

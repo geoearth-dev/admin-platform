@@ -15,9 +15,13 @@ import dev.geo.admin.quartz.service.ISysJobService;
 import dev.geo.admin.quartz.util.CronUtils;
 import dev.geo.admin.quartz.util.ScheduleUtils;
 import dev.geo.admin.security.utils.SecurityUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.quartz.SchedulerException;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 定时任务管理。
  */
+@Tag(name = "定时任务")
 @RestController
 @RequestMapping("/monitor/job")
 @RequiredArgsConstructor
@@ -36,7 +41,8 @@ public class SysJobController extends BaseController {
      */
     @PreAuthorize("@se.hasPermission('monitor:job:list')")
     @GetMapping("/list")
-    public ApiResult<PageResult<SysJob>> list(@Validated JobPageReqDTO query) {
+    @Operation(summary = "分页查询定时任务")
+    public ApiResult<PageResult<SysJob>> list(@Validated @ParameterObject JobPageReqDTO query) {
         return success(jobService.selectJobPage(query));
     }
     /**
@@ -45,7 +51,8 @@ public class SysJobController extends BaseController {
     @PreAuthorize("@se.hasPermission('monitor:job:export')")
     @Log(title = "定时任务", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, @Validated JobPageReqDTO query) {
+    @Operation(summary = "导出定时任务")
+    public void export(HttpServletResponse response, @Validated @ParameterObject JobPageReqDTO query) {
         excelService.exportExcel(response, jobService.selectJobList(query), SysJob.class, "定时任务");
     }
     /**
@@ -53,7 +60,8 @@ public class SysJobController extends BaseController {
      */
     @PreAuthorize("@se.hasPermission('monitor:job:query')")
     @GetMapping("/{id}")
-    public ApiResult<SysJob> getInfo(@PathVariable Long id) {
+    @Operation(summary = "查询定时任务详情")
+    public ApiResult<SysJob> getInfo(@Parameter(description = "任务 ID") @PathVariable Long id) {
         return success(jobService.selectJobById(id));
     }
     /**
@@ -62,6 +70,7 @@ public class SysJobController extends BaseController {
     @PreAuthorize("@se.hasPermission('monitor:job:add')")
     @Log(title = "定时任务", businessType = BusinessType.INSERT)
     @PostMapping
+    @Operation(summary = "新增定时任务")
     public ApiResult<Void> add(@Validated @RequestBody SysJob job) throws SchedulerException, TaskException {
         if (!CronUtils.isValid(job.getCronExpression())) {
             return error("新增任务'" + job.getJobName() + "'失败，Cron表达式不正确");
@@ -86,6 +95,7 @@ public class SysJobController extends BaseController {
     @PreAuthorize("@se.hasPermission('monitor:job:edit')")
     @Log(title = "定时任务", businessType = BusinessType.UPDATE)
     @PutMapping
+    @Operation(summary = "修改定时任务")
     public ApiResult<Void> edit(@Validated @RequestBody SysJob job) throws SchedulerException, TaskException {
         if (!CronUtils.isValid(job.getCronExpression()))
         {
@@ -121,6 +131,7 @@ public class SysJobController extends BaseController {
     @PreAuthorize("@se.hasPermission('monitor:job:changeStatus')")
     @Log(title = "定时任务", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
+    @Operation(summary = "启用或暂停定时任务")
     public ApiResult<Void> changeStatus(@RequestBody SysJob job) throws SchedulerException {
         SysJob newJob = jobService.selectJobById(job.getId());
         newJob.setStatus(job.getStatus());
@@ -132,6 +143,7 @@ public class SysJobController extends BaseController {
     @PreAuthorize("@se.hasPermission('monitor:job:changeStatus')")
     @Log(title = "定时任务", businessType = BusinessType.UPDATE)
     @PutMapping("/run")
+    @Operation(summary = "立即执行一次任务")
     public ApiResult<Void> run(@RequestBody SysJob job) throws SchedulerException {
         boolean result = jobService.run(job);
         return result ? success() : error("任务不存在或已过期！");
@@ -142,7 +154,8 @@ public class SysJobController extends BaseController {
     @PreAuthorize("@se.hasPermission('monitor:job:remove')")
     @Log(title = "定时任务", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public ApiResult<Void> remove(@PathVariable Long[] ids) throws SchedulerException {
+    @Operation(summary = "删除定时任务")
+    public ApiResult<Void> remove(@Parameter(description = "任务 ID 列表，多个用逗号分隔") @PathVariable Long[] ids) throws SchedulerException {
         jobService.deleteJobByIds(ids);
         return success();
     }

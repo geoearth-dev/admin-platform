@@ -1,3 +1,17 @@
+<template>
+  <template v-if="showIframe">
+    <template v-for="(item, index) in iframeRoutes" :key="item.fullPath">
+      <div v-if="canRender(item)" v-show="routeShow(item)" class="relative size-full">
+        <VbenSpinner :spinning="showSpinning(index)" />
+        <iframe
+          :src="item.meta.iframeSrc as string"
+          class="size-full"
+          @load="hideLoading(index)"
+        ></iframe>
+      </div>
+    </template>
+  </template>
+</template>
 <script lang="ts" setup>
 import type { RouteLocationNormalized } from 'vue-router';
 
@@ -59,17 +73,3 @@ function showSpinning(index: number) {
   return curSpinning === undefined ? true : curSpinning;
 }
 </script>
-<template>
-  <template v-if="showIframe">
-    <template v-for="(item, index) in iframeRoutes" :key="item.fullPath">
-      <div v-if="canRender(item)" v-show="routeShow(item)" class="relative size-full">
-        <VbenSpinner :spinning="showSpinning(index)" />
-        <iframe
-          :src="item.meta.iframeSrc as string"
-          class="size-full"
-          @load="hideLoading(index)"
-        ></iframe>
-      </div>
-    </template>
-  </template>
-</template>

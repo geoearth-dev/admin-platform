@@ -288,7 +288,7 @@ function createDefaultForm(): ConfigSaveParams {
     configName: '',
     configKey: '',
     configValue: '',
-    configType: 'Y',
+    configType: '1',
     remark: '',
   };
 }

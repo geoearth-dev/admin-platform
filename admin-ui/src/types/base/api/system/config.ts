@@ -7,7 +7,7 @@ export interface ConfigQueryParams extends PageParam {
   /** 参数键名 */
   configKey?: string;
   /** 系统内置 */
-  configType?: 'Y' | 'N';
+  configType?: '1' | '0';
   /** 创建日期起始值，格式 yyyy-MM-dd */
   beginDate?: string;
   /** 创建日期结束值，格式 yyyy-MM-dd */
@@ -24,8 +24,8 @@ export interface SysConfig extends BaseEntity {
   configKey: string;
   /** 参数键值 */
   configValue: string;
-  /** 系统内置（Y是 N否） */
-  configType: 'Y' | 'N';
+  /** 系统内置（1是 0否） */
+  configType: '1' | '0';
 }
 
 /** 对应 ConfigSaveDTO；修改时携带 id。 */
@@ -34,7 +34,7 @@ export interface ConfigSaveParams {
   configName: string;
   configKey: string;
   configValue: string;
-  /** 系统内置（Y是 N否），保存时必填 */
-  configType: 'Y' | 'N';
+  /** 系统内置（1是 0否），保存时必填 */
+  configType: '1' | '0';
   remark?: string;
 }

@@ -1,0 +1,31 @@
+#macro(control $column $target $queryMode)
+#if(!$queryMode && ($column.htmlType == 'image' || $column.htmlType == 'upload') && $column.tsType == 'string')
+<FileUpload v-model="${target}" mode="#if($column.htmlType == 'image')image#{else}file#end" :disabled="saving" @uploading="value => setUploading('#if($target.startsWith('child.'))child.' + index + '.#end${target}', value)" />
+#elseif(!$queryMode && $column.htmlType == 'editor' && $column.tsType == 'string')
+<VbenTiptap :image-upload="editorImageUpload" :model-value="${target} ?? ''" @update:model-value="value => ${target} = value" />
+#elseif($column.javaType == "LocalTime")
+<el-time-picker v-model="${target}" value-format="HH:mm:ss" clearable />
+#elseif($column.timeType)
+<el-date-picker v-model="${target}" type="#if($column.javaType == 'LocalDate')date#{else}datetime#end" value-format="#if($column.javaType == 'LocalDate')YYYY-MM-DD#elseif($column.javaType == 'LocalDateTime')YYYY-MM-DD HH:mm:ss#{else}YYYY-MM-DDTHH:mm:ss.SSSZ#end" clearable />
+#elseif($column.dictType && $column.dictType != '' && $column.tsType != 'boolean')
+#if(!$queryMode && $column.htmlType == 'checkbox' && $column.tsType == 'string')
+<el-checkbox-group :model-value="(${target} ?? '').split(',').filter(Boolean)" @update:model-value="(value: (string | number | boolean)[]) => ${target} = value.join(',')">
+  <el-checkbox v-for="item in dicts['${column.dictType}'].value" :key="item.value" :value="item.value">{{ item.label }}</el-checkbox>
+</el-checkbox-group>
+#elseif(!$queryMode && $column.htmlType == 'radio')
+<el-radio-group v-model="${target}">
+  <el-radio v-for="item in dicts['${column.dictType}'].value" :key="item.value" :value="#if($column.tsType == 'number')Number(item.value)#{else}item.value#end">{{ item.label }}</el-radio>
+</el-radio-group>
+#else
+<el-select v-model="${target}" clearable>
+  <el-option v-for="item in dicts['${column.dictType}'].value" :key="item.value" :label="item.label" :value="#if($column.tsType == 'number')Number(item.value)#{else}item.value#end" />
+</el-select>
+#end
+#elseif($column.tsType == 'number')
+<el-input-number v-model="${target}" :controls="false" />
+#elseif($column.tsType == 'boolean')
+<el-select v-model="${target}" clearable><el-option label="是" :value="true" /><el-option label="否" :value="false" /></el-select>
+#else
+<el-input v-model="${target}" type="#if(!$queryMode && $column.htmlType == 'textarea')textarea#{else}text#end" clearable />
+#end
+#end

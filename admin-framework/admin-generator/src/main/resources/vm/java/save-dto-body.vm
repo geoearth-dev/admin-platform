@@ -1,0 +1,34 @@
+package ${packageName}.model.${moduleName}.dto;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
+import lombok.Getter;
+import lombok.Setter;
+import java.math.BigDecimal;
+import java.time.*;
+import java.util.*;
+
+/** 保存参数，仅包含主键及允许新增/修改的业务字段。 */
+@Getter
+@Setter
+public class ${model.className}SaveDTO {
+    public interface Create {}
+    public interface Update {}
+#foreach($column in $model.saveColumns)
+    /** ${column.javaComment} */
+#if($column.required && !$column.pk && !(!$mainModel && $column.javaField == $subFk.javaField))
+#if($column.javaType == "String")
+    @NotBlank(message = "必填字段：${column.javaField}", groups = {#if($column.insert)Create.class#if($column.edit), #end#end#if($column.edit)Update.class#end})
+#else
+    @NotNull(message = "必填字段：${column.javaField}", groups = {#if($column.insert)Create.class#if($column.edit), #end#end#if($column.edit)Update.class#end})
+#end
+#end
+    private ${column.javaType} ${column.javaField};
+#end
+#if($mainModel && $table.sub)
+    @Valid
+    @jakarta.validation.groups.ConvertGroup(from = Create.class, to = ${subClassName}SaveDTO.Create.class)
+    @jakarta.validation.groups.ConvertGroup(from = Update.class, to = ${subClassName}SaveDTO.Create.class)
+    private List<${subClassName}SaveDTO> ${subclassName}List = new ArrayList<>();
+#end
+}

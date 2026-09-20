@@ -12,8 +12,12 @@ import dev.geo.admin.system.model.system.dto.DictTypePageReqDTO;
 import dev.geo.admin.system.model.system.dto.DictTypeSaveDTO;
 import dev.geo.admin.system.model.system.entity.SysDictType;
 import dev.geo.admin.system.service.system.ISysDictTypeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +27,7 @@ import java.util.List;
 /**
  * 字典类型管理接口。
  */
+@Tag(name = "字典类型")
 @RestController
 @RequestMapping("/system/dict-type")
 @RequiredArgsConstructor
@@ -32,14 +37,16 @@ public class SysDictTypeController extends BaseController {
 
     @PreAuthorize("@se.hasPermission('system:dict:list')")
     @GetMapping("/list")
-    public ApiResult<PageResult<SysDictType>> list(@Validated DictTypePageReqDTO query) {
+    @Operation(summary = "分页查询字典类型")
+    public ApiResult<PageResult<SysDictType>> list(@Validated @ParameterObject DictTypePageReqDTO query) {
         return success(dictTypeService.selectDictTypePage(query));
     }
 
     @Log(title = "字典类型", businessType = BusinessType.EXPORT)
     @PreAuthorize("@se.hasPermission('system:dict:export')")
     @PostMapping("/export")
-    public void export(HttpServletResponse response, @Validated DictTypePageReqDTO query) {
+    @Operation(summary = "导出字典类型")
+    public void export(HttpServletResponse response, @Validated @ParameterObject DictTypePageReqDTO query) {
         query.setPageSize(PageParam.PAGE_SIZE_NONE);
         excelService.exportExcel(response, dictTypeService.selectDictTypePage(query).getRecords(),
                 SysDictType.class, "字典类型");
@@ -47,13 +54,15 @@ public class SysDictTypeController extends BaseController {
 
     @PreAuthorize("@se.hasPermission('system:dict:query')")
     @GetMapping("/{id}")
-    public ApiResult<SysDictType> getInfo(@PathVariable Long id) {
+    @Operation(summary = "查询字典类型详情")
+    public ApiResult<SysDictType> getInfo(@Parameter(description = "字典类型 ID") @PathVariable Long id) {
         return success(dictTypeService.selectDictTypeById(id));
     }
 
     @PreAuthorize("@se.hasPermission('system:dict:add')")
     @Log(title = "字典类型", businessType = BusinessType.INSERT)
     @PostMapping
+    @Operation(summary = "新增字典类型")
     public ApiResult<Void> add(@Validated @RequestBody DictTypeSaveDTO request) {
         SysDictType dictType = BeanUtil.toBean(request, SysDictType.class);
         if (!dictTypeService.checkDictTypeUnique(dictType)) {
@@ -65,6 +74,7 @@ public class SysDictTypeController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:dict:edit')")
     @Log(title = "字典类型", businessType = BusinessType.UPDATE)
     @PutMapping
+    @Operation(summary = "修改字典类型")
     public ApiResult<Void> edit(@Validated @RequestBody DictTypeSaveDTO request) {
         SysDictType dictType = BeanUtil.toBean(request, SysDictType.class);
         if (!dictTypeService.checkDictTypeUnique(dictType)) {
@@ -76,7 +86,8 @@ public class SysDictTypeController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:dict:remove')")
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public ApiResult<Void> remove(@PathVariable Long[] ids) {
+    @Operation(summary = "删除字典类型")
+    public ApiResult<Void> remove(@Parameter(description = "字典类型 ID 列表，多个用逗号分隔") @PathVariable Long[] ids) {
         dictTypeService.deleteDictTypeByIds(ids);
         return success();
     }
@@ -84,12 +95,14 @@ public class SysDictTypeController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:dict:remove')")
     @Log(title = "字典类型", businessType = BusinessType.CLEAN)
     @DeleteMapping("/cache")
+    @Operation(summary = "刷新字典缓存")
     public ApiResult<Void> refreshCache() {
         dictTypeService.resetDictCache();
         return success();
     }
 
     @GetMapping("/options")
+    @Operation(summary = "查询字典类型选项")
     public ApiResult<List<SysDictType>> options() {
         return success(dictTypeService.selectDictTypeAll());
     }

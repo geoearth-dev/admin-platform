@@ -1,22 +1,10 @@
--- 菜单 SQL
-insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('${functionName}', '${parentMenuId}', '1', '${businessName}', '${moduleName}/${businessName}/index', 1, 0, 'C', '0', '0', '${permissionPrefix}:list', '#', 'admin', sysdate(), '', null, '${functionName}菜单');
-
--- 按钮父菜单ID
-SELECT @parentId := LAST_INSERT_ID();
-
--- 按钮 SQL
-insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('${functionName}查询', @parentId, '1',  '#', '', 1, 0, 'F', '0', '0', '${permissionPrefix}:query',        '#', 'admin', sysdate(), '', null, '');
-
-insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('${functionName}新增', @parentId, '2',  '#', '', 1, 0, 'F', '0', '0', '${permissionPrefix}:add',          '#', 'admin', sysdate(), '', null, '');
-
-insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('${functionName}修改', @parentId, '3',  '#', '', 1, 0, 'F', '0', '0', '${permissionPrefix}:edit',         '#', 'admin', sysdate(), '', null, '');
-
-insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('${functionName}删除', @parentId, '4',  '#', '', 1, 0, 'F', '0', '0', '${permissionPrefix}:remove',       '#', 'admin', sysdate(), '', null, '');
-
-insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('${functionName}导出', @parentId, '5',  '#', '', 1, 0, 'F', '0', '0', '${permissionPrefix}:export',       '#', 'admin', sysdate(), '', null, '');
+-- 当前 admin-platform 菜单结构。先确认父菜单，再执行；执行后为业务角色分配菜单权限。
+INSERT INTO sys_menu (menu_name, parent_id, `order`, path, component, route_name, menu_type, hide_in_menu, keep_alive, status, perms, create_time)
+SELECT '${functionSql}', $parentMenuId, 1, '${businessName}', 'sys/${moduleName}/${businessName}/index', '${ClassName}', 'menu', 0, 1, 1, '${permissionPrefix}:list', NOW()
+WHERE NOT EXISTS (SELECT 1 FROM sys_menu WHERE perms = '${permissionPrefix}:list');
+SET @parentId = (SELECT id FROM sys_menu WHERE perms = '${permissionPrefix}:list' ORDER BY id LIMIT 1);
+#foreach($action in ['query', 'add', 'edit', 'remove', 'export'])
+INSERT INTO sys_menu (menu_name, parent_id, `order`, path, menu_type, hide_in_menu, status, perms, create_time)
+SELECT '${functionSql} ${action}', @parentId, $foreach.count, '', 'button', 1, 1, '${permissionPrefix}:${action}', NOW()
+WHERE NOT EXISTS (SELECT 1 FROM sys_menu WHERE perms = '${permissionPrefix}:${action}');
+#end

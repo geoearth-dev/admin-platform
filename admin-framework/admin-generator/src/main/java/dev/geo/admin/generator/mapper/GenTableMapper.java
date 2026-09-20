@@ -6,6 +6,7 @@ import dev.geo.admin.generator.model.GenTable;
 import dev.geo.admin.generator.model.dto.GenTablePageReqDTO;
 
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 业务 数据层
@@ -17,7 +18,7 @@ public interface GenTableMapper {
      * @param query 业务信息
      * @return 业务集合
      */
-    IPage<GenTable> selectGenTablePage(IPage<GenTable> page, GenTablePageReqDTO query);
+    IPage<GenTable> selectGenTablePage(IPage<GenTable> page, @Param("query") GenTablePageReqDTO query);
 
     /**
      * 查询据库列表
@@ -25,7 +26,7 @@ public interface GenTableMapper {
      * @param query 业务信息
      * @return 数据库表集合
      */
-    IPage<GenTable> selectDbTablePage(IPage<GenTable> page, GenTablePageReqDTO query);
+    IPage<GenTable> selectDbTablePage(IPage<GenTable> page, @Param("query") GenTablePageReqDTO query);
 
     /**
      * 查询据库列表

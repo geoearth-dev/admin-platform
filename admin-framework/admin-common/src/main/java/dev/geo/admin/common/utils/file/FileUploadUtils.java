@@ -104,7 +104,8 @@ public class FileUploadUtils {
      * @throws InvalidExtensionException            文件校验异常
      */
     public static String upload(String baseDir, MultipartFile file, String[] allowedExtension, boolean useCustomNaming) throws FileSizeLimitExceededException, IOException, FileNameLengthLimitExceededException, InvalidExtensionException {
-        int fileNameLength = Objects.requireNonNull(file.getOriginalFilename()).length();
+        if (file == null || file.isEmpty()) throw new IOException("上传文件不能为空");
+        int fileNameLength = Objects.requireNonNullElse(file.getOriginalFilename(), "").length();
         if (fileNameLength > FileUploadUtils.DEFAULT_FILE_NAME_LENGTH) {
             throw new FileNameLengthLimitExceededException(FileUploadUtils.DEFAULT_FILE_NAME_LENGTH);
         }
@@ -122,14 +123,14 @@ public class FileUploadUtils {
      * 编码文件名(日期格式目录 + 原文件名 + 序列值 + 后缀)
      */
     public static String extractFilename(MultipartFile file) {
-        return StrUtil.format("{}/{}_{}.{}", DateTimeFormat.DATE_PATH.format(Instant.now()), FilenameUtils.getBaseName(file.getOriginalFilename()), Seq.getId(Seq.uploadSeqType), getExtension(file));
+        return StrUtil.format("{}/{}_{}.{}", DateTimeFormat.DATE_PATH.withZone(DateTimeFormat.BUSINESS_ZONE).format(Instant.now()), FilenameUtils.getBaseName(file.getOriginalFilename()), Seq.getId(Seq.uploadSeqType), getExtension(file));
     }
 
     /**
      * 编编码文件名(日期格式目录 + UUID + 后缀)
      */
     public static String uuidFilename(MultipartFile file) {
-        return StrUtil.format("{}/{}.{}", DateTimeFormat.DATE_PATH.format(Instant.now()), IdUtil.fastSimpleUUID(), getExtension(file));
+        return StrUtil.format("{}/{}.{}", DateTimeFormat.DATE_PATH.withZone(DateTimeFormat.BUSINESS_ZONE).format(Instant.now()), IdUtil.fastSimpleUUID(), getExtension(file));
     }
 
     public static File getAbsoluteFile(String uploadDir, String fileName) throws IOException {
@@ -142,7 +143,9 @@ public class FileUploadUtils {
 //        }
 //        return desc;
 
-        Path target = Path.of(uploadDir).resolve(fileName).toAbsolutePath().normalize();
+        Path root = Path.of(uploadDir).toAbsolutePath().normalize();
+        Path target = root.resolve(fileName).normalize();
+        if (!target.startsWith(root)) throw new IOException("非法文件路径");
         Path parent = target.getParent();
         if (parent != null) {
         /* Files.createDirectories() 的优点是：
@@ -156,9 +159,11 @@ public class FileUploadUtils {
     }
 
     public static String getPathFileName(String uploadDir, String fileName) {
-        int dirLastIndex = AppConfig.getProfile().length() + 1;
-        String currentDir = StrUtil.subSuf(uploadDir, dirLastIndex);
-        return Constants.RESOURCE_PREFIX + "/" + currentDir + "/" + fileName;
+        Path root = Path.of(AppConfig.getProfile()).toAbsolutePath().normalize();
+        Path directory = Path.of(uploadDir).toAbsolutePath().normalize();
+        if (!directory.startsWith(root)) throw new IllegalArgumentException("上传目录不在资源目录内");
+        String relative = root.relativize(directory.resolve(fileName).normalize()).toString().replace('\\', '/');
+        return Constants.RESOURCE_PREFIX + "/" + relative;
     }
 
     /**

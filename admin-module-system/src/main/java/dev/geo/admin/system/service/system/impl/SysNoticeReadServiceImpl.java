@@ -85,17 +85,6 @@ public class SysNoticeReadServiceImpl implements ISysNoticeReadService
                 Page.of(query.getPageNum(), query.getPageSize()), query));
     }
 
-    /**
-     * 删除公告时清理对应已读记录
-     */
-    @Override
-    public void deleteByNoticeIds(Long[] noticeIds)
-    {
-        if (noticeIds != null && noticeIds.length > 0) {
-            noticeReadMapper.deleteByNoticeIds(noticeIds);
-        }
-    }
-
     /** 公告面向全部登录用户；关闭或不存在的公告不能标记已读。 */
     private Long[] validateReadableNotices(Long[] noticeIds) {
         if (noticeIds == null || noticeIds.length == 0 ||

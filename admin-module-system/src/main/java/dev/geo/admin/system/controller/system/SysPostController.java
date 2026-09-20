@@ -12,8 +12,12 @@ import dev.geo.admin.system.model.system.dto.PostPageReqDTO;
 import dev.geo.admin.system.model.system.dto.PostSaveDTO;
 import dev.geo.admin.system.model.system.entity.SysPost;
 import dev.geo.admin.system.service.system.ISysPostService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +27,7 @@ import java.util.List;
 /**
  * 岗位管理接口。
  */
+@Tag(name = "岗位管理")
 @RestController
 @RequestMapping("/system/post")
 @RequiredArgsConstructor
@@ -32,27 +37,31 @@ public class SysPostController extends BaseController {
 
     @PreAuthorize("@se.hasPermission('system:post:list')")
     @GetMapping("/list")
-    public ApiResult<PageResult<SysPost>> list(@Validated PostPageReqDTO query) {
+    @Operation(summary = "分页查询岗位")
+    public ApiResult<PageResult<SysPost>> list(@Validated @ParameterObject PostPageReqDTO query) {
         return success(postService.selectPostPage(query));
     }
 
     @Log(title = "岗位管理", businessType = BusinessType.EXPORT)
     @PreAuthorize("@se.hasPermission('system:post:export')")
     @PostMapping("/export")
-    public void export(HttpServletResponse response, @Validated PostPageReqDTO query) {
+    @Operation(summary = "导出岗位")
+    public void export(HttpServletResponse response, @Validated @ParameterObject PostPageReqDTO query) {
         query.setPageSize(PageParam.PAGE_SIZE_NONE);
         excelService.exportExcel(response, postService.selectPostPage(query).getRecords(), SysPost.class, "岗位数据");
     }
 
     @PreAuthorize("@se.hasPermission('system:post:query')")
     @GetMapping("/{id}")
-    public ApiResult<SysPost> getInfo(@PathVariable Long id) {
+    @Operation(summary = "查询岗位详情")
+    public ApiResult<SysPost> getInfo(@Parameter(description = "岗位 ID") @PathVariable Long id) {
         return success(postService.selectPostById(id));
     }
 
     @PreAuthorize("@se.hasPermission('system:post:add')")
     @Log(title = "岗位管理", businessType = BusinessType.INSERT)
     @PostMapping
+    @Operation(summary = "新增岗位")
     public ApiResult<Void> add(@Validated @RequestBody PostSaveDTO request) {
         SysPost post = BeanUtil.toBean(request, SysPost.class);
         ApiResult<Void> validation = validatePost(post, "新增");
@@ -62,6 +71,7 @@ public class SysPostController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:post:edit')")
     @Log(title = "岗位管理", businessType = BusinessType.UPDATE)
     @PutMapping
+    @Operation(summary = "修改岗位")
     public ApiResult<Void> edit(@Validated @RequestBody PostSaveDTO request) {
         SysPost post = BeanUtil.toBean(request, SysPost.class);
         ApiResult<Void> validation = validatePost(post, "修改");
@@ -71,11 +81,13 @@ public class SysPostController extends BaseController {
     @PreAuthorize("@se.hasPermission('system:post:remove')")
     @Log(title = "岗位管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public ApiResult<Void> remove(@PathVariable Long[] ids) {
+    @Operation(summary = "删除岗位")
+    public ApiResult<Void> remove(@Parameter(description = "岗位 ID 列表，多个用逗号分隔") @PathVariable Long[] ids) {
         return toApiResult(postService.deletePostByIds(ids));
     }
 
     @GetMapping("/options")
+    @Operation(summary = "查询岗位选项")
     public ApiResult<List<SysPost>> options() {
         return success(postService.selectPostAll());
     }

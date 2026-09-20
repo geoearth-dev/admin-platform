@@ -32,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -396,9 +397,16 @@ public class SysUserServiceImpl implements ISysUserService {
     public void insertUserPost(SysUser user) {
         Long[] posts = user.getPostIds();
         if (ObjectUtil.isNotEmpty(posts)) {
+            if (Arrays.stream(posts).anyMatch(id -> id == null || id <= 0)) {
+                throw new ServiceException("请选择有效的岗位ID");
+            }
+            List<Long> postIds = Arrays.stream(posts).distinct().toList();
+            if (postMapper.selectByIds(postIds).size() != postIds.size()) {
+                throw new ServiceException("部分岗位不存在或已被删除");
+            }
             // 新增用户与岗位管理
-            List<SysUserPost> list = new ArrayList<>(posts.length);
-            for (Long postId : posts) {
+            List<SysUserPost> list = new ArrayList<>(postIds.size());
+            for (Long postId : postIds) {
                 SysUserPost up = new SysUserPost();
                 up.setUserId(user.getId());
                 up.setPostId(postId);
