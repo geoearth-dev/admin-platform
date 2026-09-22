@@ -11,7 +11,6 @@ import type { SysUser, UserSaveParams } from '@/types/base/api/system/user';
 import { roleOptions } from '@/api/system/role';
 import { postOptions } from '@/api/system/post';
 import { ElMessage } from 'element-plus';
-// import { listMenu } from '@/api/admin/menu';
 
 const emit = defineEmits<{ success: [] }>();
 
@@ -112,9 +111,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 });
 
 const getDrawerTitle = computed(() => {
-  return id.value != null
-    ? $t('system.user.editTitle')
-    : $t('system.user.createTitle');
+  return id.value != null ? $t('system.user.editTitle') : $t('system.user.createTitle');
 });
 </script>
 <template>

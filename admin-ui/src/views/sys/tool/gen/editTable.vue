@@ -275,8 +275,8 @@
                   :label="dict.dictName"
                   :value="dict.dictType"
                 >
-                  <span style="float: left">{{ dict.dictName }}</span>
-                  <span style="float: right; color: #8492a6; font-size: 13px">{{
+                  <span class="float-left">{{ dict.dictName }}</span>
+                  <span class="float-right ml-3 text-[13px] text-muted-foreground">{{
                     dict.dictType
                   }}</span>
                 </el-option>
@@ -297,7 +297,7 @@
       </el-tab-pane>
     </el-tabs>
     <el-form label-width="100px">
-      <div style="text-align: center; margin-left: -100px; margin-top: 10px">
+      <div class="mt-2.5 flex justify-center">
         <el-button
           type="primary"
           :loading="saving"

@@ -7,7 +7,7 @@ import VbenDrawer from './drawer.vue';
 import { usePreferences } from '@/plugins/preference';
 import { useSelector } from '@tanstack/vue-store';
 
-const USER_DRAWER_INJECT_KEY = Symbol('VBEN_DRAWER_INJECT');
+const USER_DRAWER_INJECT_KEY = Symbol('ADMIN_DRAWER_INJECT');
 
 const { globalEscapeShortcutKey } = usePreferences();
 
@@ -129,7 +129,7 @@ async function checkProps(api: ExtendedDrawerApi, attrs: Record<string, unknown>
 
   for (const attr of Object.keys(attrs)) {
     if (stateKeys.has(attr) && !['class'].includes(attr)) {
-      // connectedComponent存在时，不要传入Drawer的props，会造成复杂度提升，如果你需要修改Drawer的props，请使用 useVbenDrawer 或者api
+      // 使用 connectedComponent 时，通过 useVbenDrawer 或抽屉 API 配置状态。
       console.warn(
         `[Vben Drawer]: When 'connectedComponent' exists, do not set props or slots '${attr}', which will increase complexity. If you need to modify the props of Drawer, please use useVbenDrawer or api.`,
       );

@@ -1,8 +1,8 @@
-import type { BasicUserInfo } from '@/types'
+import type { UserProfileResult } from '@/types/base/api/system/user'
 
 export interface Props {
   title?: string
-  userInfo: Pick<BasicUserInfo, 'avatar' | 'realName' | 'username'> | null
+  userInfo: Pick<UserProfileResult, 'avatar' | 'nickName' | 'userName'> | null
   tabs: {
     label: string
     value: string

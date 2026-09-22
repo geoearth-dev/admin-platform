@@ -1,6 +1,7 @@
 package dev.geo.admin.security.session;
 
 import dev.geo.admin.security.model.LoginSession;
+import dev.geo.admin.security.model.LoginUserInfo;
 
 import java.time.Duration;
 import java.util.List;
@@ -16,7 +17,15 @@ public interface LoginSessionStore {
      */
     List<LoginSession> findAll();
 
+    /** 更新已有会话的用户资料，保留过期时间和刷新令牌，不重建已注销的会话。 */
+    void updateUserInfo(String sessionId, LoginUserInfo userInfo);
+
     boolean rotateRefreshToken(String sessionId, String expectedHash, String newHash);
 
-    void delete(String sessionId);
+    default void delete(String sessionId) {
+        delete(sessionId, false);
+    }
+
+    /** 撤销会话，并通知在线连接；forced 表示管理员强制下线。 */
+    void delete(String sessionId, boolean forced);
 }

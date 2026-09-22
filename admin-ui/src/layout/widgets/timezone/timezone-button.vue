@@ -25,22 +25,17 @@ const timezoneOptionsRef = ref<
 
 const [Modal, modalApi] = useVbenModal({
   fullscreenButton: false,
-  onConfirm: async () => {
-    try {
-      modalApi.setState({ confirmLoading: true });
-      const timezone = unref(timezoneRef);
-      if (timezone) {
-        await timezoneStore.setTimezone(timezone);
-      }
-      modalApi.close();
-    } finally {
-      modalApi.setState({ confirmLoading: false });
+  onConfirm() {
+    const timezone = unref(timezoneRef);
+    if (timezone) {
+      timezoneStore.setTimezone(timezone);
     }
+    modalApi.close();
   },
-  async onOpenChange(isOpen) {
+  onOpenChange(isOpen) {
     if (isOpen) {
       timezoneRef.value = unref(timezoneStore.timezone);
-      timezoneOptionsRef.value = await timezoneStore.getTimezoneOptions();
+      timezoneOptionsRef.value = timezoneStore.getTimezoneOptions();
     }
   },
 });

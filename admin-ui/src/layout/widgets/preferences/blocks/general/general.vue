@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, unref } from 'vue';
+import { computed } from 'vue';
 
 import { $t } from '@/plugins/locale';
 
@@ -24,28 +24,14 @@ const appEnableCopyPreferences = defineModel<boolean>(
 );
 const timezoneStore = useTimezoneStore();
 
-const timezoneOptionsRef = ref<
-  {
-    label: string;
-    value: string;
-  }[]
->([]);
-
-onMounted(async () => {
-  timezoneOptionsRef.value = await timezoneStore.getTimezoneOptions();
-  // 获取当前时区，例如：Asia/Shanghai
-  const timezoneValue = unref(timezoneStore.timezone);
-  if (timezoneValue) {
-    appTimezone.value = timezoneValue;
-  }
-});
+const timezoneOptions = computed(() => timezoneStore.getTimezoneOptions());
 </script>
 
 <template>
   <SelectItem v-model="appLocale" :items="SUPPORT_LANGUAGES">
     {{ $t('preferences.language') }}
   </SelectItem>
-  <SelectItem v-model="appTimezone" :items="timezoneOptionsRef">
+  <SelectItem v-model="appTimezone" :items="timezoneOptions">
     {{ $t('preferences.timezone') }}
   </SelectItem>
   <SwitchItem v-model="appDynamicTitle">

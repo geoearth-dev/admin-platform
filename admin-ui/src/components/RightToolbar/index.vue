@@ -24,12 +24,12 @@
         <el-dropdown
           trigger="click"
           :hide-on-click="false"
-          style="padding-left: 12px"
+          class="column-settings-dropdown"
           v-if="showColumnsType == 'checkbox'"
         >
           <el-button circle :icon="Menu" />
           <template #dropdown>
-            <el-dropdown-menu>
+            <el-dropdown-menu class="column-settings-menu">
               <!-- 全选/反选 按钮 -->
               <el-dropdown-item>
                 <el-checkbox
@@ -55,7 +55,7 @@
         </el-dropdown>
       </el-tooltip>
     </el-row>
-    <el-dialog :title="title" v-model="open" append-to-body>
+    <el-dialog class="column-settings-dialog" :title="title" v-model="open" append-to-body>
       <el-transfer
         :titles="['显示', '隐藏']"
         :model-value="value"
@@ -281,27 +281,3 @@ async function saveStorage(): Promise<void> {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-:deep(.el-transfer__button) {
-  border-radius: 50%;
-  display: block;
-  margin-left: 0px;
-}
-
-:deep(.el-transfer__button:first-child) {
-  margin-bottom: 10px;
-}
-
-:deep(.el-dropdown-menu__item) {
-  line-height: 30px;
-  padding: 0 17px;
-}
-
-.check-line {
-  width: 90%;
-  height: 1px;
-  background-color: #ccc;
-  margin: 3px auto;
-}
-</style>

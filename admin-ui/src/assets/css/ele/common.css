@@ -1,0 +1,321 @@
+/**
+ * 通用 CSS 样式布局处理
+ * 部分样式来自 RuoYi，适配当前项目主题。
+ */
+
+/** 基础通用 **/
+.app-container {
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 20px;
+}
+
+.app-container .mb8 {
+  margin-bottom: 8px;
+}
+
+/* 页面顶部操作栏 */
+.app-container > .el-row.mb8 {
+  align-items: center;
+  row-gap: 8px;
+}
+
+/* 工具栏 + 搜索栏按钮 */
+.app-container .el-button:not(.is-circle, .is-link, .is-text) {
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1;
+  box-shadow: none;
+}
+
+.app-container > .el-row.mb8 > .el-col .el-button .el-icon,
+.app-container .el-form--inline .el-button .el-icon {
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+}
+
+.app-container > .el-row.mb8 > .el-col .el-button .el-icon + span,
+.app-container .el-form--inline .el-button .el-icon + span {
+  margin-left: 4px;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 12px;
+  }
+}
+
+/* 默认样式优先级低于主题工具类。 */
+@layer components {
+  /** 表单布局 **/
+  :is(.app-container, .el-dialog)
+    .el-form--inline
+    .el-form-item
+    :is(.el-input, .el-select, .el-cascader, .el-autocomplete) {
+    width: 200px;
+  }
+
+  :is(.app-container, .el-dialog) .el-form .el-form-item__label {
+    font-weight: 700;
+  }
+
+  .form-header {
+    margin: 8px 10px 25px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--el-border-color);
+    color: var(--el-color-primary);
+    font-size: 15px;
+  }
+
+  /* 弹窗内容滚动 */
+  .el-dialog.scrollbar .el-dialog__body {
+    max-height: 70vh;
+    overflow: auto;
+    padding: 10px 20px 0;
+  }
+
+  /** 表格布局 **/
+  :is(.app-container, .el-dialog) .el-table {
+    --el-table-header-bg-color: var(--el-fill-color-light);
+    --el-table-header-text-color: var(--el-text-color-regular);
+  }
+
+  :is(.app-container, .el-dialog) .el-table__header-wrapper th {
+    height: 40px;
+    font-size: 13px;
+    word-break: break-word;
+  }
+
+  .el-table .small-padding .cell {
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+
+  .el-table .fixed-width .el-button {
+    height: 28px;
+    font-size: 12px;
+    box-shadow: none;
+  }
+
+  .el-table .fixed-width :is(.el-button--small, .el-button.is-link) {
+    width: auto;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  /** 表格更多操作下拉样式 */
+  .el-table .el-dropdown-link {
+    margin-left: 10px;
+    color: var(--el-color-primary);
+    cursor: pointer;
+  }
+
+  .el-table .fixed-width .el-dropdown {
+    font-size: 12px;
+  }
+
+  /* 拖拽列样式 */
+  .el-table .allowDrag {
+    cursor: grab;
+  }
+
+  .el-table .allowDrag:active {
+    cursor: grabbing;
+  }
+}
+
+/* 表格右侧工具栏样式 */
+.top-right-btn {
+  margin-left: auto;
+}
+
+.top-right-btn .el-button.is-circle {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  box-shadow: none;
+}
+
+/* 列设置面板挂载到 body，单独限定样式范围。 */
+.column-settings-dropdown {
+  padding-left: 12px;
+}
+
+.column-settings-menu .el-dropdown-menu__item {
+  padding: 0 17px;
+  line-height: 30px;
+}
+
+.column-settings-menu .check-line {
+  width: 90%;
+  height: 1px;
+  margin: 3px auto;
+  background-color: var(--el-border-color-light);
+}
+
+.column-settings-dialog .el-transfer__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-left: 0;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.column-settings-dialog .el-transfer__button:first-child {
+  margin-bottom: 10px;
+}
+
+/* 管理页面按钮组 */
+.management-toolbar {
+  margin-left: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+:is(.notice-management, .log-management) .management-toolbar {
+  margin-left: 0;
+}
+
+.management-toolbar.vben-button-group.size-small button {
+  height: 28px;
+  padding: 0 10px;
+  gap: 4px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  box-shadow: none;
+}
+
+.management-toolbar.vben-button-group.size-small button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.management-toolbar.vben-button-group.size-small button svg.animate-spin {
+  margin-right: 0;
+}
+
+/* 分页布局 */
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: 20px;
+  background: transparent;
+}
+
+.pagination-container.hidden {
+  display: none;
+}
+
+/* 弹窗中的分页器 */
+.el-dialog .pagination-container {
+  position: static;
+  margin: 10px 0 0;
+  padding: 0;
+}
+
+.el-dialog .pagination-container .el-pagination {
+  position: static;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .pagination-container .el-pagination > .el-pagination__jump,
+  .pagination-container .el-pagination > .el-pagination__sizes {
+    display: none;
+  }
+}
+
+/* Cron 编辑器 */
+.crontab .pop_btn {
+  text-align: center;
+  margin-top: 20px;
+}
+.crontab .popup-main {
+  position: relative;
+  margin: 10px auto;
+  border-radius: 5px;
+  font-size: 12px;
+  overflow: hidden;
+}
+.crontab .popup-result {
+  box-sizing: border-box;
+  line-height: 24px;
+  margin: 25px auto;
+  padding: 15px 10px 10px;
+  border: 1px solid var(--el-border-color);
+  position: relative;
+}
+.crontab .popup-result .title {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  width: 140px;
+  font-size: 14px;
+  margin-left: -70px;
+  text-align: center;
+  line-height: 30px;
+  background: var(--el-bg-color-overlay);
+}
+.crontab .popup-result table {
+  text-align: center;
+  width: 100%;
+  margin: 0 auto;
+}
+.crontab .popup-result table td:not(.result) {
+  width: 3.5rem;
+  min-width: 3.5rem;
+  max-width: 3.5rem;
+}
+.crontab .popup-result table span {
+  display: block;
+  width: 100%;
+  font-family: arial;
+  line-height: 30px;
+  height: 30px;
+  white-space: nowrap;
+  overflow: hidden;
+  border: 1px solid var(--el-border-color-lighter);
+}
+.crontab .popup-result-scroll {
+  font-size: 12px;
+  line-height: 24px;
+  height: 10em;
+  overflow-y: auto;
+}
+.crontab .cron-field {
+  --cron-select-width: 18.8rem;
+  --cron-field-gap: 0.2rem;
+}
+
+.crontab .cron-field--min {
+  --cron-select-width: 19.8rem;
+}
+
+.crontab .cron-field--week {
+  --cron-select-width: 8rem;
+  --cron-field-gap: 0.5rem;
+}
+
+.crontab .cron-field :is(.el-input-number, .el-select) {
+  margin: 0 var(--cron-field-gap);
+}
+
+.crontab .cron-field .el-select {
+  width: var(--cron-select-width);
+}
+
+.crontab .cron-field--week .el-select.multiselect {
+  width: 17.8rem;
+}

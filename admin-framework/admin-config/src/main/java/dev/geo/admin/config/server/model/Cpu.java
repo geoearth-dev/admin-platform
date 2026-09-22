@@ -7,7 +7,6 @@ import lombok.Setter;
 /**
  * CPU相关信息
  *
- * @author qdata
  */
 @Getter
 @Setter

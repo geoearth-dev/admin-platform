@@ -322,9 +322,3 @@ onMounted(getList);
     />
   </div>
 </template>
-
-<style scoped>
-.log-management :deep(.management-toolbar) {
-  margin-left: 0;
-}
-</style>

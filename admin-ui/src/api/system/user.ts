@@ -4,6 +4,7 @@ import type { SysRole } from '@/types/base/api/system/role';
 import type {
   SysUser,
   UserProfileResult,
+  UserProfileUpdateParams,
   UserQueryParams,
   UserSaveParams,
 } from '@/types/base/api/system/user';
@@ -71,13 +72,20 @@ export function changeUserStatus(userId: number, status: string) {
 }
 
 // 修改当前用户个人资料。
-export function updateUserProfile(data: SysUser) {
-  return requestClient.put<void>('/system/profile', data);
+export function updateUserProfile(data: UserProfileUpdateParams) {
+  return requestClient.put<UserProfileResult>('/system/profile', data, { silent: true });
+}
+
+export function uploadUserAvatar(file: File) {
+  return requestClient.upload<UserProfileResult>('/system/profile/avatar', file, {
+    silent: true,
+    timeout: 120_000,
+  });
 }
 
 // 修改当前用户密码，后端接收 JSON 请求体。
 export function updateUserPwd(oldPassword: string, newPassword: string) {
-  return requestClient.put<void>('/system/profile/password', { oldPassword, newPassword });
+  return requestClient.put<void>('/system/profile/password', { oldPassword, newPassword }, { silent: true });
 }
 
 // 查询用户及其授权角色。

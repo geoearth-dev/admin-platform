@@ -5,7 +5,7 @@ import dev.geo.admin.common.core.controller.BaseController;
 import dev.geo.admin.common.core.model.ApiResult;
 import dev.geo.admin.common.enums.BusinessType;
 import dev.geo.admin.system.model.monitor.dto.OnlineSessionQueryDTO;
-import dev.geo.admin.system.model.monitor.entity.SysUserOnline;
+import dev.geo.admin.system.model.monitor.vo.OnlineSessionVO;
 import dev.geo.admin.system.service.monitor.ISysUserOnlineService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,7 +30,7 @@ public class SysUserOnlineController extends BaseController {
     @PreAuthorize("@se.hasPermission('monitor:online-session:list')")
     @GetMapping("/list")
     @Operation(summary = "查询在线会话")
-    public ApiResult<List<SysUserOnline>> list(@ParameterObject OnlineSessionQueryDTO query) {
+    public ApiResult<List<OnlineSessionVO>> list(@ParameterObject OnlineSessionQueryDTO query) {
         return success(onlineService.getOnlineSessions(query));
     }
 

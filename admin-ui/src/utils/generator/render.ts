@@ -113,7 +113,10 @@ const isAttr = makeMap(
     'target,title,type,usemap,value,width,wrap,prefix-icon',
 )
 const isNotProps = makeMap(
-  'layout,prepend,append,regList,tag,document,changeTag,defaultValue',
+  // 构建器内部配置不传给实际组件，避免 children 等字段落到原生 DOM。
+  'layout,layoutTree,children,tagIcon,vModel,formId,renderKey,componentName,' +
+    'labelWidth,dataType,valueKey,labelKey,childrenKey,' +
+    'prepend,append,regList,tag,document,changeTag,defaultValue',
 )
 
 const componentChild: BuilderMap<ChildBuilder> = {

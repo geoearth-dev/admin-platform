@@ -76,11 +76,17 @@
         <el-table-column
           prop="createTime"
           label="创建时间"
-        ></el-table-column>
+          width="180"
+        >
+          <template #default="{ row }">{{ formatDateTime(row.createTime) || '—' }}</template>
+        </el-table-column>
         <el-table-column
           prop="updateTime"
           label="更新时间"
-        ></el-table-column>
+          width="180"
+        >
+          <template #default="{ row }">{{ formatDateTime(row.updateTime) || '—' }}</template>
+        </el-table-column>
       </el-table>
       <pagination
         v-show="total > 0"
@@ -111,6 +117,7 @@ import type { FormInstance, TableInstance } from 'element-plus'
 import { Search, Refresh } from '@element-plus/icons-vue'
 import { listDbTable, importTable } from '@/api/tool/gen'
 import type { DbTable, GenQueryParams } from '@/types/base/api/tool/gen'
+import { formatDateTime } from '@/utils/date'
 const emit = defineEmits<{ ok: [] }>()
 const total = ref(0),
   visible = ref(false),

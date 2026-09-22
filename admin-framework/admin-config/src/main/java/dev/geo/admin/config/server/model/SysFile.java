@@ -5,8 +5,6 @@ import lombok.Setter;
 
 /**
  * 系统文件相关信息
- *
- * @author qdata
  */
 @Getter
 @Setter

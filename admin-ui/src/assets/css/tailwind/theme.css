@@ -1,23 +1,15 @@
 /*
  * 级联层顺序声明（必须先于 @import 'tailwindcss' 首次出现）：
- * preflight(base) < UI 库组件样式(antd / el / td) < Tailwind 工具类，
- * 使组件库样式（antdv-next 经 StyleProvider layer 注入 @layer antd；
- * element-plus / tdesign 经各自应用的 vite css-layer 插件包入对应层）
- * 能被工具类覆盖
+ * preflight(base) < Element Plus 组件样式(el) < Tailwind 工具类。
+ * Element Plus 样式由 vite css-layer 插件放入 el 层，使工具类可以覆盖组件样式。
  */
-@layer theme, base, ant, antd, el, td, components, utilities;
+@layer theme, base, el, components, utilities;
 
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
 @plugin '@tailwindcss/typography';
 @plugin '@iconify/tailwind4';
-
-/* Monorepo source detection: scan all packages and apps for utility classes */
-/* @source '../../../packages/';
-@source '../../../apps/';
-@source '../../../docs/';
-@source '../../../playground/'; */
 
 /* Dark mode uses .dark class selector, not prefers-color-scheme */
 @custom-variant dark (&:is(.dark *));
@@ -39,8 +31,7 @@
 
   /* Box Shadow */
   --shadow-float:
-    0 6px 16px 0 rgb(0 0 0 / 8%), 0 3px 6px -4px rgb(0 0 0 / 12%),
-    0 9px 28px 8px rgb(0 0 0 / 5%);
+    0 6px 16px 0 rgb(0 0 0 / 8%), 0 3px 6px -4px rgb(0 0 0 / 12%), 0 9px 28px 8px rgb(0 0 0 / 5%);
 
   /* Animations */
   --animate-accordion-down: accordion-down 0.2s ease-out;

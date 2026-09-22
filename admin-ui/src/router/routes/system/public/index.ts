@@ -1,6 +1,7 @@
-import { LOGIN_PATH } from '@/constants/core'
-import { AuthPageLayout, BasicLayout } from '@/layout'
-import { $t } from '@/plugins/locale'
+import { LOGIN_PATH } from '@/constants/core';
+import { AuthPageLayout, BasicLayout } from '@/layout';
+import { $t } from '@/plugins/locale';
+
 import type { RouteRecordRaw } from 'vue-router'
 
 /** 启动时注册的系统固定路由，包含根布局、登录页和 404。 */
@@ -17,7 +18,11 @@ const systemPublicRouter: RouteRecordRaw[] = [
     redirect: LOGIN_PATH,
     component: AuthPageLayout,
     name: 'Authentication',
-    meta: { title: 'Authentication', hideInTab: true,  hideInMenu:true },
+    meta: {
+      title: 'Authentication',
+      hideInTab: true,
+       hideInMenu:true ,
+      ignoreAccess: true,},
     children: [
       {
         name: 'Login',

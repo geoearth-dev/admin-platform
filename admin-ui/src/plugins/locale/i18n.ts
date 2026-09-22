@@ -1,7 +1,12 @@
-import { createI18n, type Locale } from "vue-i18n";
-import type { ImportLocaleFn, LoadMessageFn, LocaleSetupOptions, SupportedLanguagesType } from "./type";
-import { unref, type App } from "vue";
-import { useSimpleLocale } from "./use-simple-locale";
+import { createI18n, type Locale } from 'vue-i18n';
+import type {
+  ImportLocaleFn,
+  LoadMessageFn,
+  LocaleSetupOptions,
+  SupportedLanguagesType,
+} from './type';
+import { unref, type App } from 'vue';
+import { useSimpleLocale } from './use-simple-locale';
 const i18n = createI18n({
   globalInjection: true,
   legacy: false,
@@ -16,7 +21,10 @@ const { setSimpleLocale } = useSimpleLocale();
  * @param modules - The modules object containing paths and import functions
  * @returns A map of locales to their corresponding import functions
  */
-function loadLocalesMapFromDir(regexp: RegExp, modules: Record<string, () => Promise<unknown>>): Record<Locale, ImportLocaleFn> {
+function loadLocalesMapFromDir(
+  regexp: RegExp,
+  modules: Record<string, () => Promise<unknown>>,
+): Record<Locale, ImportLocaleFn> {
   const localesRaw: Record<Locale, Record<string, () => Promise<unknown>>> = {};
   const localesMap: Record<Locale, ImportLocaleFn> = {};
 
@@ -24,7 +32,7 @@ function loadLocalesMapFromDir(regexp: RegExp, modules: Record<string, () => Pro
   for (const path in modules) {
     const match = path.match(regexp);
     if (match) {
-      const [_, locale, fileName] = match;
+      const [, locale, fileName] = match;
       if (locale && fileName) {
         if (!localesRaw[locale]) {
           localesRaw[locale] = {};
@@ -50,7 +58,6 @@ function loadLocalesMapFromDir(regexp: RegExp, modules: Record<string, () => Pro
   return localesMap;
 }
 
-
 /**
  * Set i18n language
  * @param locale
@@ -59,8 +66,6 @@ function setI18nLanguage(locale: Locale) {
   i18n.global.locale.value = locale;
   document?.querySelector('html')?.setAttribute('lang', locale);
 }
-
-
 
 /**
  * Load locale messages
@@ -83,8 +88,6 @@ async function loadLocaleMessages(lang: SupportedLanguagesType) {
   return setI18nLanguage(lang);
 }
 
-
-
 let loadMessages: LoadMessageFn;
 async function initI18n(app: App, options: LocaleSetupOptions = {}) {
   const { defaultLocale = 'zh-CN' } = options;
@@ -96,17 +99,9 @@ async function initI18n(app: App, options: LocaleSetupOptions = {}) {
   // 在控制台打印警告
   i18n.global.setMissingHandler((locale, key) => {
     if (options.missingWarn && key.includes('.')) {
-      console.warn(
-        `[intlify] Not found '${key}' key in '${locale}' locale messages.`,
-      );
+      console.warn(`[intlify] Not found '${key}' key in '${locale}' locale messages.`);
     }
   });
 }
 
-
-export {
-  i18n,
-  loadLocaleMessages,
-  initI18n,
-  loadLocalesMapFromDir
-};
+export { i18n, loadLocaleMessages, initI18n, loadLocalesMapFromDir };

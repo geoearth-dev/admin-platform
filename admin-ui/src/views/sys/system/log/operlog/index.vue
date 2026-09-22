@@ -332,9 +332,3 @@ onMounted(getList);
     <OperlogDetail v-if="detailRow" v-model:visible="detailVisible" :row="detailRow" />
   </div>
 </template>
-
-<style scoped>
-.log-management :deep(.management-toolbar) {
-  margin-left: 0;
-}
-</style>

@@ -4,6 +4,7 @@ import { ElMessage } from 'element-plus';
 import type { RequestAuthOptions, RequestConfig } from './types';
 import type { ApiResult as ApiResponse } from '@/types/base/api/common';
 import axios from 'axios';
+import { preferences } from '@/plugins/preference';
 
 const MAX_REQUEST_SIGNATURE_LENGTH = 1024 * 1024; //限制存放数据5M
 
@@ -120,7 +121,7 @@ function addRequestInterceptor(axiosInstance: AxiosInstance, getAuthOptions: Get
       /**
        * 设置请求头中的语言信息
        */
-      config.headers.set('Accept-Language', navigator.language || 'zh-CN');
+      config.headers.set('Accept-Language', preferences.app.locale);
       /**
        * 防止重复提交。
        */

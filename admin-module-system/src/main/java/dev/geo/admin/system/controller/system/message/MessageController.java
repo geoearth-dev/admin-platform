@@ -70,9 +70,9 @@ public class MessageController extends BaseController {
     }
 
     /**
-     * 建立当前用户的消息推送流。
+     * 所有登录用户共用在线通道；具体业务消息在发送时检查权限。
      */
-    @PreAuthorize("@se.hasPermission('system:message:list')")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/stream", produces = "text/event-stream")
     @Operation(summary = "订阅消息推送", description = "通过 SSE 接收消息和心跳事件，请求需携带访问令牌。")
     public SseEmitter stream(JwtAuthenticationToken authentication,

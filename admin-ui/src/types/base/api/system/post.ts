@@ -10,14 +10,14 @@ export interface PostQueryParams extends PageParam {
   status?: string;
 }
 
-/** 岗位信息 */
+/** 已保存的岗位信息，新增、修改请求使用 PostSaveParams。 */
 export interface SysPost extends BaseEntity {
   /** 岗位编号 */
-  id?: number;
+  id: number;
   /** 岗位编码 */
   postCode?: string;
   /** 岗位名称 */
-  postName?: string;
+  postName: string;
   /** 岗位排序 */
   postSort?: number;
   /** 状态（0停用 1正常） */

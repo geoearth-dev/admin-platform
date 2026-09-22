@@ -7,7 +7,6 @@ import { startProgress, stopProgress } from '@/utils/nprogress';
 import { useTitle } from '@vueuse/core';
 import { generateAccess } from './access';
 
-// import { traverseTreeValues } from '@/utils/tree';
 /**
  * 通用守卫配置
  * @param router
@@ -20,7 +19,7 @@ function setupCommonGuard(router: Router) {
     to.meta.loaded = loadedPaths.has(to.path);
 
     // 页面加载进度条
-    if (!to.meta.loaded && true) {
+    if (!to.meta.loaded) {
       startProgress();
     }
     return true;
@@ -51,14 +50,12 @@ function setupAccessGuard(router: Router) {
 
     const accessStore = useAccessStore();
     const authStore = useAuthStore();
-
-    const isLoginRoute = to.path === LOGIN_PATH;
     const isPublicRoute = Boolean(to.meta.ignoreAccess);
     /**
      * 第一次进入系统时，尝试通过 Refresh Cookie 恢复会话。
      * 登录页和公共页面无需探测登录状态。
      */
-    if (!authStore.sessionInitialized && !isLoginRoute && !isPublicRoute) {
+    if (!authStore.sessionInitialized && !isPublicRoute) {
       await authStore.restoreSession();
     }
 
@@ -66,7 +63,7 @@ function setupAccessGuard(router: Router) {
      * 没有登录。
      */
     if (!authStore.isAuthenticated) {
-      if (isLoginRoute || isPublicRoute) {
+      if (isPublicRoute) {
         return true;
       }
       return {
@@ -91,11 +88,12 @@ function setupAccessGuard(router: Router) {
       accessInitializedNow = true;
     }
 
+    const isAuthRoute = to.matched.some((route) => route.name === 'Authentication');
     /**
      * 已登录用户访问登录页或者根路径，跳转目标首页。
      *
      */
-    if (isLoginRoute || to.path === '/') {
+    if (isAuthRoute || to.path === '/') {
       const redirect = to.query.redirect;
       return {
         path: typeof redirect === 'string' ? redirect : preferences.app.defaultHomePath,

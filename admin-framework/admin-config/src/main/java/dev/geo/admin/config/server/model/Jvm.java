@@ -14,7 +14,6 @@ import java.time.format.DateTimeFormatter;
 /**
  * JVM 信息：保存堆内存字节数，读取容量时转换为 MB（1024 进制）
  *
- * @author qdata
  */
 @Getter
 @Setter

@@ -2,12 +2,10 @@ import { fetchEventSource } from '@microsoft/fetch-event-source';
 
 import { requestClient } from '@/utils/request';
 
-interface OnlineStreamOptions {
-  sessionId: string;
+export interface OnlineStreamOptions {
   getToken: () => string | null;
-  isCurrent: () => boolean;
   refreshToken: () => Promise<string>;
-  onInvalidated: (sessionId: string) => Promise<void> | void;
+  onInvalidated: (forced: boolean) => Promise<void> | void;
 }
 
 interface PingPayload {
@@ -40,7 +38,7 @@ export function startOnlineStream(options: OnlineStreamOptions) {
   let retryDelay = 1000;
 
   function isActive() {
-    return !stopped && options.isCurrent();
+    return !stopped;
   }
 
   function stop() {
@@ -49,13 +47,13 @@ export function startOnlineStream(options: OnlineStreamOptions) {
     activeController?.abort();
   }
 
-  async function invalidate() {
+  async function invalidate(forced = false) {
     if (!isActive()) return;
 
     stop();
 
     try {
-      await options.onInvalidated(options.sessionId);
+      await options.onInvalidated(forced);
     } catch (error) {
       console.error('处理会话失效失败', error);
     }
@@ -119,7 +117,13 @@ export function startOnlineStream(options: OnlineStreamOptions) {
 
         if (response.status === 401 && isActive()) {
           await response.body?.cancel();
-          await options.refreshToken();
+          try {
+            await options.refreshToken();
+          } catch {
+            // 与普通请求一致，刷新失败后交给认证层退出登录。
+            await invalidate();
+            throw new Error('登录状态已失效');
+          }
 
           if (!isActive() || controller.signal.aborted) {
             throw new DOMException('连接已取消', 'AbortError');
@@ -134,7 +138,7 @@ export function startOnlineStream(options: OnlineStreamOptions) {
 
       async onopen(response) {
         if (!response.ok) {
-          throw new Error('在线通道连接失败');
+          throw Object.assign(new Error('在线通道连接失败'), { code: response.status });
         }
 
         if (!response.headers.get('content-type')?.includes('text/event-stream')) {
@@ -160,13 +164,9 @@ export function startOnlineStream(options: OnlineStreamOptions) {
         }
 
         if (message.event === 'session-invalidated') {
-          const event = JSON.parse(message.data) as {
-            sessionId: string;
-          };
-
-          if (event.sessionId === options.sessionId) {
-            void invalidate();
-          }
+          // 服务端只向被撤销会话的连接发送此事件。
+          const event = JSON.parse(message.data) as { forced: boolean };
+          void invalidate(event.forced);
         }
       },
 

@@ -14,7 +14,6 @@
           v-model="queryParams.tableName"
           placeholder="请输入表名称"
           clearable
-          style="width: 200px"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
@@ -26,7 +25,6 @@
           v-model="queryParams.tableComment"
           placeholder="请输入表描述"
           clearable
-          style="width: 200px"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
@@ -168,18 +166,22 @@
         label="创建时间"
         align="center"
         prop="createTime"
-        width="160"
+        width="180"
         sortable="custom"
         :sort-orders="['descending', 'ascending']"
-      />
+      >
+        <template #default="{ row }">{{ formatDateTime(row.createTime) || '—' }}</template>
+      </Column>
       <Column
         label="更新时间"
         align="center"
         prop="updateTime"
-        width="160"
+        width="180"
         sortable="custom"
         :sort-orders="['descending', 'ascending']"
-      />
+      >
+        <template #default="{ row }">{{ formatDateTime(row.updateTime) || '—' }}</template>
+      </Column>
       <Column
         label="操作"
         align="center"
@@ -277,7 +279,7 @@
             underline="never"
             :icon="DocumentCopy"
             @click="copyCode(value)"
-            style="float: right"
+            class="float-right"
             >&nbsp;复制</el-link
           >
           <pre>{{ value }}</pre>
@@ -324,6 +326,7 @@ import {
 } from '@/api/tool/gen'
 import type { GenTable, GenQueryParams } from '@/types/base/api/tool/gen'
 import { downloadFileFromBlob } from '@/utils/download'
+import { formatDateTime } from '@/utils/date'
 import ImportTable from './importTable.vue'
 import CreateTable from './createTable.vue'
 

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import dayjs from 'dayjs'
+import { ADMIN_LOGO_URL } from '@/constants/admin.ts'
 import type { UploadFile, UploadProps, UploadRawFile } from 'element-plus'
 import { ElButton, ElDialog } from 'element-plus'
 import { h, onBeforeUnmount, ref } from 'vue'
@@ -638,7 +639,7 @@ function handleSetFormValue() {
         name: 'example.png',
         status: 'success',
         uid: -1,
-        url: 'https://unpkg.com/@vbenjs/static-source@0.1.7/source/logo-v1.webp',
+        url: ADMIN_LOGO_URL,
       },
     ],
     mentions: '@afc163',
@@ -654,8 +655,8 @@ function handleSetFormValue() {
     username: '1',
     richEditor: `
       <h1>Vben Tiptap</h1>
-      <p>这个编辑器已经被封装在 <code>src/components/tiptap</code> 中。</p>
-      <p>你可以直接在各个 app 里通过 <code>@/components/tiptap</code> 引入。</p>
+      <p>编辑器封装位于 <code>src/components/tiptap</code>。</p>
+      <p>通过 <code>@/components/tiptap</code> 引入富文本编辑器组件。</p>
       <blockquote>默认内置 StarterKit、Underline、TextAlign、Placeholder。</blockquote>
     `,
   })

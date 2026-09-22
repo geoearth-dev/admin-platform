@@ -77,8 +77,8 @@ const bindProps = computed(() => {
 
 function toggleTheme(event: MouseEvent) {
   const isAppearanceTransition =
-    // @ts-expect-error - startViewTransition is not available in the current DOM lib target
-    document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    typeof document.startViewTransition === 'function' &&
+    !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!isAppearanceTransition || !event) {
     isDark.value = !isDark.value;
     return;

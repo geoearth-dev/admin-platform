@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.util.PatternMatchUtils;
 
 import java.util.Collection;
@@ -17,6 +18,11 @@ import java.util.Collection;
  * 安全服务工具类
  */
 public class SecurityUtils {
+
+    /** 当前访问令牌对应的登录会话，与 Token 刷新无关。 */
+    public static String getSessionId() {
+        return ((JwtAuthenticationToken) getAuthentication()).getToken().getId();
+    }
 
     /**
      * 用户ID

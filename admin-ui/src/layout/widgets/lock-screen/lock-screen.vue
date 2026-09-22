@@ -6,11 +6,13 @@ import { useAccessStore } from '@/store';
 
 import { VbenAvatar, VbenButton } from '@/plugins/vben-ui/shadcn-ui';
 
-import { useDateFormat, useNow } from '@vueuse/core';
 import { $t, useI18n } from '@/plugins/locale';
 import { storeToRefs } from 'pinia';
 import { useScrollLock } from '@/plugins/composables/use-scroll-lock';
-
+import { useVbenForm, z } from '@/plugins/vben-ui/form-ui';
+import { useTimezoneStore } from '@/store';
+import dayjs from 'dayjs';
+import { useNow } from '@vueuse/core';
 interface Props {
   avatar?: string;
 }
@@ -27,12 +29,18 @@ defineEmits<{ toLogin: [] }>();
 
 const { locale } = useI18n();
 const accessStore = useAccessStore();
-
+const { timezone } = storeToRefs(useTimezoneStore());
 const now = useNow();
-const meridiem = useDateFormat(now, 'A');
-const hour = useDateFormat(now, 'HH');
-const minute = useDateFormat(now, 'mm');
-const date = useDateFormat(now, 'YYYY-MM-DD dddd', { locales: locale.value });
+
+const localTime = computed(() =>
+  dayjs(now.value)
+    .tz(timezone.value)
+    .locale(locale.value === 'zh-CN' ? 'zh-cn' : 'en'),
+);
+const meridiem = computed(() => localTime.value.format('A'));
+const hour = computed(() => localTime.value.format('HH'));
+const minute = computed(() => localTime.value.format('mm'));
+const date = computed(() => localTime.value.format('YYYY-MM-DD dddd'));
 
 const showUnlockForm = ref(false);
 const { lockScreenPassword } = storeToRefs(accessStore);

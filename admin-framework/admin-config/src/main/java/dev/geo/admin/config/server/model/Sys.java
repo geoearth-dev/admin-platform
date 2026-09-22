@@ -6,7 +6,6 @@ import lombok.Setter;
 /**
  * 系统相关信息
  *
- * @author qdata
  */
 @Getter
 @Setter

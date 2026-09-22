@@ -1,20 +1,23 @@
 # Form Array 数组字段用法
 
-这个 demo 展示 `form-ui` 的数组字段 schema 写法。业务侧推荐使用 `type: 'array' + children` 描述数组结构，不需要直接指定 `component: 'VbenFormFieldArray'`。
+本示例展示 `form-ui` 的数组字段 schema 写法。业务侧使用 `type: 'array' + children` 描述数组结构，无需直接指定 `component: 'VbenFormFieldArray'`。
 
 示例页面：
 
-- `/vue-vben-admin/playground/src/views/demos/form-array/index.vue`
+- [admin-ui/src/views/demos/form-array/index.vue](./index.vue)
 
 核心实现：
 
-- `/packages/@core/ui-kit/form-ui/src/form-render/schema.ts`
-- `/packages/@core/ui-kit/form-ui/src/components/form-field-array.vue`
-- `/packages/@core/ui-kit/form-ui/src/form-api.ts`
+- [admin-ui/src/plugins/vben-ui/form-ui/form-render/schema.ts](../../../plugins/vben-ui/form-ui/form-render/schema.ts)
+- [admin-ui/src/plugins/vben-ui/form-ui/components/form-field-array.vue](../../../plugins/vben-ui/form-ui/components/form-field-array.vue)
+- [admin-ui/src/plugins/vben-ui/form-ui/form-api.ts](../../../plugins/vben-ui/form-ui/form-api.ts)
 
 ## 快速开始
 
 ```ts
+import { z } from '@/plugins/vben-ui/form-ui';
+import type { VbenFormSchema } from '@/plugins/vben-ui/form-ui';
+
 const schema: VbenFormSchema[] = [
   {
     type: 'array',

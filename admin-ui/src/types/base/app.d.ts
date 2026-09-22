@@ -105,7 +105,6 @@ type AuthPageLayoutType = 'panel-center' | 'panel-left' | 'panel-right';
  */
 interface TimezoneOption {
   label: string;
-  offset: number;
   timezone: string;
 }
 

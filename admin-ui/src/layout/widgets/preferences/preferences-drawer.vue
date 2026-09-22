@@ -32,7 +32,6 @@ import {
   ColorMode,
   Content,
   Copyright,
-  Custom,
   FontSize,
   Footer,
   General,
@@ -169,44 +168,8 @@ const [Drawer] = useVbenDrawer();
 
 const activeTab = ref('appearance');
 
-//TODO
-const preferencesExtension = ref();
-const diffCustomPreference = ref();
-const customPreferences = ref();
-
-const customPreferencesTab = computed(() => {
-  return preferencesExtension.value;
-});
-
-const customTabLabel = computed(() => {
-  return customPreferencesTab.value?.tabLabel ? $t(customPreferencesTab.value.tabLabel) : '';
-});
-
-const customTabTitle = computed(() => {
-  const title = customPreferencesTab.value?.title || customPreferencesTab.value?.tabLabel;
-  return title ? $t(title) : '';
-});
-
-const mergedDiffPreference = computed(() => {
-  const result: Record<string, unknown> = {};
-
-  if (diffPreference.value) {
-    Object.assign(result, diffPreference.value);
-  }
-
-  if (diffCustomPreference.value) {
-    result.custom = diffCustomPreference.value;
-  }
-
-  return Object.keys(result).length > 0 ? result : undefined;
-});
-
-const showCustomTab = computed(() => {
-  return (customPreferencesTab.value?.fields.length ?? 0) > 0;
-});
-
 const tabs = computed((): SegmentedItem[] => {
-  const items: SegmentedItem[] = [
+  return [
     {
       label: $t('preferences.appearance'),
       value: 'appearance',
@@ -224,15 +187,6 @@ const tabs = computed((): SegmentedItem[] => {
       value: 'general',
     },
   ];
-
-  if (showCustomTab.value) {
-    items.push({
-      label: customTabLabel.value,
-      value: 'custom',
-    });
-  }
-
-  return items;
 });
 
 const showBreadcrumbConfig = computed(() => {
@@ -242,7 +196,7 @@ const showBreadcrumbConfig = computed(() => {
 });
 
 async function handleCopy() {
-  await copy(JSON.stringify(mergedDiffPreference.value, null, 2));
+  await copy(JSON.stringify(diffPreference.value, null, 2));
 
   message.copyPreferencesSuccess?.(
     $t('preferences.copyPreferencesSuccessTitle'),
@@ -257,17 +211,11 @@ async function handleClearCache() {
 }
 
 async function handleReset() {
-  if (!mergedDiffPreference.value) {
+  if (!diffPreference.value) {
     return;
   }
   await resetPreferences();
   await loadLocaleMessages(preferences.app.locale);
-}
-
-function handleCustomPreferencesUpdate(updates: unknown) {
-  console.log(updates);
-
-  // updateCustomPreferences(updates);
 }
 </script>
 
@@ -281,13 +229,13 @@ function handleCustomPreferencesUpdate(updates: unknown) {
       <template #extra>
         <div class="flex items-center">
           <VbenIconButton
-            :disabled="!mergedDiffPreference"
+            :disabled="!diffPreference"
             :tooltip="$t('preferences.resetTip')"
             class="relative"
             @click="handleReset"
           >
             <span
-              v-if="mergedDiffPreference"
+              v-if="diffPreference"
               class="absolute top-0.5 right-0.5 size-2 rounded-sm bg-primary"
             ></span>
             <RotateCw class="size-4" />
@@ -481,22 +429,13 @@ function handleCustomPreferencesUpdate(updates: unknown) {
               />
             </Block>
           </template>
-          <template #custom>
-            <Block :title="customTabTitle">
-              <Custom
-                :fields="customPreferencesTab?.fields || []"
-                :values="customPreferences"
-                @update="handleCustomPreferencesUpdate"
-              />
-            </Block>
-          </template>
         </VbenSegmented>
       </div>
 
       <template #footer>
         <VbenButton
           v-if="appEnableCopyPreferences"
-          :disabled="!mergedDiffPreference"
+          :disabled="!diffPreference"
           class="mx-4 w-full"
           size="sm"
           variant="default"
@@ -506,7 +445,7 @@ function handleCustomPreferencesUpdate(updates: unknown) {
           {{ $t('preferences.copyPreferences') }}
         </VbenButton>
         <VbenButton
-          :disabled="!mergedDiffPreference"
+          :disabled="!diffPreference"
           class="mr-4 w-full"
           size="sm"
           variant="ghost"

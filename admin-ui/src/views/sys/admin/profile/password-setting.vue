@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { updateUserPasswordApi } from '@/api/example/profile'
+import { useAuthStore } from '@/store'
 import { useVbenForm, z } from '@/plugins/vben-ui/form-ui'
 
 interface PasswordFormValues extends Record<string, unknown> {
@@ -10,6 +10,7 @@ interface PasswordFormValues extends Record<string, unknown> {
   confirmPassword: string
 }
 const saving = ref(false)
+const authStore = useAuthStore()
 const [Form, formApi] = useVbenForm<PasswordFormValues>({
   layout: 'vertical',
   wrapperClass: 'grid-cols-1',
@@ -20,9 +21,8 @@ const [Form, formApi] = useVbenForm<PasswordFormValues>({
     saving.value = true
     formApi.setState({ submitButtonOptions: { loading: true } })
     try {
-      await updateUserPasswordApi({ oldPassword, newPassword })
-      await formApi.reset()
-      ElMessage.success('演示密码已修改，再次修改时请使用新密码')
+      await authStore.changePassword(oldPassword, newPassword)
+      ElMessage.success('密码已修改，请使用新密码登录')
     } catch (error) {
       ElMessage.error(error instanceof Error ? error.message : '修改失败')
     } finally {
@@ -84,7 +84,7 @@ const [Form, formApi] = useVbenForm<PasswordFormValues>({
   <section class="w-full max-w-xl">
     <h2 class="mb-2 text-lg font-semibold">修改密码</h2>
     <p class="mb-6 text-sm text-muted-foreground">
-      示例初始密码：Admin123。新密码需为 5–20 位，刷新页面后恢复初始密码。
+      新密码需为 5–20 位。修改成功后，当前账号的所有登录会话将退出，请重新登录。
     </p>
     <Form />
   </section>

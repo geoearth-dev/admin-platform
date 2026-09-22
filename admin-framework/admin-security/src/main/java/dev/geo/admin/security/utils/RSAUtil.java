@@ -115,7 +115,7 @@ public class RSAUtil {
      * 解密公钥加密后的数据
      */
 //    public static void main(String[] args) {
-//        // 替换为您的加密数据
+//        // 待解密的密文示例。
 //        String encryptedData = "U/ANHv0/jZLQIKGRq/4syageiHcd93x9mUjaAyBeyWNf4GvVGizZwi1D7VQWHyDO4nbPJCu/bvyJ7ppT0cb4SpxHZN6KpTBW4bLQAF6fdxOAmPFxRS4xBilrawRm9fVJVW91h7mC4gF0V4KKteUoLe2egJisAnrZ6yVYg4uxLP0=";
 //
 //        // 调用解密方法

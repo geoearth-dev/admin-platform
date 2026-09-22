@@ -105,6 +105,7 @@ public class AuthController {
                 principal.getUsername(),
                 principal.getNickName(),
                 principal.getAvatar(),
+                principal.getEmail(),
                 principal.getPermissions(),
                 principal.getRolesKey(),
                 passwordCharRange,

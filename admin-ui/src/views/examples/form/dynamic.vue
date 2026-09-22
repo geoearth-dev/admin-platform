@@ -243,7 +243,7 @@ function handleUpdate() {
 
 <template>
   <Page
-    description="表单组件动态联动示例，包含了常用的场景。增删改，本质上是修改schema，你也可以通过 `setState` 动态修改schema。"
+    description="表单动态联动示例，展示常用的字段联动场景，通过 setState 修改 schema 可动态增删和调整字段。"
     title="表单组件"
   >
     <ElCard header="表单动态联动示例">

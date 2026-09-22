@@ -88,12 +88,3 @@ function handlePaginationChange(page: number, limit: number) {
   });
 }
 </script>
-
-<style scoped>
-.pagination-container {
-  background: hsl(var(--background));
-}
-.pagination-container.hidden {
-  display: none;
-}
-</style>

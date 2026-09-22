@@ -44,8 +44,13 @@ public final class LoginPrincipal implements UserDetails, CredentialsContainer {
     public String getNickName() {
         return userInfo.nickName();
     }
+
     public String getAvatar() {
         return userInfo.avatar();
+    }
+
+    public String getEmail() {
+        return userInfo.email();
     }
 
     public Instant getPasswordUpdateTime() {

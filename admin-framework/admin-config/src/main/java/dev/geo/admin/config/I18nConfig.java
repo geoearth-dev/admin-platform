@@ -16,7 +16,7 @@ public class I18nConfig {
     public LocaleResolver localeResolver() {
         AcceptHeaderLocaleResolver resolver = new AcceptHeaderLocaleResolver();
         // 默认语言
-        resolver.setDefaultLocale(Locale.SIMPLIFIED_CHINESE);
+        resolver.setDefaultLocale(Locale.US);
 
         return resolver;
     }

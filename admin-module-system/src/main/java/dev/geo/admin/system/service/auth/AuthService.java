@@ -71,9 +71,7 @@ public class AuthService {
         return tokenService.refresh(refreshToken);
     }
 
-    public void logout(String sessionId) {
-        tokenService.revoke(sessionId);
-    }
+
 
     private void loginPreCheck(String username, String password) {
         // 用户名或密码为空 错误
@@ -103,5 +101,8 @@ public class AuthService {
 
     public void logoutByRefreshToken(String refreshToken) {
         tokenService.revokeByRefreshToken(refreshToken);
+    }
+    public void logout(String sessionId) {
+        tokenService.revoke(sessionId);
     }
 }

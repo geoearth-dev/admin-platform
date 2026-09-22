@@ -1,21 +1,30 @@
+<template>
+  <AuthenticationLogin
+    :form-schema="formSchema"
+    :loading="authStore.loginLoading"
+    @submit="handleSubmit"
+  />
+</template>
 <script lang="ts" setup>
-import type { LoginParams } from '@/api/admin/auth'
-import type { VbenFormSchema } from '@/plugins/vben-ui/form-ui'
+import type { LoginParams } from '@/api/admin/auth';
+import type { VbenFormSchema } from '@/plugins/vben-ui/form-ui';
 
-import { computed, h, onMounted, ref } from 'vue'
+import { computed, markRaw, onMounted, ref } from 'vue';
 
-import { getCodeImg } from '@/api/admin/auth'
-import { AuthenticationLogin } from '@/components/authentication'
-import { $t } from '@/plugins/locale'
-import { z } from '@/plugins/vben-ui/form-ui'
-import { useAuthStore } from '@/store'
+import { getCodeImg } from '@/api/admin/auth';
+import { AuthenticationLogin } from '@/components/authentication';
+import { ImageCaptcha } from '@/components/captcha';
+import { $t } from '@/plugins/locale';
+import { z } from '@/plugins/vben-ui/form-ui';
+import { useAuthStore } from '@/store';
 
-defineOptions({ name: 'Login' })
+defineOptions({ name: 'Login' });
 
-const authStore = useAuthStore()
-const captchaEnabled = ref(true)
-const captchaImage = ref('')
-const captchaUuid = ref('')
+const authStore = useAuthStore();
+const captchaEnabled = ref(true);
+const captchaImage = ref('');
+const captchaLoading = ref(false);
+const captchaUuid = ref('');
 
 const formSchema = computed<VbenFormSchema[]>(() => {
   const schema: VbenFormSchema[] = [
@@ -41,43 +50,43 @@ const formSchema = computed<VbenFormSchema[]>(() => {
       label: $t('authentication.password'),
       rules: z.string().min(1, $t('authentication.passwordTip')),
     },
-  ]
+  ];
 
   if (captchaEnabled.value) {
     schema.push({
-      component: 'Input',
+      component: markRaw(ImageCaptcha),
       componentProps: {
-        autocomplete: 'off',
-        placeholder: $t('authentication.code'),
+        loading: captchaLoading.value,
+        onRefresh: getCode,
+        src: captchaImage.value,
       },
       fieldName: 'code',
       label: $t('authentication.code'),
-      renderComponentContent: () => ({
-        append: () =>
-          h('img', {
-            alt: $t('authentication.code'),
-            class: 'h-8 w-[100px] cursor-pointer object-fill',
-            onClick: getCode,
-            src: captchaImage.value,
-            title: $t('authentication.code'),
-          }),
-      }),
       rules: z.string().min(1, $t('authentication.verifyRequiredTip')),
-    })
+    });
   }
 
-  return schema
-})
+  return schema;
+});
 
-onMounted(getCode)
+onMounted(getCode);
 
 async function getCode() {
-  const result = await getCodeImg()
-  captchaEnabled.value = result.enabled ?? true
-  captchaUuid.value = captchaEnabled.value ? result.uuid : ''
-  captchaImage.value = captchaEnabled.value
-    ? `data:image/gif;base64,${result.image}`
-    : ''
+  if (captchaLoading.value) return;
+
+  captchaLoading.value = true;
+  try {
+    const result = await getCodeImg();
+    captchaEnabled.value = result.enabled ?? true;
+    captchaUuid.value = captchaEnabled.value ? result.uuid : '';
+    captchaImage.value =
+      captchaEnabled.value && result.image ? `data:image/gif;base64,${result.image}` : '';
+  } catch {
+    captchaImage.value = '';
+    captchaUuid.value = '';
+  } finally {
+    captchaLoading.value = false;
+  }
 }
 
 async function handleSubmit(values: LoginParams) {
@@ -86,20 +95,12 @@ async function handleSubmit(values: LoginParams) {
       ...values,
       code: captchaEnabled.value ? (values.code ?? '') : '',
       uuid: captchaUuid.value,
-    })
+    });
   } catch {
     // 登录失败后更新验证码，避免重复提交已经失效的验证码。
     if (captchaEnabled.value) {
-      await getCode()
+      await getCode();
     }
   }
 }
 </script>
-
-<template>
-  <AuthenticationLogin
-    :form-schema="formSchema"
-    :loading="authStore.loginLoading"
-    @submit="handleSubmit"
-  />
-</template>

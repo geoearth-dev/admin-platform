@@ -50,12 +50,16 @@ function close() {
   open.value = false;
 }
 
+function toggle() {
+  open.value = !open.value;
+}
+
 function openDetail(detail: NoticeDetail) {
   close();
   detailRef.value?.open(detail);
 }
 
-defineExpose({ close, openDetail });
+defineExpose({ close, openDetail, toggle });
 </script>
 
 <template>
@@ -68,7 +72,8 @@ defineExpose({ close, openDetail });
         <VbenIconButton
           class="bell-button relative text-foreground"
           :aria-label="$t('system.notice.title')"
-          @click.stop="open = !open"
+          :tooltip="$t('system.notice.title')"
+          @click.stop="toggle"
         >
           <span
             v-if="dot"

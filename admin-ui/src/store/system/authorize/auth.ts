@@ -18,6 +18,8 @@ import {
 } from '@/api/admin/auth';
 import { requestClient } from '@/utils/request';
 import { resetAccessRoutes } from '@/router/access';
+import { useOnlineSession } from '@/plugins/effects/hooks/use-online-session';
+import { updateUserPwd } from '@/api/system/user';
 
 /**
  * @zh_CN 登录、会话权限相关
@@ -43,6 +45,15 @@ export const useAuthStore = defineStore('auth', () => {
     getToken: () => accessStore.accessToken,
     refreshToken: refreshAccessToken,
     onUnauthorized: handleSessionExpired,
+  });
+
+  const { stop: stopOnlineSession, start: startOnlineSession } = useOnlineSession({
+    enabled: () => sessionInitialized.value && isAuthenticated.value,
+    getToken: () => accessStore.accessToken,
+    refreshToken: refreshAccessToken,
+    onInvalidated: (forced) => handleSessionExpired(
+      forced ? '当前会话已被管理员强制下线，请重新登录' : undefined,
+    ),
   });
   /**
    * 异步处理登录操作
@@ -158,13 +169,13 @@ export const useAuthStore = defineStore('auth', () => {
    *
    * 该方法由请求拦截器在 refresh 失败后调用。
    */
-  async function handleSessionExpired(): Promise<void> {
+  async function handleSessionExpired(message = '登录状态已过期，请重新登录'): Promise<void> {
     const currentRoute = router.currentRoute.value;
     const redirect = currentRoute.fullPath;
 
     clearSession();
     if (currentRoute.path !== LOGIN_PATH) {
-      ElMessage.warning('登录状态已过期，请重新登录');
+      ElMessage.warning(message);
       await router.replace({
         path: LOGIN_PATH,
         query: {
@@ -178,6 +189,7 @@ export const useAuthStore = defineStore('auth', () => {
    * 主动退出登录。
    */
   async function logout(redirect: boolean = true) {
+    stopOnlineSession();
     const currentRoute = router.currentRoute.value;
     const redirectPath = currentRoute.fullPath;
     try {
@@ -193,10 +205,23 @@ export const useAuthStore = defineStore('auth', () => {
       });
     }
   }
+
+  /** 改密会撤销当前会话，提前关闭在线连接，避免把主动退出提示为会话异常。 */
+  async function changePassword(oldPassword: string, newPassword: string) {
+    stopOnlineSession();
+    try {
+      await updateUserPwd(oldPassword, newPassword);
+    } catch (error) {
+      startOnlineSession();
+      throw error;
+    }
+    await logout(false);
+  }
   /**
    * 清理客户端认证和权限状态。
    */
   function clearSession(): void {
+    stopOnlineSession();
     resetAccessRoutes();
     userStore.$reset();
     accessStore.$reset();
@@ -217,6 +242,7 @@ export const useAuthStore = defineStore('auth', () => {
     $reset,
     authLogin,
     clearSession,
+    changePassword,
     fetchUserInfo,
     handleSessionExpired,
     logout,

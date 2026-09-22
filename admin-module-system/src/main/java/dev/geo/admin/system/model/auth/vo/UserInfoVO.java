@@ -17,6 +17,8 @@ public record UserInfoVO(
         String nickName,
         @Schema(description = "用户头像")
         String avatar,
+        @Schema(description = "用户邮箱")
+        String email,
         @Schema(description = "权限标识集合")
         Set<String> permissions,
 

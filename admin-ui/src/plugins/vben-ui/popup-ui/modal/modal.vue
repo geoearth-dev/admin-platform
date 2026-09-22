@@ -191,12 +191,6 @@ function handleFocusOutside(e: Event) {
   e.stopPropagation();
 }
 
-function handleCloseAutoFocus(_e: Event) {
-  console.log(_e);
-
-  // allow reka-ui to return focus to the trigger element on close
-}
-
 const getForceMount = computed(() => {
   return !unref(destroyOnClose) && unref(firstOpened);
 });
@@ -246,7 +240,6 @@ function handleClosed() {
       :z-index="zIndex"
       :overlay-blur="overlayBlur"
       close-class="top-3"
-      @close-auto-focus="handleCloseAutoFocus"
       @closed="handleClosed"
       :close-disabled="submitting"
       @escape-key-down="escapeKeyDown"

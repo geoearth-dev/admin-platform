@@ -39,7 +39,7 @@ defineOptions({
 });
 
 withDefaults(defineProps<Props>(), {
-  companyName: 'Vben Admin',
+  companyName: 'GeoEarth',
   companySiteLink: '',
   date: '2024',
   icp: '',

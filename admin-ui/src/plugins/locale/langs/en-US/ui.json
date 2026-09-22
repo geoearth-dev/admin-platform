@@ -29,6 +29,20 @@
     "select": "Please select",
     "upload": "Click to upload"
   },
+  "excelImport": {
+    "title": "Import Data",
+    "submit": "Start Import",
+    "dropFile": "Drop a file here, or",
+    "clickUpload": "click to upload",
+    "selectFileRequired": "Select a file to import first.",
+    "fileLimit": "Import one file at a time. Remove the selected file first.",
+    "updateSupport": "Update existing data",
+    "downloadTemplate": "Download Template",
+    "excelOnly": "Only .xls and .xlsx files are allowed.",
+    "success": "Import completed",
+    "failed": "Import failed. Check the file contents and try again.",
+    "partialHint": "Some records may have been imported. Check the data against the details above, correct the failed records, and try again."
+  },
   "captcha": {
     "title": "Please complete the security verification",
     "sliderSuccessText": "Passed",
@@ -41,6 +55,7 @@
     "sliderTranslateFailTip": "Validation failed",
     "sliderTranslateSuccessTip": "Validation successful, time {0} seconds",
     "refreshAriaLabel": "Refresh captcha",
+    "imageLoadFailed": "Captcha failed to load. Click to retry.",
     "confirmAriaLabel": "Confirm selection",
     "confirm": "Confirm",
     "pointAriaLabel": "Click point",
@@ -150,7 +165,7 @@
     },
     "lockScreen": {
       "title": "Lock Screen",
-      "screenButton": "Unlock",
+      "screenButton": "Lock",
       "password": "Password",
       "placeholder": "Please enter password",
       "unlock": "Click to unlock",

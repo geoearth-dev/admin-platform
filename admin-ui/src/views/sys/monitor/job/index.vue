@@ -16,7 +16,6 @@
           v-model="queryParams.jobName"
           placeholder="请输入任务名称"
           clearable
-          style="width: 200px"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
@@ -28,7 +27,6 @@
           v-model="queryParams.jobGroup"
           placeholder="请选择任务组名"
           clearable
-          style="width: 200px"
         >
           <el-option
             v-for="dict in sys_job_group"
@@ -46,7 +44,6 @@
           v-model="queryParams.status"
           placeholder="请选择任务状态"
           clearable
-          style="width: 200px"
         >
           <el-option
             v-for="dict in statusOptions"

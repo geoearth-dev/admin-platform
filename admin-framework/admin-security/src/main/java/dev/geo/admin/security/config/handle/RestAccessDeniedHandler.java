@@ -16,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 /**
  * 认证失败处理类 返回未授权
  *
- * @author qdata
  */
 @Component
 @RequiredArgsConstructor

@@ -122,15 +122,6 @@ const exampleDynamicRouter: RouteRecordRaw[] = [
             },
           },
           {
-            name: 'PreferencesExtensionDemo',
-            path: 'preferences-extension',
-            component: () => import('@/views/demos/features/preferences-extension/index.vue'),
-            meta: {
-              icon: 'lucide:sliders-horizontal',
-              title: $t('demos.features.preferencesExtension'),
-            },
-          },
-          {
             name: 'FeatureTabsDemo',
             path: 'tabs',
             component: () => import('@/views/demos/features/tabs/index.vue'),

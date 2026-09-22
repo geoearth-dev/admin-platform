@@ -30,26 +30,12 @@ async function loadElementLocale(lang: SupportedLanguagesType) {
  * @param lang
  */
 async function loadDayjsLocale(lang: SupportedLanguagesType) {
-  let locale;
-  switch (lang) {
-    case 'en-US': {
-      locale = await import('dayjs/locale/en');
-      break;
-    }
-    case 'zh-CN': {
-      locale = await import('dayjs/locale/zh-cn');
-      break;
-    }
-    // 默认使用英语
-    default: {
-      locale = await import('dayjs/locale/en');
-    }
-  }
-  if (locale) {
-    dayjs.locale(locale);
+  if (lang === 'zh-CN') {
+    await import('dayjs/locale/zh-cn');
   } else {
-    console.error(`Failed to load dayjs locale for ${lang}`);
+    await import('dayjs/locale/en');
   }
+  dayjs.locale(lang === 'zh-CN' ? 'zh-cn' : 'en');
 }
 
 /**

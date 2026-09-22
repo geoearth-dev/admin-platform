@@ -1,44 +1,38 @@
-# Boot Framework
+# Admin Platform
 
-A clean and extensible Spring Boot backend scaffold for modern web applications.
+Admin Platform 是基于 Spring Boot、Vue 3 和 TypeScript 的前后端分离管理平台，提供用户与角色管理、菜单权限、系统配置、在线会话、任务调度和代码生成等功能。
 
-一个简洁、可扩展的 Spring Boot 后端开发脚手架，用于快速构建规范化的 Web API 项目。
+## 工程结构
 
-## Features
+| 目录 | 用途 |
+| --- | --- |
+| `admin-server` | 后端启动模块、运行配置和日志配置 |
+| `admin-module-system` | 系统管理、认证、监控与消息等业务 |
+| `admin-framework` | 通用工具、安全、数据访问、Excel、任务调度与代码生成等基础模块 |
+| `admin-ui` | Vue 前端、业务页面和本地组件 |
+| `sql` | MySQL 数据快照和数据调整脚本 |
 
-- 统一 API 响应结构
-- 全局异常处理
-- 分页查询封装
-- MyBatis-Plus 数据访问
-- PostgreSQL 数据库支持
-- Druid 数据库连接池
-- OpenAPI 接口文档
-- Scalar API 文档页面
-- Logback 日志配置
+## 后端开发
 
-## Tech Stack
+运行环境：JDK 17 或以上版本、Maven 3.9 或以上版本、MySQL、Redis。
 
-- Java
-- Spring Boot
-- MyBatis-Plus
-- PostgreSQL
-- Druid
-- SpringDoc OpenAPI
-- Scalar
+1. 在开发数据库中导入 [sql/MySQL.zip](sql/MySQL.zip) 内的 `MySQL.sql`。
+2. 在 [application-dev.yml](admin-server/src/main/resources/application-dev.yml) 中配置开发环境的数据库、Redis 和文件存储等参数。公共配置位于 [application.yml](admin-server/src/main/resources/application.yml)，生产环境配置位于 [application-prod.yml](admin-server/src/main/resources/application-prod.yml)。
+3. 在工程根目录构建并启动后端：
 
-## Getting Started
+```sh
+mvn clean package
+java -jar admin-server/target/admin-server-0.1.0-SNAPSHOT.jar --spring.profiles.active=dev
+```
 
-### Requirements
+后端默认端口为 `8080`。数据访问使用 MyBatis-Plus，接口文档使用 SpringDoc OpenAPI，日志由 Logback 管理。
 
-- JDK 17+
-- Maven 3.9+
-- PostgreSQL
+## 前端开发
 
-### Configuration
+前端的安装、启动、构建与目录说明见 [admin-ui/README.md](admin-ui/README.md)。
 
-配置以下环境变量：
+## 项目入口
 
-```text
-DB_URL=jdbc:postgresql://localhost:5432/your_database
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
+- [项目主页](https://admin.geoearth.dev)
+- [项目文档](https://admin-docs.geoearth.dev)
+- [源码仓库](https://github.com/geoearth-dev/admin-platform)

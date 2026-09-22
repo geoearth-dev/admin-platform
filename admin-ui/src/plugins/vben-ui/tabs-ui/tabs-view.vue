@@ -26,6 +26,7 @@ const forward = useForwardPropsEmits(props, emit);
 const {
   handleScrollAt,
   handleWheel,
+  scrollbarRef,
   scrollDirection,
   scrollIsAtLeft,
   scrollIsAtRight,

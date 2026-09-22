@@ -130,10 +130,9 @@ public class SysSyncDataServiceImpl implements SysSyncDataService {
             sysUser.setUserName(userName);
             sysUser.setNickName(nickName);
             try {
-                //TODO 多个部门的数据导入不进去 冰凤框架deptId设置的为Long
                 sysUser.setDeptId(StrUtil.isBlank(deptId) ? null : Long.valueOf(deptId));
             } catch (NumberFormatException e) {
-                e.printStackTrace();
+               log.error("<UNK>ID<UNK>{}", deptId);
                 continue;
             }
             sysUser.setSex(sex);
@@ -142,7 +141,7 @@ public class SysSyncDataServiceImpl implements SysSyncDataService {
             sysUser.setDelFlag(fromLegacyDelFlag(delFlag));
 //            sysUser.setPassword("qdata@123");
             sysUser.setPassword(SecurityUtils.encryptPassword("qdata@123"));
-            sysUser.setRoleId(Long.valueOf(3));
+            sysUser.setRoleId(3L);
             sysUser.setAuthId(idHubId);
             if (userMap.containsKey(sysUser.getAuthId())) {
                 SysUser user1 = userMap.get(sysUser.getAuthId());

@@ -4,6 +4,7 @@ import dev.geo.admin.common.constant.CacheConstants;
 import dev.geo.admin.redis.RedisCache;
 import dev.geo.admin.security.event.LoginSessionDeletedEvent;
 import dev.geo.admin.security.model.LoginSession;
+import dev.geo.admin.security.model.LoginUserInfo;
 import dev.geo.admin.security.session.LoginSessionStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -48,6 +49,23 @@ public class RedisLoginSessionStore implements LoginSessionStore {
                 .toList();
     }
 
+    @Override
+    public void updateUserInfo(String sessionId, LoginUserInfo userInfo) {
+        find(sessionId).ifPresent(session -> {
+            var updated = new LoginSession(sessionId, userInfo, session.loginAt(),
+                    session.expiresAt(), session.rememberMe());
+            var script = new DefaultRedisScript<Long>("""
+                    if redis.call('HEXISTS', KEYS[1], 'session') == 0 then
+                        return 0
+                    end
+                    redis.call('HSET', KEYS[1], 'session', ARGV[1])
+                    return 1
+                    """, Long.class);
+            // 只替换 session 字段；HSET 不改变 TTL，也不覆盖并发轮换的 refreshHash。
+            redisCache.execute(script, List.of(key(sessionId)), updated);
+        });
+    }
+
     /**
      * 让 Refresh Token 使用一次后立即作废，并替换成一个新的 Refresh Token。
      * 防止 Refresh Token 被重复使用
@@ -80,10 +98,9 @@ public class RedisLoginSessionStore implements LoginSessionStore {
     }
 
     @Override
-    public void delete(String sessionId) {
+    public void delete(String sessionId, boolean forced) {
         redisCache.deleteObject(key(sessionId));
-        eventPublisher.publishEvent(new LoginSessionDeletedEvent(sessionId));
-
+        eventPublisher.publishEvent(new LoginSessionDeletedEvent(sessionId, forced));
     }
 
     private String key(String sessionId) {

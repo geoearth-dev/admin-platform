@@ -137,7 +137,7 @@ function useEcharts(chartRef: Ref<EchartsUIType>) {
           return;
         }
 
-        // 合并你原有的全局配置（比如 backgroundColor）
+        // 合并图表配置，暗色主题的背景配置优先。
         const finalOption = {
           ...option,
           ...getOptions.value,

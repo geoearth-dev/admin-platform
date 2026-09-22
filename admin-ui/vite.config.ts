@@ -39,6 +39,20 @@ export default defineConfig(async ({ command, mode }) => {
       tailwindcss(),
 
       await viteMetadataPlugin(),
+
+      //gzip静态资源压缩
+      // viteCompression({
+      //   threshold: 10240, // >10kb 压缩
+      //   algorithm: 'gzip', // 压缩算法
+      //   verbose: false, //false（默认）则不输出日志
+      //   deleteOriginFile: true, //指定压缩完文件后删除源文件 默认false
+      // }),
+      // visualizer({
+      //   filename: 'dist/stats.html',
+      //   open: true,
+      //   gzipSize: true,
+      //   brotliSize: true,
+      // })
     ],
     resolve: {
       alias: {
@@ -56,5 +70,6 @@ export default defineConfig(async ({ command, mode }) => {
         },
       },
     },
-  };
+
+  }
 });

@@ -12,7 +12,6 @@
           v-model="queryParams.dictName"
           placeholder="请输入字典名称"
           clearable
-          style="width: 200px"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
@@ -21,7 +20,6 @@
           v-model="queryParams.dictType"
           placeholder="请输入字典类型"
           clearable
-          style="width: 200px"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
@@ -30,7 +28,6 @@
           v-model="queryParams.status"
           placeholder="字典状态"
           clearable
-          style="width: 200px"
         >
           <el-option
             v-for="dict in sys_normal_disable"
@@ -245,7 +242,7 @@ import { useDict } from '@/utils/dict';
 import { downloadFileFromBlob } from '@/utils/download.ts';
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus';
 import { reactive, toRefs, ref, nextTick } from 'vue';
-import { Delete, Download, Edit, Plus, Refresh, Search, Operation } from '@element-plus/icons-vue';
+import { Delete, Download, Edit, Plus, Refresh, Search, Operation, QuestionFilled } from '@element-plus/icons-vue';
 
 const queryRef = ref<FormInstance>();
 const dictRef = ref<FormInstance>();

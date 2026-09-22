@@ -81,7 +81,10 @@
     "basicInfo": "基本信息",
     "otherInfo": "其他信息",
     "resetPassword": "重置密码",
-    "assignRoles": "分配角色"
+    "assignRoles": "分配角色",
+    "importTitle": "导入用户",
+    "updateSupport": "更新已存在的用户数据",
+    "downloadFailed": "文件下载失败，请重试"
   },
   "dept": {
     "orderNum": "显示顺序",

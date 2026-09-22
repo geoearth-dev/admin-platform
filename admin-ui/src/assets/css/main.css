@@ -1,12 +1,12 @@
 @import './tailwind/theme.css';
 
+@import 'element-plus/dist/index.css' layer(el);
+
 @import './ele/index.css';
-@import './ele/compat.css';
+@import './ele/common.css';
 
 @import './design-tokens/index.css';
 
 @import './app/transition.css';
 @import './app/nprogress.css';
 @import './app/ui.css';
-
-@import 'element-plus/dist/index.css';

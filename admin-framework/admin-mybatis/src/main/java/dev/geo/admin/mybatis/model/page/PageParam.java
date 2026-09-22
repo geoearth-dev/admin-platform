@@ -16,7 +16,7 @@ public class PageParam extends BaseEntity {
     private static final Integer PAGE_SIZE = 100;
     /**
      * 每页显示项目数 - 不分页
-     * 例如，导出界面时，您可以将 {@link #pageSize} 设置为 -1 以查询所有数据而不分页。
+     * 导出全部数据时，将 {@link #pageSize} 设置为 -1 可禁用分页。
      */
     public static final Integer PAGE_SIZE_NONE = -1;
 

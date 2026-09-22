@@ -81,7 +81,10 @@
     "basicInfo": "Basic Information",
     "otherInfo": "Other Information",
     "resetPassword": "Reset Password",
-    "assignRoles": "Assign Roles"
+    "assignRoles": "Assign Roles",
+    "importTitle": "Import Users",
+    "updateSupport": "Update existing user data",
+    "downloadFailed": "File download failed. Please try again."
   },
   "dept": {
     "list": "Department List",

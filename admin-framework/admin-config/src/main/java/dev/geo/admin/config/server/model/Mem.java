@@ -6,7 +6,6 @@ import lombok.Setter;
 /**
  * 内存信息：保存字节数，读取容量时转换为 GB（1024 进制）
  *
- * @author qdata
  */
 @Setter
 public class Mem {

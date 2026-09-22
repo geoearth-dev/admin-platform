@@ -12,7 +12,8 @@ import {
   Search,
   Settings,
 } from '@/assets/icons';
-import { $t, loadLocaleMessages } from '@/plugins/locale';
+import { $t, loadLocaleMessages, type SupportedLanguagesType } from '@/plugins/locale';
+import { SUPPORT_LANGUAGES } from '@/constants/core';
 import { preferences, updatePreferences, usePreferences } from '@/plugins/preference';
 import { useAccessStore } from '@/store';
 
@@ -57,8 +58,8 @@ interface Props {
    * 菜单数组
    */
   menus?: Array<{
-    handler: AnyFunction;
-    icon?: Component | Function | string;
+    handler: AnyFunction<[]>;
+    icon?: Component | string;
     text: string;
   }>;
 
@@ -273,7 +274,7 @@ function handleLanguageToggleSelect(event?: Event) {
   event?.preventDefault();
   showLanguageList.value = !showLanguageList.value;
 }
-async function handleLocaleChange(event: Event, value: 'en-US' | 'zh-CN') {
+async function handleLocaleChange(event: Event, value: SupportedLanguagesType) {
   // 阻止默认关闭，让用户能继续看到选择结果；选完手动收起
   event.preventDefault();
   updatePreferences({ app: { locale: value } });

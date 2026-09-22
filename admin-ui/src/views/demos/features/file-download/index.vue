@@ -3,7 +3,7 @@ import { ref } from 'vue';
 
 import { Page } from '@/components/page';
 
-import { Button, Card } from '@/plugins/vben-ui/shadcn-ui';
+import { Button, Card, CardHeader, CardTitle, CardContent } from '@/plugins/vben-ui/shadcn-ui';
 
 import imageBase64 from './base64';
 import {
@@ -12,7 +12,12 @@ import {
   downloadFileFromUrl,
   downloadFileFromBlobPart,
 } from '@/utils/download';
-import { downloadFile1, downloadFile2 } from '@/api/example/download';
+import {
+  downloadFile1,
+  downloadFile2,
+  TEST_DOWNLOAD_URL,
+  TEST_IMAGE_URL,
+} from '@/api/example/download';
 
 const downloadResult = ref('');
 
@@ -31,37 +36,46 @@ function getResponse() {
 
 <template>
   <Page title="文件下载示例">
-    <Card title="根据文件地址下载文件">
+    <Card>
+<CardHeader><CardTitle>根据文件地址下载文件</CardTitle></CardHeader>
+<CardContent>
       <Button
-        type="primary"
+        variant="default"
         @click="
           downloadFileFromUrl({
-            source: 'https://codeload.github.com/vbenjs/vue-vben-admin-doc/zip/main',
+            source: TEST_DOWNLOAD_URL,
+            fileName: 'download-test.bin',
             target: '_self',
           })
         "
       >
         Download File
       </Button>
-    </Card>
+    </CardContent>
+</Card>
 
-    <Card class="my-5" title="根据地址下载图片">
+    <Card class="my-5">
+<CardHeader><CardTitle>根据地址下载图片</CardTitle></CardHeader>
+<CardContent>
       <Button
-        type="primary"
+        variant="default"
         @click="
           downloadFileFromImageUrl({
-            source: 'https://unpkg.com/@vbenjs/static-source@0.1.7/source/logo-v1.webp',
-            fileName: 'vben-logo.png',
+            source: TEST_IMAGE_URL,
+            fileName: 'test-image.png',
           })
         "
       >
         Download File
       </Button>
-    </Card>
+    </CardContent>
+</Card>
 
-    <Card class="my-5" title="base64流下载">
+    <Card class="my-5">
+<CardHeader><CardTitle>base64流下载</CardTitle></CardHeader>
+<CardContent>
       <Button
-        type="primary"
+        variant="default"
         @click="
           downloadFileFromBase64({
             source: imageBase64,
@@ -71,10 +85,13 @@ function getResponse() {
       >
         Download Image
       </Button>
-    </Card>
-    <Card class="my-5" title="文本下载">
+    </CardContent>
+</Card>
+    <Card class="my-5">
+<CardHeader><CardTitle>文本下载</CardTitle></CardHeader>
+<CardContent>
       <Button
-        type="primary"
+        variant="default"
         @click="
           downloadFileFromBlobPart({
             source: 'text content',
@@ -84,12 +101,16 @@ function getResponse() {
       >
         Download TxT
       </Button>
-    </Card>
+    </CardContent>
+</Card>
 
-    <Card class="my-5" title="Request download">
-      <Button type="primary" @click="getBlob"> 获取Blob </Button>
-      <Button type="primary" class="ml-4" @click="getResponse"> 获取Response </Button>
+    <Card class="my-5">
+<CardHeader><CardTitle>Request download</CardTitle></CardHeader>
+<CardContent>
+      <Button variant="default" @click="getBlob"> 获取Blob </Button>
+      <Button variant="default" class="ml-4" @click="getResponse"> 获取Response </Button>
       <div class="mt-4">{{ downloadResult }}</div>
-    </Card>
+    </CardContent>
+</Card>
   </Page>
 </template>

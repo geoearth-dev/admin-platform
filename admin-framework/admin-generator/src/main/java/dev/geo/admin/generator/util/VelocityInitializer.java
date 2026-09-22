@@ -8,7 +8,6 @@ import java.util.Properties;
 /**
  * VelocityEngine工厂
  * 
- * @author ruoyi
  */
 public class VelocityInitializer
 {

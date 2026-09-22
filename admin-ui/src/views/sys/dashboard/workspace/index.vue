@@ -25,7 +25,7 @@ import { openWindow } from '@/utils/window';
 
 const userStore = useUserStore();
 
-// 这是一个示例数据，实际项目中需要根据实际情况进行调整
+// 工作台项目示例数据。
 // url 也可以是内部路由，在 navTo 方法中识别处理，进行内部跳转
 // 例如：url: /dashboard/workspace
 const projectItems: WorkbenchProjectItem[] = [
@@ -109,7 +109,7 @@ const quickNavItems: WorkbenchQuickNavItem[] = [
     color: '#3fb27f',
     icon: 'ion:settings-outline',
     title: '系统管理',
-    url: '/demos/features/login-expired', // 这里的 URL 是示例，实际项目中需要根据实际情况进行调整
+    url: '/demos/features/login-expired', // 登录过期演示入口。
   },
   {
     color: '#4daf1bc9',
@@ -177,12 +177,6 @@ const trendItems: WorkbenchTrendItem[] = [
     title: '克里斯',
   },
   {
-    avatar: 'svg:avatar-4',
-    content: `发表文章 <a>如何编写一个Vite插件</a> `,
-    date: '2天前',
-    title: 'Vben',
-  },
-  {
     avatar: 'svg:avatar-1',
     content: `回复了 <a>杰克</a> 的问题 <a>如何进行项目优化？</a>`,
     date: '3天前',
@@ -206,18 +200,11 @@ const trendItems: WorkbenchTrendItem[] = [
     date: '2021-04-01 20:00',
     title: '威廉',
   },
-  {
-    avatar: 'svg:avatar-4',
-    content: `发表文章 <a>如何编写使用 Admin Vben</a> `,
-    date: '2021-03-01 20:00',
-    title: 'Vben',
-  },
 ];
 
 const router = useRouter();
 
-// 这是一个示例方法，实际项目中需要根据实际情况进行调整
-// This is a sample method, adjust according to the actual project requirements
+// 外部链接在新窗口打开，站内路径通过路由跳转。
 function navTo(nav: WorkbenchProjectItem | WorkbenchQuickNavItem) {
   if (nav.url?.startsWith('http')) {
     openWindow(nav.url);

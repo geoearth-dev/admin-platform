@@ -3,7 +3,14 @@
     <FormDrawer @success="onRefresh" />
     <DetailDrawer @success="onRefresh" />
     <AssignRolesModal @success="onRefresh" />
-    <ImportModal @changed="onRefresh" />
+    <ExcelImportDialog
+      ref="importDialog"
+      :title="$t('system.user.importTitle')"
+      :import-file="importUser"
+      :download-template="onDownloadTemplate"
+      :update-support-label="$t('system.user.updateSupport')"
+      @changed="onRefresh"
+    />
     <div class="flex size-full">
       <ElCard class="w-1/6">
         <ElInput
@@ -105,8 +112,10 @@ import {
   changeUserStatus,
   deleteUser,
   deptTreeSelect,
+  downloadUserTemplate,
   exportUser,
   getUser,
+  importUser,
   listUser,
   resetUserPwd,
 } from '@/api/system/user';
@@ -129,7 +138,7 @@ import { createDateRangeCodec } from '@/utils/date-range-codec';
 import type { SysUser } from '@/types/base/api/system/user.ts';
 import type { TreeSelect } from '@/types/base/api/common.ts';
 import AssignRoles from './modules/assign-roles.vue';
-import ImportUsers from './modules/import.vue';
+import ExcelImportDialog from '@/components/ExcelImportDialog/index.vue';
 import { Search } from '@lucide/vue';
 import { saveExcel } from './modules/download.ts';
 import { useAccess } from '@/plugins/effects/access/use-access.ts';
@@ -155,10 +164,7 @@ const [AssignRolesModal, assignRolesModalApi] = useVbenModal({
   destroyOnClose: true,
 });
 
-const [ImportModal, importModalApi] = useVbenModal({
-  connectedComponent: ImportUsers,
-  destroyOnClose: true,
-});
+const importDialog = ref<InstanceType<typeof ExcelImportDialog>>();
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
   destroyOnClose: true,
@@ -320,7 +326,12 @@ function onCreate() {
     .open();
 }
 function onImport() {
-  importModalApi.open();
+  importDialog.value?.open();
+}
+
+async function onDownloadTemplate() {
+  const blob = await downloadUserTemplate();
+  await saveExcel(blob, `${$t('ui.excelImport.downloadTemplate')}.xlsx`);
 }
 
 const exporting = ref(false);

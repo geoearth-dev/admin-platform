@@ -31,6 +31,20 @@
     "select": "请选择",
     "upload": "点击上传"
   },
+  "excelImport": {
+    "title": "数据导入",
+    "submit": "开始导入",
+    "dropFile": "将文件拖到此处，或",
+    "clickUpload": "点击上传",
+    "selectFileRequired": "请先选择要导入的文件",
+    "fileLimit": "一次只能导入一个文件，请先移除已选择的文件",
+    "updateSupport": "更新已存在的数据",
+    "downloadTemplate": "下载模板",
+    "excelOnly": "仅允许导入 .xls、.xlsx 格式文件",
+    "success": "导入成功",
+    "failed": "导入失败，请检查文件内容后重试",
+    "partialHint": "部分记录可能已成功导入，请根据上方提示核对数据，修正失败记录后重试。"
+  },
   "captcha": {
     "title": "请完成安全验证",
     "sliderSuccessText": "验证通过",
@@ -43,6 +57,7 @@
     "sliderTranslateSuccessTip": "验证成功，耗时{0}秒",
     "alt": "支持img标签src属性值",
     "refreshAriaLabel": "刷新验证码",
+    "imageLoadFailed": "验证码加载失败，点击重试",
     "confirmAriaLabel": "确认选择",
     "confirm": "确认",
     "pointAriaLabel": "点击点",
@@ -152,7 +167,7 @@
     },
     "lockScreen": {
       "title": "锁定屏幕",
-      "screenButton": "解锁",
+      "screenButton": "锁定",
       "password": "密码",
       "placeholder": "请输入锁屏密码",
       "unlock": "点击解锁",

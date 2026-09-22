@@ -98,32 +98,3 @@ const buttons = computed(() => {
   }));
 });
 </script>
-
-<style scoped>
-.management-toolbar {
-  margin-left: 20px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-/* 覆盖按钮组默认 small 字号，仅影响这个工具栏。 */
-.management-toolbar.vben-button-group.size-small :deep(button) {
-  height: 28px;
-  padding: 0 10px;
-  gap: 4px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 16px;
-  box-shadow: none;
-}
-
-.management-toolbar.vben-button-group.size-small :deep(button svg) {
-  width: 14px;
-  height: 14px;
-}
-
-.management-toolbar.vben-button-group.size-small :deep(button svg.animate-spin) {
-  margin-right: 0;
-}
-</style>

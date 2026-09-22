@@ -5,7 +5,6 @@ import dev.geo.admin.common.constant.GenConstants;
 import dev.geo.admin.generator.config.GenConfig;
 import dev.geo.admin.generator.model.GenTable;
 import dev.geo.admin.generator.model.GenTableColumn;
-import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 
@@ -184,13 +183,13 @@ public class GenUtils {
     }
 
     /**
-     * 关键字替换
+     * 去除表注释中的“表”字，生成默认功能名称
      *
      * @param text 需要被替换的名字
      * @return 替换后的名字
      */
     public static String replaceText(String text) {
-        return RegExUtils.replaceAll(text, "(?:表|若依)", "");
+        return Strings.CS.replace(text, "表", "");
     }
 
     /**

@@ -42,6 +42,8 @@ export {
   Heading2,
   Highlighter,
   Menu as IconDefault,
+  ImageOff,
+  CloudUpload,
   ImagePlus,
   Inbox,
   Info,

@@ -5,14 +5,14 @@
   "keywords": [
     "vue admin"
   ],
-  "homepage": "https://github.com/vbenjs/vue-vben-admin",
-  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
-  "repository": "vbenjs/vue-vben-admin.git",
+  "homepage": "https://admin.geoearth.dev",
+  "bugs": "https://github.com/geoearth-dev/admin-platform/issues",
+  "repository": "admin-platform",
   "license": "MIT",
   "author": {
-    "name": "vben",
-    "email": "ann.vben@gmail.com",
-    "url": "https://github.com/anncwb"
+    "name": "Charles",
+    "email": "qiangliu.dev@gmail.com",
+    "url": "https://github.com/geoearth-dev"
   },
   "type": "module",
   "scripts": {
@@ -20,6 +20,7 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
+    "type-check": "vue-tsc --build",
     "lint": "run-s \"lint:*\"",
     "lint:oxlint": "oxlint . --fix",
     "lint:eslint": "eslint . --fix --cache",

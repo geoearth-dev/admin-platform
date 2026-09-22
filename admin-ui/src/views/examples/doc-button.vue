@@ -1,20 +1,17 @@
 <script lang="ts" setup>
-import { openWindow } from '@/utils/window'
+import { openWindow } from '@/utils/window';
 
-import { Button } from '@/plugins/vben-ui/shadcn-ui'
+import { Button } from '@/plugins/vben-ui/shadcn-ui';
+import { ADMIN_DOC_URL } from '@/constants/admin';
 
-const VBEN_DOC_URL = 'https://doc.vben.pro'
-
-const props = defineProps<{ path: string }>()
+const props = defineProps<{ path: string }>();
 
 function handleClick() {
   // 如果没有.html，打开页面时可能会出现404
   const path =
-    VBEN_DOC_URL +
-    (props.path.toLowerCase().endsWith('.html')
-      ? props.path
-      : `${props.path}.html`)
-  openWindow(path)
+    ADMIN_DOC_URL +
+    (props.path.toLowerCase().endsWith('.html') ? props.path : `${props.path}.html`);
+  openWindow(path);
 }
 </script>
 

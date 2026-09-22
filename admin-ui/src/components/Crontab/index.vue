@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="crontab">
     <el-tabs type="border-card">
       <el-tab-pane label="秒" v-if="shouldHide('second')">
         <CrontabSecond
@@ -257,68 +257,3 @@ function clearCron(): void {
 }
 onMounted(resolveExp);
 </script>
-
-<style lang="scss" scoped>
-.pop_btn {
-  text-align: center;
-  margin-top: 20px;
-}
-.popup-main {
-  position: relative;
-  margin: 10px auto;
-  border-radius: 5px;
-  font-size: 12px;
-  overflow: hidden;
-}
-.popup-title {
-  overflow: hidden;
-  line-height: 34px;
-  padding-top: 6px;
-  background: #f2f2f2;
-}
-.popup-result {
-  box-sizing: border-box;
-  line-height: 24px;
-  margin: 25px auto;
-  padding: 15px 10px 10px;
-  border: 1px solid #ccc;
-  position: relative;
-}
-.popup-result .title {
-  position: absolute;
-  top: -28px;
-  left: 50%;
-  width: 140px;
-  font-size: 14px;
-  margin-left: -70px;
-  text-align: center;
-  line-height: 30px;
-  background: #fff;
-}
-.popup-result table {
-  text-align: center;
-  width: 100%;
-  margin: 0 auto;
-}
-.popup-result table td:not(.result) {
-  width: 3.5rem;
-  min-width: 3.5rem;
-  max-width: 3.5rem;
-}
-.popup-result table span {
-  display: block;
-  width: 100%;
-  font-family: arial;
-  line-height: 30px;
-  height: 30px;
-  white-space: nowrap;
-  overflow: hidden;
-  border: 1px solid #e8e8e8;
-}
-.popup-result-scroll {
-  font-size: 12px;
-  line-height: 24px;
-  height: 10em;
-  overflow-y: auto;
-}
-</style>

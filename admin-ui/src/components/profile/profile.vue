@@ -31,16 +31,18 @@ const tabsValue = defineModel<string>('modelValue')
   >
     <div class="flex w-full flex-col gap-4 md:flex-row">
       <Card class="w-full flex-none md:w-56">
-        <div class="mt-4 flex-col-center h-40 gap-4">
-          <VbenAvatar
-            :src="userInfo?.avatar || preferences.app.defaultAvatar"
-            class="size-20"
-          />
+        <div class="flex-col-center gap-3 px-4 pt-6">
+          <slot name="avatar">
+            <VbenAvatar
+              :src="userInfo?.avatar || preferences.app.defaultAvatar"
+              class="size-20"
+            />
+          </slot>
           <span class="text-lg font-semibold">
-            {{ userInfo?.realName ?? '' }}
+            {{ userInfo?.nickName || userInfo?.userName || '' }}
           </span>
           <span class="text-sm text-foreground/80">
-            {{ userInfo?.username ?? '' }}
+            {{ userInfo?.userName ?? '' }}
           </span>
         </div>
         <Separator class="my-4" />

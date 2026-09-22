@@ -1,5 +1,4 @@
 export { default as Block } from './block.vue';
-export { default as Custom } from './custom/custom.vue';
 export { default as Animation } from './general/animation.vue';
 export { default as General } from './general/general.vue';
 export { default as Breadcrumb } from './layout/breadcrumb.vue';

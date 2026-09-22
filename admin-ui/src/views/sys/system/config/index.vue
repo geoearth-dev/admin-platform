@@ -12,7 +12,6 @@
           v-model="queryParams.configName"
           placeholder="请输入参数名称"
           clearable
-          style="width: 200px"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
@@ -21,17 +20,11 @@
           v-model="queryParams.configKey"
           placeholder="请输入参数键名"
           clearable
-          style="width: 200px"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
       <el-form-item label="系统内置" prop="configType">
-        <el-select
-          v-model="queryParams.configType"
-          placeholder="系统内置"
-          clearable
-          style="width: 200px"
-        >
+        <el-select v-model="queryParams.configType" placeholder="系统内置" clearable>
           <el-option
             v-for="dict in sys_yes_no"
             :key="dict.value"
@@ -63,7 +56,7 @@
           plain
           :icon="Plus"
           @click="handleAdd"
-          v-hasPermi="['system:config:add']"
+          v-access:code="['system:config:add']"
           >新增</el-button
         >
       </el-col>
@@ -74,7 +67,7 @@
           :icon="Edit"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:config:edit']"
+          v-access:code="['system:config:edit']"
           >修改</el-button
         >
       </el-col>
@@ -85,7 +78,7 @@
           :icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:config:remove']"
+          v-access:code="['system:config:remove']"
           >删除</el-button
         >
       </el-col>
@@ -95,7 +88,7 @@
           plain
           :icon="Download"
           @click="handleExport"
-          v-hasPermi="['system:config:export']"
+          v-access:code="['system:config:export']"
           >导出</el-button
         >
       </el-col>
@@ -105,7 +98,7 @@
           plain
           :icon="Refresh"
           @click="handleRefreshCache"
-          v-hasPermi="['system:config:remove']"
+          v-access:code="['system:config:remove']"
           >刷新缓存</el-button
         >
       </el-col>
@@ -156,7 +149,7 @@
             type="primary"
             :icon="Edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:config:edit']"
+            v-access:code="['system:config:edit']"
             >修改</el-button
           >
           <el-button
@@ -164,7 +157,7 @@
             type="danger"
             :icon="Delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:config:remove']"
+            v-access:code="['system:config:remove']"
             >删除</el-button
           >
         </template>

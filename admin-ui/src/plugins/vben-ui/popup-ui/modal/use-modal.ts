@@ -8,7 +8,7 @@ import { useSelector } from '@tanstack/vue-store';
 import { ModalApi } from './modal-api';
 import VbenModal from './modal.vue';
 
-const USER_MODAL_INJECT_KEY = Symbol('VBEN_MODAL_INJECT');
+const USER_MODAL_INJECT_KEY = Symbol('ADMIN_MODAL_INJECT');
 
 const { globalEscapeShortcutKey } = usePreferences();
 /**
@@ -156,7 +156,7 @@ async function checkProps(api: ExtendedModalApi, attrs: Record<string, unknown>)
 
   for (const attr of Object.keys(attrs)) {
     if (stateKeys.has(attr) && !['class'].includes(attr)) {
-      // connectedComponent存在时，不要传入Modal的props，会造成复杂度提升，如果你需要修改Modal的props，请使用 useModal 或者api
+      // 使用 connectedComponent 时，通过 useVbenModal 或弹窗 API 配置状态。
       console.warn(
         `[Vben Modal]: When 'connectedComponent' exists, do not set props or slots '${attr}', which will increase complexity. If you need to modify the props of Modal, please use useVbenModal or api.`,
       );

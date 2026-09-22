@@ -83,29 +83,24 @@ const BUILT_IN_THEME_PRESETS: BuiltinThemePreset[] = [
  */
 const DEFAULT_TIME_ZONE_OPTIONS: TimezoneOption[] = [
   {
-    offset: -5,
     timezone: 'America/New_York',
-    label: 'America/New_York(GMT-5)',
+    label: 'America/New_York',
   },
   {
-    offset: 0,
     timezone: 'Europe/London',
-    label: 'Europe/London(GMT0)',
+    label: 'Europe/London',
   },
   {
-    offset: 8,
     timezone: 'Asia/Shanghai',
-    label: 'Asia/Shanghai(GMT+8)',
+    label: 'Asia/Shanghai',
   },
   {
-    offset: 9,
     timezone: 'Asia/Tokyo',
-    label: 'Asia/Tokyo(GMT+9)',
+    label: 'Asia/Tokyo',
   },
   {
-    offset: 9,
     timezone: 'Asia/Seoul',
-    label: 'Asia/Seoul(GMT+9)',
+    label: 'Asia/Seoul',
   },
 ];
 

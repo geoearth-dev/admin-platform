@@ -23,6 +23,7 @@ export interface LoginInfo {
   username: string;
   nickName?: string;
   avatar?: string;
+  email?: string;
   permissions: string[];
   roles: string[];
   passwordCharRange?: string;

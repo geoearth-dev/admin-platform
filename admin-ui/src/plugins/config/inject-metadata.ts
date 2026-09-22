@@ -48,7 +48,7 @@ export async function viteMetadataPlugin(root = process.cwd()): Promise<Plugin> 
       return {
         define: {
           // 供 About 页面使用。
-          __VBEN_ADMIN_METADATA__: JSON.stringify(metadata),
+          __ADMIN_METADATA__: JSON.stringify(metadata),
 
           // 供 main.ts 中的缓存命名空间使用。
           'import.meta.env.VITE_APP_VERSION': JSON.stringify(version),

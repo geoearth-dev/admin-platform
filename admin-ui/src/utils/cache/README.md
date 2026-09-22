@@ -34,14 +34,14 @@
 ### 基本使用（默认 localStorage）
 
 ```typescript
-import { StorageManager } from '@vben-core/shared/cache'
+import { StorageManager } from '@/utils/cache'
 
 const cache = new StorageManager({ prefix: 'myapp' })
 // 使用 IndexedDB
 //new StorageManager({ driver: new IndexedDBDriver(), prefix: 'app' });
 
 // 使用 sessionStorage
-//new StorageManager({ driver: new LocalStorageDriver({ storageType: 'sessionStorage' }), prefix: 'app' });
+//new StorageManager({ driver: new LocalStorageDriver('sessionStorage'), prefix: 'app' });
 
 // 测试环境
 //new StorageManager({ driver: new MemoryStorageDriver(), prefix: 'test' });
@@ -93,7 +93,7 @@ await cache.clearExpiredItems()
 基于浏览器 `localStorage` 或 `sessionStorage`，数据持久化存储。
 
 ```typescript
-import { LocalStorageDriver, StorageManager } from '@vben-core/shared/cache'
+import { LocalStorageDriver, StorageManager } from '@/utils/cache'
 
 // 使用 localStorage（默认）
 const cache = new StorageManager({
@@ -103,7 +103,7 @@ const cache = new StorageManager({
 
 // 使用 sessionStorage
 const sessionCache = new StorageManager({
-  driver: new LocalStorageDriver({ storageType: 'sessionStorage' }),
+  driver: new LocalStorageDriver('sessionStorage'),
   prefix: 'app',
 })
 ```
@@ -124,11 +124,11 @@ const sessionCache = new StorageManager({
 基于浏览器 IndexedDB，支持大容量结构化数据存储。
 
 ```typescript
-import {IndexedDBDriver, StorageManager} from '@vben-core/shared/cache';
+import {IndexedDBDriver, StorageManager} from '@/utils/cache';
 
 const cache = new StorageManager({
   driver: new IndexedDBDriver({
-    dbName: 'my-app-db',     // 数据库名称，默认 'vben-storage'
+    dbName: 'admin-platform-cache', // 数据库名称，默认 'admin-storage'
     dbVersion: 1,            // 数据库版本，默认 1
     storeName: 'cache-store', // 对象存储名称，默认 'kv-store'
   }),
@@ -136,12 +136,12 @@ const cache = new StorageManager({
 });
 
 // 存储大量数据
-await cache.setItem('table-data', largeDataArray);
+await cache.setItem('table-data', [{ id: 1, name: '示例数据' }]);
 
 // 存储二进制友好的结构（IndexedDB 原生支持）
 await cache.setItem('config', {
-  columns: [...],
-  filters: [...],
+  columns: [{ field: 'name', title: '名称' }],
+  filters: [],
   pagination: {page: 1, size: 20},
 });
 ```
@@ -162,7 +162,7 @@ await cache.setItem('config', {
 基于内存 Map，数据不持久化，页面刷新即丢失。
 
 ```typescript
-import { MemoryStorageDriver, StorageManager } from '@vben-core/shared/cache'
+import { MemoryStorageDriver, StorageManager } from '@/utils/cache'
 
 const cache = new StorageManager({
   driver: new MemoryStorageDriver(),
@@ -192,7 +192,7 @@ new StorageManager(options?: StorageManagerOptions)
 
 | 参数     | 类型             | 默认值                     | 说明                     |
 | -------- | ---------------- | -------------------------- | ------------------------ |
-| `driver` | `IStorageDriver` | `new LocalStorageDriver()` | 存储驱动实例             |
+| `driver` | `IStorageDriver` | 按运行环境选择 | localStorage 可访问时使用 LocalStorageDriver，否则使用 MemoryStorageDriver |
 | `prefix` | `string`         | `''`                       | 键前缀，用于命名空间隔离 |
 
 #### 方法
@@ -200,7 +200,7 @@ new StorageManager(options?: StorageManagerOptions)
 | 方法                | 签名                                                                    | 说明                               |
 | ------------------- | ----------------------------------------------------------------------- | ---------------------------------- |
 | `getItem`           | `getItem<T>(key: string, defaultValue?: T \| null): Promise<T \| null>` | 获取存储项，过期或不存在返回默认值 |
-| `setItem`           | `setItem<T>(key: string, value: T, ttl?: number): Promise<void>`        | 设置存储项，可选 TTL（毫秒）       |
+| `setItem`           | `setItem(key: string, value: unknown, ttl?: number): Promise<void>`        | 设置存储项，可选 TTL（毫秒）       |
 | `removeItem`        | `removeItem(key: string): Promise<void>`                                | 删除指定存储项                     |
 | `clear`             | `clear(): Promise<void>`                                                | 清除当前前缀下所有存储项           |
 | `clearExpiredItems` | `clearExpiredItems(): Promise<void>`                                    | 主动清理所有过期项                 |
@@ -232,8 +232,10 @@ interface IStorageDriver {
 ### 自定义 Driver
 
 ```typescript
-import type { IStorageDriver } from '@vben-core/shared/cache'
+import type { IStorageDriver } from '@/utils/cache'
+import { StorageManager } from '@/utils/cache'
 
+// 以下为接口实现示意，Cookie 读写函数需由接入方实现。
 class CookieStorageDriver implements IStorageDriver {
   async getItem<T>(key: string): Promise<null | T> {
     const value = getCookie(key)
@@ -272,9 +274,9 @@ import {
   LocalStorageDriver,
   MemoryStorageDriver,
   StorageManager,
-} from '@vben-core/shared/cache'
+} from '@/utils/cache'
 
-function createStorageManager(prefix: string) {
+function createStorageManager(prefix: string, needsLargeStorage = false) {
   // SSR 环境使用内存驱动
   if (typeof window === 'undefined') {
     return new StorageManager({
@@ -284,7 +286,7 @@ function createStorageManager(prefix: string) {
   }
 
   // 大数据场景使用 IndexedDB
-  if (needsLargeStorage()) {
+  if (needsLargeStorage) {
     return new StorageManager({
       driver: new IndexedDBDriver({ dbName: `${prefix}-db` }),
       prefix,
@@ -345,7 +347,7 @@ interface StorageItem<T> {
 }
 ```
 
-实际存储的 key 格式为：`{prefix}-{key}`
+设置前缀时，实际存储的 key 格式为 `{prefix}-{key}`；前缀为空时直接使用原始 key。
 
 例如 `prefix = 'app'`，`key = 'user'`，则实际存储键为 `app-user`。
 
@@ -378,28 +380,20 @@ interface StorageItem<T> {
 
 ## 在项目中的使用
 
-本项目中 `StorageManager` 主要被 `PreferenceManager` 消费，用于持久化用户偏好设置：
+偏好设置由 [PreferenceManager](../../plugins/preference/preferences.ts) 管理，应用入口 [main.ts](../../main.ts) 在创建 Vue 应用前调用 `initPreferences`：
 
 ```typescript
-// packages/@core/preferences/src/preferences.ts
-class PreferenceManager {
-  private cache: StorageManager
+import { initPreferences } from '@/plugins/preference';
+import { overridesPreferences } from '@/preference';
 
-  constructor() {
-    this.cache = new StorageManager()
-    this.state = reactive<Preferences>({ ...defaultPreferences })
-  }
+const env = import.meta.env.PROD ? 'prod' : 'dev';
+const appVersion = import.meta.env.VITE_APP_VERSION;
+const namespace = `${import.meta.env.VITE_APP_NAMESPACE}-${appVersion}-${env}`;
 
-  initPreferences = async ({ namespace }) => {
-    // 用应用命名空间重新初始化
-    this.cache = new StorageManager({ prefix: namespace })
-
-    // 从缓存加载偏好设置
-    const cached = await this.cache.getItem<Preferences>('preferences')
-    // ...
-  }
-}
+await initPreferences({ namespace, overrides: overridesPreferences });
 ```
+
+`PreferenceManager` 先使用默认偏好初始化状态，再以 `namespace` 为前缀创建 `StorageManager` 并异步加载缓存。应用默认配置位于 [preference.ts](../../preference.ts)，缓存按应用命名空间、版本和运行环境隔离。
 
 ---
 
@@ -411,7 +405,7 @@ class PreferenceManager {
 
 3. **IndexedDB 懒初始化** — 不需要手动调用 `init()` 或 `open()`，首次操作时自动打开数据库连接并复用。
 
-4. **前缀隔离是逻辑隔离** — `clear()` 只清除当前前缀下的数据，不影响其他前缀或无前缀的数据。
+4. **前缀隔离是逻辑隔离** — 设置前缀时，`clear()` 清除所有以 `{prefix}-` 开头的键；前缀为空时会清除该驱动中的全部数据。不同模块应使用独立且无包含关系的前缀。
 
 5. **错误处理** — LocalStorageDriver 在 JSON 解析失败时自动清除损坏数据； `PreferenceManager.saveToCache` 内部 try-catch 防止未捕获异常。
 

@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { $t } from '@/plugins/locale';
 
 import { VbenBreadcrumbView, type IBreadcrumb } from '@/plugins/vben-ui/shadcn-ui';
+import type { BreadcrumbStyleType } from '@/types';
 
 interface Props {
   hideWhenOnlyOne?: boolean;

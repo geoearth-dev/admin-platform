@@ -103,7 +103,7 @@ public @interface Excel {
     boolean needMerge() default false;
 
     /**
-     * 是否导出数据,应对需求:有时我们需要导出一份模板,这是标题需要但内容需要用户手工填写.
+     * 是否导出数据；生成仅含表头、由用户填写内容的模板时设为 false。
      */
     boolean isExport() default true;
 

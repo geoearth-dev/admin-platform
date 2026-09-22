@@ -309,9 +309,3 @@ onMounted(loadList);
     <ReadUsers ref="readersRef" />
   </div>
 </template>
-
-<style scoped>
-.notice-management :deep(.management-toolbar) {
-  margin-left: 0;
-}
-</style>

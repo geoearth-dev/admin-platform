@@ -203,7 +203,7 @@ defineExpose({ cancelAll })
       :key="file.uid"
       class="mt-2 flex items-center gap-2 text-sm"
     >
-      <span class="text-danger">{{ file.name }} 上传失败</span>
+      <span class="text-destructive">{{ file.name }} 上传失败</span>
       <el-button
         link
         type="primary"

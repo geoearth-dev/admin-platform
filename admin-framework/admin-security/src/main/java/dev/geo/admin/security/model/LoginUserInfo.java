@@ -10,6 +10,7 @@ public record LoginUserInfo(
         Long userId,
         String username,
         String nickName,
+        String email,
         String avatar,
 
         Instant passwordUpdateTime,
@@ -44,5 +45,10 @@ public record LoginUserInfo(
         roleGrants = roleGrants == null ? Set.of() : Set.copyOf(roleGrants);
 
         permissions = permissions == null ? Set.of() : Set.copyOf(permissions);
+    }
+
+    public LoginUserInfo withProfile(String nickName, String email, String avatar) {
+        return new LoginUserInfo(userId, username, nickName, email, avatar, passwordUpdateTime,
+                ip, loginLocation, browser, os, deptId, deptName, roleGrants, permissions);
     }
 }

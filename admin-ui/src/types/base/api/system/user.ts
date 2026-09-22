@@ -79,16 +79,29 @@ export interface SysRegister {
 
 /** 用户个人资料响应 */
 export interface UserProfileResult {
+  id: number;
+  userName: string;
+  nickName: string | null;
+  email: string | null;
+  phoneNumber: string | null;
+  sex: string | null;
+  avatar: string | null;
+  remark: string | null;
+  deptName: string | null;
+  createTime: string | null;
   /** 角色分组 */
   roleGroup: string;
   /** 岗位分组 */
   postGroup: string;
 }
 
-/** 用户头像上传响应 */
-export interface UserProfileAvatarResult {
-  /** 头像地址 */
-  imgUrl: string;
+/** 当前用户可修改的个人资料；不包含账号、部门和角色。 */
+export interface UserProfileUpdateParams {
+  nickName: string;
+  email: string;
+  phoneNumber: string;
+  sex: '0' | '1' | '2';
+  remark: string;
 }
 
 /** 用户授权角色响应 */

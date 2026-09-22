@@ -1,4 +1,4 @@
-import type { LoginInfo } from '@/api/system/auth/auth';
+import type { LoginInfo } from '@/api/admin/auth';
 import { acceptHMRUpdate, defineStore } from 'pinia';
 
 interface AccessState {

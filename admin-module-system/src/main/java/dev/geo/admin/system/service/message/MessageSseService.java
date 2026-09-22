@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class MessageSseService {
+    private static final long HEARTBEAT_INTERVAL = 15_000L;
     private static final long CONNECTION_TIMEOUT = 30 * 60 * 1000L;
     private static final long ONLINE_TIMEOUT = 90_000L;
     private final LoginSessionStore sessionStore;
@@ -129,7 +130,7 @@ public class MessageSseService {
         return List.copyOf(sessions.values());
     }
 
-    @Scheduled(fixedDelay = 15_000L)
+    @Scheduled(scheduler = "onlineSessionScheduler", fixedDelay = HEARTBEAT_INTERVAL)
     public void heartbeat() {
         for (Connection connection : connections.values()) {
             try {
@@ -168,7 +169,7 @@ public class MessageSseService {
         connections.values().stream()
                 .filter(connection ->
                         connection.sessionId.equals(event.sessionId()))
-                .forEach(connection -> close(connection, true));
+                .forEach(connection -> close(connection, true, event.forced()));
     }
 
     public void pushUnreadCount(Long userId, long unreadCount) {
@@ -259,6 +260,10 @@ public class MessageSseService {
     }
 
     private void close(Connection connection, boolean invalidated) {
+        close(connection, invalidated, false);
+    }
+
+    private void close(Connection connection, boolean invalidated, boolean forced) {
         if (!connections.remove(connection.connectionId, connection)) {
             return;
         }
@@ -269,11 +274,11 @@ public class MessageSseService {
                         SseEmitter.event()
                                 .name("session-invalidated")
                                 .data(Map.of(
-                                        "sessionId", connection.sessionId
+                                        "forced", forced
                                 ))
                 );
             } catch (IOException | IllegalStateException exception) {
-                return;
+                // 客户端可能已经断开，仍需完成服务端连接清理。
             }
         }
 

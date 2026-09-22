@@ -154,6 +154,11 @@ async function handleClick(item: NotificationItem) {
   if (!notice.isRead) await markRead([notice.id])
 }
 
+// 用户菜单复用通知面板的展开行为。
+defineExpose({
+  toggle: () => headerRef.value?.toggle(),
+})
+
 onMounted(() => {
   void loadNotices()
 })

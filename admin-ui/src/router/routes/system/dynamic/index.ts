@@ -71,12 +71,12 @@ const systemDynamicRouter: RouteRecordRaw[] = [
     ],
   },
   {
-    name: 'VbenAbout',
+    name: 'About',
     path: '/admin/about',
     component: () => import('@/views/sys/admin/about/index.vue'),
     meta: {
       icon: 'lucide:copyright',
-      title: $t('demos.vben.about'),
+      title: $t('demos.admin.about'),
       order: 9999,
     },
   },

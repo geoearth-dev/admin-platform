@@ -1,5 +1,8 @@
 import type { Preferences } from './types';
 
+import defaultAvatar from '@/assets/img/avatar.png';
+import { ADMIN_LOGO_DARK_URL, ADMIN_LOGO_URL } from '@/constants/admin';
+
 const defaultPreferences: Preferences = {
   app: {
     accessMode: 'frontend',
@@ -15,7 +18,7 @@ const defaultPreferences: Preferences = {
     contentPaddingLeft: 0,
     contentPaddingRight: 0,
     contentPaddingTop: 0,
-    defaultAvatar: 'https://unpkg.com/@vbenjs/static-source@0.1.7/source/avatar-v1.webp',
+    defaultAvatar,
     defaultHomePath: '/dashboard',
     dynamicTitle: true,
     enableCheckUpdates: true,
@@ -27,7 +30,7 @@ const defaultPreferences: Preferences = {
     layout: 'sidebar-nav',
     locale: 'zh-CN',
     loginExpiredMode: 'page',
-    name: 'Vben Admin',
+    name: 'Admin Platform',
     preferencesButtonPosition: 'auto',
     timezone: 'Asia/Shanghai',
     watermark: false,
@@ -42,11 +45,11 @@ const defaultPreferences: Preferences = {
     styleType: 'normal',
   },
   copyright: {
-    companyName: 'Vben',
-    companySiteLink: 'https://www.vben.pro',
-    date: '2024',
+    companyName: 'GeoEarth',
+    companySiteLink: 'https://www.geoearth.dev',
+    date: '2026',
     enable: true,
-    icp: '闽ICP备19024351号',
+    icp: '',
     icpLink: 'https://beian.miit.gov.cn/',
     settingShow: true,
   },
@@ -66,7 +69,8 @@ const defaultPreferences: Preferences = {
   logo: {
     enable: true,
     fit: 'contain',
-    source: 'https://unpkg.com/@vbenjs/static-source@0.1.7/source/logo-v1.webp',
+    source: ADMIN_LOGO_URL,
+    sourceDark: ADMIN_LOGO_DARK_URL,
     showText: true,
     logoMode: 'icon',
   },

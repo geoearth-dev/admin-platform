@@ -28,8 +28,6 @@ import { computed, reactive } from 'vue';
 
 import { $t } from '@/plugins/locale';
 
-import type { Recordable } from '@/types';
-
 import { useVbenModal } from '@/plugins/vben-ui/popup-ui';
 import { VbenAvatar, VbenButton } from '@/plugins/vben-ui/shadcn-ui';
 import { useVbenForm, z } from '@/plugins/vben-ui/form-ui';
@@ -49,10 +47,12 @@ withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-  submit: [Recordable<unknown>];
+  submit: [password: string];
 }>();
 
-const [Form, { resetForm, validate, getValues, getFieldComponentRef }] = useVbenForm(
+const [Form, { reset, validate, getValues, getFieldComponentRef }] = useVbenForm<{
+  lockScreenPassword: string;
+}>(
   reactive({
     commonConfig: {
       hideLabel: true,
@@ -80,7 +80,7 @@ const [Modal] = useVbenModal({
   },
   onOpenChange(isOpen) {
     if (isOpen) {
-      resetForm();
+      reset();
     }
   },
   onOpened() {

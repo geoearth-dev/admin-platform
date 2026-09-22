@@ -7,6 +7,7 @@ import { updateThemeCSSVariables } from './effects';
 import { defaultPreferences } from './defaults';
 import { breakpointsTailwind, useBreakpoints, useDebounceFn } from '@vueuse/core';
 import { StorageManager } from '@/utils/cache';
+import { setCurrentTimezone } from '@/utils/date';
 
 const STORAGE_KEYS = {
   MAIN: 'preferences',
@@ -22,8 +23,7 @@ class PreferenceManager {
   private state: Preferences;
 
   constructor() {
-    // 构造函数不再同步读取缓存，使用默认值初始化
-    // 真正的缓存加载在 initPreferences 中完成（已经是 async）
+    // 使用默认偏好初始化状态，缓存由 initPreferences 异步加载。
     this.state = reactive<Preferences>({ ...defaultPreferences });
     this.debouncedSave = useDebounceFn(() => this.saveToCache(), 150);
   }
@@ -67,7 +67,7 @@ class PreferenceManager {
     // 合并初始偏好设置：前面的对象优先，后面的对象仅补齐缺失字段
     this.initialPreferences = merge({}, overrides, defaultPreferences);
 
-    // 加载缓存的偏好设置，并仅用缓存补齐初始化配置中未显式设置的字段
+    // 用户保存的偏好优先，项目配置补齐缺失字段。
     const cachedPreferences = (await this.loadFromCache()) || {};
 
     const mergedPreference = mergeWithArrayOverride(
@@ -96,11 +96,10 @@ class PreferenceManager {
     // 将状态重置为初始偏好设置
     Object.assign(this.state, this.initialPreferences);
 
-    // 保存偏好设置至缓存
-    await this.saveToCache();
-
-    // 直接触发 UI 更新
+    // 先应用配置，保证页面刷新时使用重置后的主题和时区。
     this.handleUpdates(this.state);
+
+    await this.saveToCache();
   };
 
   /**
@@ -124,6 +123,11 @@ class PreferenceManager {
    */
   private handleUpdates(updates: DeepPartial<Preferences>) {
     const { theme, app } = updates;
+    // 初始化、切换和重置都通过偏好配置应用时区。
+    if (app?.timezone !== undefined) {
+      setCurrentTimezone(this.state.app.timezone);
+    }
+
     if (theme && (Object.keys(theme).length > 0 || Reflect.has(theme, 'fontSize'))) {
       updateThemeCSSVariables(this.state);
     }

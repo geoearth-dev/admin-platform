@@ -1,5 +1,5 @@
 <template>
-  <el-form>
+  <el-form class="cron-field cron-field--min">
     <el-form-item>
       <el-radio
         v-model="mode"
@@ -162,15 +162,3 @@ function updateExpression(): void {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.el-input-number--small,
-.el-select,
-.el-select--small {
-  margin: 0 0.2rem;
-}
-.el-select,
-.el-select--small {
-  width: 19.8rem;
-}
-</style>
