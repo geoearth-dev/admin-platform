@@ -38,9 +38,9 @@ const getZIndex = computed(() => {
 });
 
 /**
- * 排除ant-message和loading:9999的z-index
+ * 排除临时消息、通知和加载遮罩，避免它们抬高登录弹窗层级。
  */
-const zIndexExcludeClass = ['ant-message', 'loading'];
+const zIndexExcludeClass = ['el-message', 'el-notification', 'el-loading-mask', 'loading'];
 function isZIndexExcludeClass(element: Element) {
   return zIndexExcludeClass.some((className) =>
     element.classList.contains(className),

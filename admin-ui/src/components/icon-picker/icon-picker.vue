@@ -29,7 +29,7 @@ import { usePagination } from '@/plugins/effects/hooks/use-pagination';
 import { isFunction } from '@/utils/inference';
 
 const props = withDefaults(defineProps<IconPickerProps>(), {
-  prefix: 'ant-design',
+  prefix: 'lucide',
   pageSize: 36,
   icons: () => [],
   iconSlot: 'default',

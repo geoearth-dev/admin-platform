@@ -1,13 +1,19 @@
 <script lang="ts" setup>
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 
-import { Page } from '@/components/page';
-import { resetAllStores, useUserStore, useAuthStore } from '@/store';
+import { Page } from '@/components/page'
+import { resetAllStores, useUserStore, useAuthStore } from '@/store'
 
-import { Button, Card } from '@/plugins/vben-ui/shadcn-ui';
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from '@/plugins/vben-ui/shadcn-ui'
 
-import { useAccess } from '@/plugins/effects/access/use-access';
-import type { LoginParams } from '@/api/admin/auth';
+import { useAccess } from '@/plugins/effects/access/use-access'
+import type { LoginParams } from '@/api/admin/auth'
 
 const accounts: Record<string, LoginParams> = {
   admin: {
@@ -31,43 +37,43 @@ const accounts: Record<string, LoginParams> = {
     uuid: '',
     rememberMe: false,
   },
-};
+}
 
-const { accessMode, toggleAccessMode } = useAccess();
-const userStore = useUserStore();
-const accessStore = useAuthStore();
-const router = useRouter();
+const { accessMode, toggleAccessMode } = useAccess()
+const userStore = useUserStore()
+const accessStore = useAuthStore()
+const router = useRouter()
 
-function roleButtonType(role: string) {
-  return userStore.userRoles.includes(role) ? 'primary' : 'default';
+function roleButtonVariant(role: string) {
+  return userStore.userRoles.includes(role) ? 'default' : 'outline'
 }
 
 async function changeAccount(role: string) {
   if (userStore.userRoles.includes(role)) {
-    return;
+    return
   }
 
-  const account = accounts[role];
-  resetAllStores();
+  const account = accounts[role]
+  resetAllStores()
   if (account) {
     await accessStore.authLogin(account, async () => {
-      router.go(0);
-    });
+      router.go(0)
+    })
   }
 }
 
 async function handleToggleAccessMode() {
   if (!accounts.super) {
-    return;
+    return
   }
-  await toggleAccessMode();
-  resetAllStores();
+  await toggleAccessMode()
+  resetAllStores()
 
   await accessStore.authLogin(accounts.super, async () => {
     setTimeout(() => {
-      router.go(0);
-    }, 150);
-  });
+      router.go(0)
+    }, 150)
+  })
 }
 </script>
 
@@ -76,26 +82,45 @@ async function handleToggleAccessMode() {
     :title="`${accessMode === 'frontend' ? '前端' : '后端'}页面访问权限演示`"
     description="切换不同的账号，观察左侧菜单变化。"
   >
-    <Card class="mb-5" title="权限模式">
-      <span class="font-semibold">当前权限模式:</span>
-      <span class="mx-4 text-primary">{{
-        accessMode === 'frontend' ? '前端权限控制' : '后端权限控制'
-      }}</span>
-      <Button type="primary" @click="handleToggleAccessMode">
-        切换为{{ accessMode === 'frontend' ? '后端' : '前端' }}权限模式
-      </Button>
+    <Card class="mb-5">
+      <CardHeader><CardTitle>权限模式</CardTitle></CardHeader>
+      <CardContent>
+        <span class="font-semibold">当前权限模式:</span>
+        <span class="mx-4 text-primary">{{
+          accessMode === 'frontend' ? '前端权限控制' : '后端权限控制'
+        }}</span>
+        <Button
+          variant="default"
+          @click="handleToggleAccessMode"
+        >
+          切换为{{ accessMode === 'frontend' ? '后端' : '前端' }}权限模式
+        </Button>
+      </CardContent>
     </Card>
-    <Card title="账号切换">
-      <Button :type="roleButtonType('super')" @click="changeAccount('super')">
-        切换为 Super 账号
-      </Button>
+    <Card>
+      <CardHeader><CardTitle>账号切换</CardTitle></CardHeader>
+      <CardContent>
+        <Button
+          :variant="roleButtonVariant('super')"
+          @click="changeAccount('super')"
+        >
+          切换为 Super 账号
+        </Button>
 
-      <Button :type="roleButtonType('admin')" class="mx-4" @click="changeAccount('admin')">
-        切换为 Admin 账号
-      </Button>
-      <Button :type="roleButtonType('user')" @click="changeAccount('user')">
-        切换为 User 账号
-      </Button>
+        <Button
+          :variant="roleButtonVariant('admin')"
+          class="mx-4"
+          @click="changeAccount('admin')"
+        >
+          切换为 Admin 账号
+        </Button>
+        <Button
+          :variant="roleButtonVariant('user')"
+          @click="changeAccount('user')"
+        >
+          切换为 User 账号
+        </Button>
+      </CardContent>
     </Card>
   </Page>
 </template>

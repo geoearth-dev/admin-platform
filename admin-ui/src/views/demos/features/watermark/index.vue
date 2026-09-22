@@ -1,14 +1,20 @@
 <script lang="ts" setup>
-import { Page } from '@/components/page';
-import { useWatermark } from '@/plugins/effects/hooks';
+import { Page } from '@/components/page'
+import { useWatermark } from '@/plugins/effects/hooks'
 
-import { Button, Card } from '@/plugins/vben-ui/shadcn-ui';
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from '@/plugins/vben-ui/shadcn-ui'
 
-const { destroyWatermark, updateWatermark, watermark } = useWatermark();
+const { destroyWatermark, updateWatermark, watermark } = useWatermark()
 
 async function recreateWaterMark() {
-  destroyWatermark();
-  await createWaterMark();
+  destroyWatermark()
+  await createWaterMark()
 }
 
 async function createWaterMark() {
@@ -41,7 +47,7 @@ async function createWaterMark() {
     layout: 'grid',
     rotate: 22,
     width: 200,
-  });
+  })
 }
 </script>
 
@@ -61,14 +67,33 @@ async function createWaterMark() {
       </div>
     </template>
 
-    <Card title="使用">
-      <Button :disabled="!!watermark" class="mr-2" type="primary" @click="recreateWaterMark">
-        创建水印
-      </Button>
-      <Button :disabled="!watermark" class="mr-2" type="primary" @click="createWaterMark">
-        更新水印
-      </Button>
-      <Button :disabled="!watermark" danger @click="destroyWatermark"> 移除水印 </Button>
+    <Card>
+      <CardHeader><CardTitle>使用</CardTitle></CardHeader>
+      <CardContent>
+        <Button
+          :disabled="!!watermark"
+          class="mr-2"
+          variant="default"
+          @click="recreateWaterMark"
+        >
+          创建水印
+        </Button>
+        <Button
+          :disabled="!watermark"
+          class="mr-2"
+          variant="default"
+          @click="createWaterMark"
+        >
+          更新水印
+        </Button>
+        <Button
+          :disabled="!watermark"
+          variant="destructive"
+          @click="destroyWatermark"
+        >
+          移除水印
+        </Button>
+      </CardContent>
     </Card>
   </Page>
 </template>

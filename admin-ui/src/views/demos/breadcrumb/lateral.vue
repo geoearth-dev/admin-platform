@@ -19,7 +19,7 @@ function details() {
     title="面包屑导航-平级模式"
   >
     <template #action>
-      <Button type="primary" @click="details">点击查看详情</Button>
+      <Button variant="default" @click="details">点击查看详情</Button>
     </template>
   </Fallback>
 </template>

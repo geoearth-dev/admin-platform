@@ -213,33 +213,5 @@
     "refreshPosition": "Refresh Position",
     "timezone": "Enable Timezone",
     "timezonePosition": "Timezone Position"
-  },
-  "antd": {
-    "tabLabel": "Antd Extension",
-    "title": "Business Preferences",
-    "fields": {
-      "enableFormFullscreen": {
-        "label": "Enable Form Fullscreen Mode",
-        "tip": "Subprojects can read this extension configuration in their own business scenarios."
-      },
-      "tenantMode": {
-        "label": "Tenant Mode",
-        "options": {
-          "single": {
-            "label": "Single Tenant"
-          },
-          "multi": {
-            "label": "Multi Tenant"
-          }
-        }
-      },
-      "defaultTableSize": {
-        "label": "Default Page Size"
-      },
-      "reportTitle": {
-        "label": "Default Report Title",
-        "placeholder": "Please enter the default report title"
-      }
-    }
   }
 }

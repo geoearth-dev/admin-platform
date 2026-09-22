@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { globalShareState } from '@/plugins/global-state';
+import type { Component } from 'vue';
 import type { CollapsibleParamSchema } from './type';
 
 import { computed } from 'vue';
+import { ElInput, ElInputNumber, ElSelectV2 } from 'element-plus';
 
 interface Props {
   data: CollapsibleParamSchema;
@@ -27,23 +28,21 @@ const finalOption = computed(() => {
   return otherOption;
 });
 
-const components = globalShareState.getComponents();
-
-const FieldComponent = computed(() => {
+const FieldComponent = computed<Component>(() => {
   switch (props.data.option.type) {
     case 'exponential':
     case 'number': {
-      return components.InputNumber;
+      return ElInputNumber;
     }
     case 'select': {
-      return components.Select;
+      return ElSelectV2;
     }
     case 'string': {
-      return components.Input;
+      return ElInput;
     }
 
     default: {
-      return components.InputNumber;
+      return ElInputNumber;
     }
   }
 });
@@ -85,7 +84,7 @@ defineExpose({
     </div>
     <div class="body-cell pt-2 pb-2 px-5 leading-[1.5rem] flex items-center flex-nowrap">
       <div class="flex-auto w-full">
-        <component :is="FieldComponent" v-bind="finalOption" v-model:value="modelValue" />
+        <component :is="FieldComponent" v-bind="finalOption" v-model="modelValue" />
       </div>
       <div class="flex items-center flex-none text-muted-foreground pl-2 gap-2">
         <span v-if="limitDisplay">

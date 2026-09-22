@@ -1,19 +1,25 @@
 <script lang="ts" setup>
-import type { LoginExpiredModeType } from '@/types';
+import type { LoginExpiredModeType } from '@/types'
 
-import { Page } from '@/components/page';
+import { Page } from '@/components/page'
 
-import { Button, Card } from '@/plugins/vben-ui/shadcn-ui';
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from '@/plugins/vben-ui/shadcn-ui'
 
-import { preferences, updatePreferences } from '@/plugins/preference';
-import { getMockStatusApi } from '@/api/example/status';
+import { preferences, updatePreferences } from '@/plugins/preference'
+import { getMockStatusApi } from '@/api/example/status'
 
 async function handleClick(type: LoginExpiredModeType) {
-  const loginExpiredMode = preferences.app.loginExpiredMode;
+  const loginExpiredMode = preferences.app.loginExpiredMode
 
-  updatePreferences({ app: { loginExpiredMode: type } });
-  await getMockStatusApi(401);
-  updatePreferences({ app: { loginExpiredMode } });
+  updatePreferences({ app: { loginExpiredMode: type } })
+  await getMockStatusApi(401)
+  updatePreferences({ app: { loginExpiredMode } })
 }
 </script>
 
@@ -23,15 +29,33 @@ async function handleClick(type: LoginExpiredModeType) {
       <div class="mt-2 text-foreground/80">
         接口请求遇到401状态码时，需要重新登录。有两种方式：
         <p>1.转到登录页，登录成功后跳转回原页面</p>
-        <p>2.弹出重新登录弹窗，登录后关闭弹窗，不进行任何页面跳转（刷新后还是会跳转登录页面）</p>
+        <p>
+          2.弹出重新登录弹窗，登录后关闭弹窗，不进行任何页面跳转（刷新后还是会跳转登录页面）
+        </p>
       </div>
     </template>
 
-    <Card class="mb-5" title="跳转登录页面方式">
-      <Button type="primary" @click="handleClick('page')"> 点击触发 </Button>
+    <Card class="mb-5">
+      <CardHeader><CardTitle>跳转登录页面方式</CardTitle></CardHeader>
+      <CardContent>
+        <Button
+          variant="default"
+          @click="handleClick('page')"
+        >
+          点击触发
+        </Button>
+      </CardContent>
     </Card>
-    <Card class="mb-5" title="登录弹窗方式">
-      <Button type="primary" @click="handleClick('modal')"> 点击触发 </Button>
+    <Card class="mb-5">
+      <CardHeader><CardTitle>登录弹窗方式</CardTitle></CardHeader>
+      <CardContent>
+        <Button
+          variant="default"
+          @click="handleClick('modal')"
+        >
+          点击触发
+        </Button>
+      </CardContent>
     </Card>
   </Page>
 </template>

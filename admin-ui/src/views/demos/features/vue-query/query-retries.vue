@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 
 import { useQuery } from '@tanstack/vue-query';
-import { Button } from  '@/plugins/vben-ui/shadcn-ui';
+import { VbenButton } from  '@/plugins/vben-ui/shadcn-ui';
 
 const count = ref(-1);
 async function fetchApi() {
@@ -28,7 +28,7 @@ const onClick = async () => {
 </script>
 
 <template>
-  <Button :loading="isFetching" @click="onClick"> 发起错误重试 </Button>
+  <VbenButton :loading="isFetching" @click="onClick"> 发起错误重试 </VbenButton>
   <p v-if="count > 0" class="my-3">重试次数{{ count }}</p>
   <p>{{ error }}</p>
 </template>

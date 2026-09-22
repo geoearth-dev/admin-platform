@@ -119,27 +119,21 @@ const [Form] = useVbenForm<Record<string, unknown>>({
     },
     {
       component: 'InputNumber',
-      componentProps: {
-        addonAfter: '毫秒',
-      },
+      suffix: () => '毫秒',
       defaultValue: tippyProps.duration,
       fieldName: 'duration',
       label: '动画时长',
     },
     {
       component: 'InputNumber',
-      componentProps: {
-        addonAfter: '毫秒',
-      },
+      suffix: () => '毫秒',
       defaultValue: 100,
       fieldName: 'delay1',
       label: '显示延时',
     },
     {
       component: 'InputNumber',
-      componentProps: {
-        addonAfter: '毫秒',
-      },
+      suffix: () => '毫秒',
       defaultValue: 100,
       fieldName: 'delay2',
       label: '隐藏延时',
