@@ -58,7 +58,7 @@ defineExpose({ open });
       <TimezoneIcon class="size-4 text-foreground" />
     </VbenIconButton>
     <Modal :title="$t('ui.widgets.timezone.setTimezone')">
-      <div class="timezone-container">
+      <div class="pl-5">
         <RadioGroup v-model="timezoneRef" class="flex flex-col gap-2">
           <div
             class="flex cursor-pointer items-center gap-2"
@@ -73,9 +73,3 @@ defineExpose({ open });
     </Modal>
   </div>
 </template>
-
-<style scoped lang="scss">
-.timezone-container {
-  @apply pl-5;
-}
-</style>

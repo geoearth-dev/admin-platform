@@ -16,7 +16,7 @@ Admin Platform 是基于 Spring Boot、Vue 3 和 TypeScript 的前后端分离�
 
 运行环境：JDK 17 或以上版本、Maven 3.9 或以上版本、MySQL、Redis。
 
-1. 在开发数据库中导入 [sql/MySQL.zip](sql/MySQL.zip) 内的 `MySQL.sql`。
+1. 按 [数据库初始化说明](sql/README.md) 准备数据库；演示基准为本地导出的 `sql/demo-baseline.sql`，不适用于已有业务库升级。
 2. 在 [application-dev.yml](admin-server/src/main/resources/application-dev.yml) 中配置开发环境的数据库、Redis 和文件存储等参数。公共配置位于 [application.yml](admin-server/src/main/resources/application.yml)，生产环境配置位于 [application-prod.yml](admin-server/src/main/resources/application-prod.yml)。
 3. 在工程根目录构建并启动后端：
 

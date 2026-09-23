@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readPackageJSON } from 'pkg-types';
 
 /**
  * 用于生成将loading样式注入到项目中
@@ -15,8 +16,13 @@ async function viteInjectAppLoadingPlugin(
   loadingTemplate = 'loading.html',
 ): Promise<PluginOption | undefined> {
   const loadingHtml = await getLoadingRawByHtmlTemplate(loadingTemplate);
+
+  const { version = '0.0.0' } = await readPackageJSON(process.cwd());
   const envRaw = isBuild ? 'prod' : 'dev';
-  const cacheName = `'${env.VITE_APP_NAMESPACE}-${envRaw}-preferences-theme'`;
+
+  // 与 main.ts 的偏好缓存命名空间保持一致。
+  const namespace = `${env.VITE_APP_NAMESPACE}-${version}-${envRaw}`;
+  const cacheName = JSON.stringify(`${namespace}-preferences-theme`);
 
   // 获取缓存的主题
   // 保证黑暗主题下，刷新页面时，loading也是黑暗主题

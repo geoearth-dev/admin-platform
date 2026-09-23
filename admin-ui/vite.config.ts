@@ -7,10 +7,11 @@ import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import tailwindcss from '@tailwindcss/vite';
-import { viteCssLayerPlugin } from './src/plugins/config/css-layer';
-import { viteInjectAppLoadingPlugin } from './src/plugins/config/inject-app-loading';
-import { viteTailwindReferencePlugin } from './src/plugins/config/tailwind-reference';
-import { viteMetadataPlugin } from './src/plugins/config/inject-metadata';
+
+import { viteCssLayerPlugin } from './src/plugins/config/css-layer.ts';
+import { viteInjectAppLoadingPlugin } from './src/plugins/config/inject-app-loading/index.ts';
+import { viteTailwindReferencePlugin } from './src/plugins/config/tailwind-reference.ts';
+import { viteMetadataPlugin } from './src/plugins/config/inject-metadata.ts';
 
 // https://vite.dev/config/
 export default defineConfig(async ({ command, mode }) => {
@@ -21,6 +22,7 @@ export default defineConfig(async ({ command, mode }) => {
       ? await viteInjectAppLoadingPlugin(isBuild, env)
       : undefined;
   return {
+    base: env.VITE_BASE,
     plugins: [
       vue(),
       vueDevTools(),
@@ -39,20 +41,6 @@ export default defineConfig(async ({ command, mode }) => {
       tailwindcss(),
 
       await viteMetadataPlugin(),
-
-      //gzip静态资源压缩
-      // viteCompression({
-      //   threshold: 10240, // >10kb 压缩
-      //   algorithm: 'gzip', // 压缩算法
-      //   verbose: false, //false（默认）则不输出日志
-      //   deleteOriginFile: true, //指定压缩完文件后删除源文件 默认false
-      // }),
-      // visualizer({
-      //   filename: 'dist/stats.html',
-      //   open: true,
-      //   gzipSize: true,
-      //   brotliSize: true,
-      // })
     ],
     resolve: {
       alias: {
@@ -70,6 +58,20 @@ export default defineConfig(async ({ command, mode }) => {
         },
       },
     },
-
-  }
+    // 打包配置
+    build: {
+      // https://vite.dev/config/build-options.html
+      sourcemap: false, //防止浏览器开发者工具中直接调试源码
+      outDir: 'dist',
+      assetsDir: 'assets',
+      chunkSizeWarningLimit: 2000, // 控制大文件警告
+      rollupOptions: {
+        output: {
+          chunkFileNames: 'static/js/[name]-[hash].js',
+          entryFileNames: 'static/js/[name]-[hash].js',
+          assetFileNames: 'static/[ext]/[name]-[hash].[ext]',
+        },
+      },
+    },
+  };
 });

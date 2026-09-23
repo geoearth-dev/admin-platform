@@ -91,7 +91,7 @@ function onMouseDown(e: MouseEvent, tab: TabConfig) {
         @click="active = tab.key"
         @mousedown="onMouseDown($event, tab)"
       >
-        <VbenContextMenu :handler-data="tab" :menus="contextMenus" :modal="false" item-class="pr-6">
+        <VbenContextMenu :handler-data="tab" :menus="() => contextMenus(tab)" :modal="false" item-class="pr-6">
           <div class="relative flex size-full items-center">
             <!-- extra -->
             <div class="absolute top-1/2 right-1.5 z-3 translate-y-[-50%] overflow-hidden">

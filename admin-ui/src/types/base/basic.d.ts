@@ -1,7 +1,7 @@
-interface BasicOption {
+type BasicOption = {
   label: string;
   value: string;
-}
+};
 
 type SelectOption = BasicOption;
 

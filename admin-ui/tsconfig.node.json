@@ -20,6 +20,8 @@
 
     // Disable emitting output during `vue-tsc --build`, which is used for type-checking only.
     "noEmit": true,
+    // 配置文件由 Vite 加载，允许导入路径显式携带 .ts 扩展名。
+    "allowImportingTsExtensions": true,
 
     // `vue-tsc --build` produces a .tsbuildinfo file for incremental type-checking.
     // Specified here to keep it out of the root directory.

@@ -11,9 +11,6 @@ security:
     secure: false
     same-site: Strict
     path: /
-  cors:
-    allowed-origins:
-      - http://localhost:5173
   login:
     # 最大密码错误次数
     max-retry-count: 5

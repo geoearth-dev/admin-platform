@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SelectOption }from '@/types';
+import type { SelectOption } from '@/types';
 
 import { useSlots } from 'vue';
 
@@ -43,7 +43,6 @@ const slots = useSlots();
   >
     <span class="flex items-center text-sm">
       <slot></slot>
-
       <VbenTooltip v-if="slots.tip" side="bottom">
         <template #trigger>
           <CircleHelp class="ml-1 size-3 cursor-help" />

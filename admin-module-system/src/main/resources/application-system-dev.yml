@@ -1,5 +1,7 @@
 # 登录认证
 security:
+  cors:
+    allowed-origins: http://localhost:5173
   cookie:
     secure: false
     same-site: Strict

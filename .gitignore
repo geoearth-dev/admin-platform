@@ -24,9 +24,7 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+/build/
 
 ### VS Code ###
 .vscode/
@@ -35,3 +33,7 @@ build/
 *.log
 /logs/
 /upload/
+
+# 部署
+/sql/private-backup/
+/deploy/

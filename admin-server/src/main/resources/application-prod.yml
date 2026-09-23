@@ -1,8 +1,12 @@
+app:
+  profile: /opt/admin-platform/upload/
+
+
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
-      url: ${DB_URL}
+      url: jdbc:mysql://localhost:3306/admin_platform
       username: ${DB_USERNAME}
       password: ${DB_PASSWORD}
       driver-class-name: com.mysql.cj.jdbc.Driver
@@ -34,8 +38,8 @@ spring:
         enabled: true
         url-pattern: /druid/*
         # 控制台管理用户名和密码
-        login-username: ${DRUID_USERNAME}
-        login-password: ${DRUID_PASSWORD}
+        login-username: druid
+        login-password: 123456
       filter:
         stat:
           enabled: true

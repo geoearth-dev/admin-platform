@@ -1,5 +1,7 @@
 # 登录认证
 security:
+  cors:
+    allowed-origins: https://admin-demo.geoearth.dev
   cookie:
     secure: true
     same-site: Strict

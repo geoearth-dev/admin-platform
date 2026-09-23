@@ -80,12 +80,3 @@ logging:
     org.springframework.security: DEBUG
     org.springframework.security.oauth2.server.resource: DEBUG
     dev.geo.admin.security: DEBUG
-
-# 调度器相关配置
-ds:
-  # 资源中心路径
-  resource_url: /dolphinscheduler/
-  # hdfs相关配置
-  hdfs:
-    #NameNode RPC地址（客户端连接 HDFS 的入口地址）
-    url: hdfs://127.0.0.1:9000
