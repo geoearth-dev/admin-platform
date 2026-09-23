@@ -1,0 +1,117 @@
+name: Deploy Admin Platform
+
+on:
+  #  git push origin main → 自动运行。
+  push:
+    branches: [ "main" ]
+  # 在 GitHub Actions 页面点击 Run workflow 手动触发。
+  workflow_dispatch:
+
+permissions:
+  # GITHUB_TOKEN 只需读取仓库代码；服务器部署使用下面单独配置的 SSH 密钥。
+  contents: read
+
+concurrency:
+  # 同一仓库内，同组任务不能同时运行，避免重复部署到生产环境。
+  group: admin-platform-production
+  # 新任务不会打断正在执行的任务；较新的等待任务会替换旧的等待任务。
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # 只允许 main 分支部署；手动选择其他分支时会跳过整个任务。
+    if: github.ref == 'refs/heads/main'
+    # 在 GitHub 提供的 Ubuntu 执行机上构建，整个任务最多运行 40 分钟。
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      # 拉取本次运行对应的代码，不在 Git 配置中保留访问凭据。
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # 安装 Java 17，并缓存 Maven 下载的依赖，加快后续构建。
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      # 安装符合项目要求的 Node，按前端锁文件管理 npm 下载缓存。
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24.12.0'
+          cache: npm
+          cache-dependency-path: admin-ui/package-lock.json
+
+      - name: Build backend and run tests
+        # 清理旧产物、运行测试并打包；-B 使用非交互模式，-ntp 隐藏下载进度。
+        run: mvn -B -ntp clean package
+
+      - name: Install frontend dependencies
+        working-directory: admin-ui
+        # 严格按 package-lock.json 安装依赖，不在 CI 中更新锁文件。
+        run: npm ci
+
+      - name: Check and build frontend
+        working-directory: admin-ui
+        # 同时进行类型检查和 Vite 打包；任一失败都会阻止后续发布。
+        run: npm run build
+
+      - name: Package release
+        run: |
+          # 命令失败、变量未定义或管道中任一步失败时，立即退出。
+          set -euo pipefail
+          # 提交 SHA + 运行编号 + 重试次数组成唯一版本号，供后续步骤使用。
+          release_id="${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "RELEASE_ID=$release_id" >> "$GITHUB_ENV"
+          mkdir -p release-package/web
+          # 只收集启动模块的运行 JAR，避免误传源码包或文档包。
+          mapfile -t jars < <(find admin-server/target -maxdepth 1 -type f -name '*.jar' ! -name '*-sources.jar' ! -name '*-javadoc.jar')
+          [[ ${#jars[@]} -eq 1 ]] || { echo '启动模块 JAR 数量不是 1'; exit 1; }
+          cp "${jars[0]}" release-package/admin-server.jar
+          cp -a admin-ui/dist/. release-package/web/
+          # 网站版本标记用于发布后核对；JAR 和前端一起打成一个上传包。
+          printf '%s\n' "$release_id" > release-package/web/_release.txt
+          tar -czf release.tgz -C release-package .
+
+      - name: Upload and deploy
+        # 真实连接信息和私钥从仓库 Secrets 注入，不直接写入这个文件。
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          # 缺少任一必要配置时直接报错，避免带着空参数连接服务器。
+          : "${DEPLOY_HOST:?Missing DEPLOY_HOST}"
+          : "${DEPLOY_PORT:?Missing DEPLOY_PORT}"
+          : "${DEPLOY_USER:?Missing DEPLOY_USER}"
+          : "${DEPLOY_SSH_KEY:?Missing DEPLOY_SSH_KEY}"
+          : "${DEPLOY_KNOWN_HOSTS:?Missing DEPLOY_KNOWN_HOSTS}"
+          [[ "$DEPLOY_PORT" =~ ^[0-9]+$ ]]
+          # 密钥临时落盘并限制读取权限；步骤退出时自动清理，兼容 Windows 换行。
+          ssh_dir=$(mktemp -d)
+          trap 'rm -rf -- "$ssh_dir"' EXIT
+          chmod 700 "$ssh_dir"
+          printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' > "$ssh_dir/key"
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" | tr -d '\r' > "$ssh_dir/known_hosts"
+          chmod 600 "$ssh_dir/key" "$ssh_dir/known_hosts"
+          # 校验服务器主机公钥，使用指定私钥连接，并设置超时和连接保活。
+          ssh_options=(-i "$ssh_dir/key" -o "UserKnownHostsFile=$ssh_dir/known_hosts" -o StrictHostKeyChecking=yes -o HostKeyAlgorithms=ssh-ed25519 -o BatchMode=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=4)
+          remote="${DEPLOY_USER}@${DEPLOY_HOST}"
+          # 先上传到暂存目录，再调用服务器上已安装的脚本切换版本、重启和检查。
+          scp "${ssh_options[@]}" -P "$DEPLOY_PORT" release.tgz "$remote:/opt/admin-platform/incoming/$RELEASE_ID.tgz"
+          ssh "${ssh_options[@]}" -p "$DEPLOY_PORT" "$remote" \
+            "/bin/bash /opt/admin-platform/ops/deploy.sh deploy $RELEASE_ID"
+          # 部署成功后，将版本号写到本次 Actions 运行的 Summary 页面。
+          printf '已发布版本：`%s`\n' "$RELEASE_ID" >> "$GITHUB_STEP_SUMMARY"
