@@ -1,0 +1,59 @@
+{
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "tsconfig.json": "tsconfig.*.json, env.d.ts, typed-router.d.ts",
+    "vite.config.*": "jsconfig*, vitest.config.*, cypress.config.*, playwright.config.*",
+    "package.json": "package-lock.json, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .oxlint*, oxlint*, .oxfmt*, .prettier*, prettier*, .editorconfig, bun.lock, nub.lock",
+    "*.env": ".env.*",
+    "*.ts": "$(capture).test.ts"
+  },
+  // lint && format
+  "oxc.enable": true,
+  "oxc.typeAware": true,
+  "oxc.fmt.configPath": "oxfmt.config.ts",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit"
+  },
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "[html]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+
+  // extensions
+  "extensions.ignoreRecommendations": true,
+
+  "i18n-ally.localesPaths": ["src/plugins/locale/langs"],
+  "i18n-ally.displayLanguage": "zh-CN",
+  "i18n-ally.namespace": true,
+  "i18n-ally.keystyle": "nested",
+
+  "css.validate": false,
+  "dotenv.enableAutocloaking": false,
+  "[dotenv]": {
+    "editor.defaultFormatter": "weixu.wx-vsce-dotenv"
+  }
+}

@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  # GITHUB_TOKEN 只需读取仓库代码；服务器部署使用下面单独配置的 SSH 密钥。
+  # GITHUB_TOKEN 只需读取仓库代码；服务器部署使用单独配置的 SSH 私钥。
   contents: read
 
 concurrency:
@@ -67,13 +67,14 @@ jobs:
 
       - name: Package release
         run: |
-          # 命令失败、变量未定义或管道中任一步失败时，立即退出。
+          # 命令失败、变量未定义失败时，立即退出。
           set -euo pipefail
           # 提交 SHA + 运行编号 + 重试次数组成唯一版本号，供后续步骤使用。
           release_id="${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          # 向 GitHub 的环境变量文件中追加release_id
           echo "RELEASE_ID=$release_id" >> "$GITHUB_ENV"
           mkdir -p release-package/web
-          # 只收集启动模块的运行 JAR，避免误传源码包或文档包。
+          # 收集JAR包，排除源码包或文档包。
           mapfile -t jars < <(find admin-server/target -maxdepth 1 -type f -name '*.jar' ! -name '*-sources.jar' ! -name '*-javadoc.jar')
           [[ ${#jars[@]} -eq 1 ]] || { echo '启动模块 JAR 数量不是 1'; exit 1; }
           cp "${jars[0]}" release-package/admin-server.jar
@@ -83,34 +84,34 @@ jobs:
           tar -czf release.tgz -C release-package .
 
       - name: Upload and deploy
-        # 真实连接信息和私钥从仓库 Secrets 注入，不直接写入这个文件。
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         run: |
-          set -euo pipefail
-          # 缺少任一必要配置时直接报错，避免带着空参数连接服务器。
-          : "${DEPLOY_HOST:?Missing DEPLOY_HOST}"
-          : "${DEPLOY_PORT:?Missing DEPLOY_PORT}"
-          : "${DEPLOY_USER:?Missing DEPLOY_USER}"
-          : "${DEPLOY_SSH_KEY:?Missing DEPLOY_SSH_KEY}"
-          : "${DEPLOY_KNOWN_HOSTS:?Missing DEPLOY_KNOWN_HOSTS}"
-          [[ "$DEPLOY_PORT" =~ ^[0-9]+$ ]]
-          # 密钥临时落盘并限制读取权限；步骤退出时自动清理，兼容 Windows 换行。
+          set -euo pipefail 
+          # 私钥记录临时文件，限制读取权限；退出时清理
+          umask 077
           ssh_dir=$(mktemp -d)
+          # 当前脚本退出时，自动删除临时目录
           trap 'rm -rf -- "$ssh_dir"' EXIT
           chmod 700 "$ssh_dir"
-          printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' > "$ssh_dir/key"
-          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" | tr -d '\r' > "$ssh_dir/known_hosts"
-          chmod 600 "$ssh_dir/key" "$ssh_dir/known_hosts"
-          # 校验服务器主机公钥，使用指定私钥连接，并设置超时和连接保活。
-          ssh_options=(-i "$ssh_dir/key" -o "UserKnownHostsFile=$ssh_dir/known_hosts" -o StrictHostKeyChecking=yes -o HostKeyAlgorithms=ssh-ed25519 -o BatchMode=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=4)
+          # 私钥和服务器公钥分别写进临时文件
+          printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' > "$ssh_dir/key" 
+          chmod 600 "$ssh_dir/key"
+          
+          # 密钥登录需要的配置
+          ssh_options=(
+          -i "$ssh_dir/key"                    # 登录私钥
+          -o PreferredAuthentications=publickey # 只用密钥认证
+          -o BatchMode=yes                     # 不等待人工输入
+          -o StrictHostKeyChecking=no          # 不要求预先确认服务器公钥
+          -o UserKnownHostsFile=/dev/null       # 不保存服务器公钥记录
+          )
           remote="${DEPLOY_USER}@${DEPLOY_HOST}"
-          # 先上传到暂存目录，再调用服务器上已安装的脚本切换版本、重启和检查。
-          scp "${ssh_options[@]}" -P "$DEPLOY_PORT" release.tgz "$remote:/opt/admin-platform/incoming/$RELEASE_ID.tgz"
+          # 上传到临时目录；服务器脚本发布并检查成功后，才将包保存到 releases。
+          scp "${ssh_options[@]}" -P "$DEPLOY_PORT" release.tgz "$remote:/tmp/admin-platform-$RELEASE_ID.tgz"
           ssh "${ssh_options[@]}" -p "$DEPLOY_PORT" "$remote" \
             "/bin/bash /opt/admin-platform/ops/deploy.sh deploy $RELEASE_ID"
           # 部署成功后，将版本号写到本次 Actions 运行的 Summary 页面。

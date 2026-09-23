@@ -1,5 +1,7 @@
 # Admin Platform
+
 [![部署状态](https://github.com/geoearth-dev/admin-platform/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/geoearth-dev/admin-platform/actions/workflows/deploy.yml)
+
 Admin Platform 是基于 Spring Boot、Vue 3 和 TypeScript 的前后端分离管理平台，提供用户与角色管理、菜单权限、系统配置、在线会话、任务调度和代码生成等功能。
 
 ## 工程结构

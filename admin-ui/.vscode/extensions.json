@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "Vue.volar",
+    "dbaeumer.vscode-eslint",
+    "EditorConfig.EditorConfig",
+    // 使用 oxfmt 的代码格式化程序
+    "oxc.oxc-vscode", 
+    // i18n 插件
+    "Lokalise.i18n-ally"
+  ]
+}

@@ -26,9 +26,6 @@ target/
 /.nb-gradle/
 /build/
 
-### VS Code ###
-.vscode/
-
 ### Others ###
 *.log
 /logs/
@@ -36,4 +33,4 @@ target/
 
 # 部署
 /sql/private-backup/
-/deploy/
+/deploy/*
