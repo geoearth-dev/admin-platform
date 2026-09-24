@@ -572,6 +572,10 @@ const layoutStaticHeaderTarget = `#${idLayoutStaticHeader}`;
         <slot name="menu"></slot>
       </template>
 
+      <template #decoration="{ availableSpace }">
+        <slot name="sidebar-decoration" :available-space="availableSpace"></slot>
+      </template>
+
       <template #extra>
         <slot name="side-extra"></slot>
       </template>

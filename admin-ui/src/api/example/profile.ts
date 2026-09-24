@@ -34,7 +34,7 @@ let profile: UserProfile = {
   introduction: '这是个人中心的演示资料，可以修改后查看效果。',
   avatar: '',
 };
-let password = 'Admin123';
+let password = '123456';
 const security: SecuritySettings = {
   accountPassword: true,
   securityPhone: true,

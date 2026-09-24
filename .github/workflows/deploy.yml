@@ -1,4 +1,4 @@
-name: Deploy Admin Platform
+name: Deploy
 
 on:
   #  git push origin main → 自动运行。
@@ -110,7 +110,7 @@ jobs:
           -o UserKnownHostsFile=/dev/null       # 不保存服务器公钥记录
           )
           remote="${DEPLOY_USER}@${DEPLOY_HOST}"
-          # 上传到临时目录；服务器脚本发布并检查成功后，才将包保存到 releases。
+          # 上传到临时目录；服务器脚本发布
           scp "${ssh_options[@]}" -P "$DEPLOY_PORT" release.tgz "$remote:/tmp/admin-platform-$RELEASE_ID.tgz"
           ssh "${ssh_options[@]}" -p "$DEPLOY_PORT" "$remote" \
             "/bin/bash /opt/admin-platform/ops/deploy.sh deploy $RELEASE_ID"

@@ -1,249 +1,761 @@
-<script lang="ts" setup>
-import type {
-  WorkbenchProjectItem,
-  WorkbenchQuickNavItem,
-  WorkbenchTodoItem,
-  WorkbenchTrendItem,
-} from '@/components/dashboard/index.ts';
-
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-
+<script setup lang="ts">
+import { computed, ref } from 'vue'
 import {
-  AnalysisChartCard,
-  WorkbenchHeader,
-  WorkbenchProject,
-  WorkbenchQuickNav,
-  WorkbenchTodo,
-  WorkbenchTrends,
-} from '@/components/dashboard';
-import { preferences } from '@/plugins/preference';
-import { useUserStore } from '@/store';
+  ElDialog,
+  ElInput,
+  ElCheckbox,
+  ElSelect,
+  ElOption,
+  ElTable,
+  ElTableColumn,
+} from 'element-plus'
+import { useI18n } from '@/plugins/locale'
+import {
+  Button,
+  Card,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  VbenCountToAnimator,
+  VbenIcon,
+} from '@/plugins/vben-ui/shadcn-ui'
+import DemoHero from '../components/demo-hero.vue'
+import DemoPanel from '../components/demo-panel.vue'
+import '../dashboard-demo.css'
 
-import AnalyticsVisitsSource from '../analytics/analytics-visits-source.vue';
-import { openWindow } from '@/utils/window';
-
-const userStore = useUserStore();
-
-// 工作台项目示例数据。
-// url 也可以是内部路由，在 navTo 方法中识别处理，进行内部跳转
-// 例如：url: /dashboard/workspace
-const projectItems: WorkbenchProjectItem[] = [
+const { t, locale } = useI18n()
+const text = (key: string) => t(`dashboardDemo.${key}`)
+const metrics = [
   {
-    color: '',
-    content: '不要等待机会，而要创造机会。',
-    date: '2021-04-01',
-    group: '开源组',
-    icon: 'carbon:logo-github',
-    title: 'Github',
-    url: 'https://github.com',
+    key: 'todayTasks',
+    value: '8',
+    change: '+2',
+    tone: 'hsl(var(--primary))',
+    icon: 'lucide:square-check',
+    up: false,
   },
   {
-    color: '#3fb27f',
-    content: '现在的你决定将来的你。',
-    date: '2021-04-01',
-    group: '算法组',
-    icon: 'ion:logo-vue',
-    title: 'Vue',
-    url: 'https://vuejs.org',
+    key: 'approvals',
+    value: '12',
+    change: '-3',
+    tone: 'hsl(var(--warning))',
+    icon: 'lucide:clock-3',
+    up: true,
   },
   {
-    color: '#e18525',
-    content: '没有什么才能比努力更重要。',
-    date: '2021-04-01',
-    group: '上班摸鱼',
-    icon: 'ion:logo-html5',
-    title: 'Html5',
-    url: 'https://developer.mozilla.org/zh-CN/docs/Web/HTML',
+    key: 'unread',
+    value: '6',
+    change: '+2',
+    tone: 'hsl(var(--primary))',
+    icon: 'lucide:mail',
+    up: false,
   },
   {
-    color: '#bf0c2c',
-    content: '热情和欲望可以突破一切难关。',
-    date: '2021-04-01',
-    group: 'UI',
-    icon: 'ion:logo-angular',
-    title: 'Angular',
-    url: 'https://angular.io',
+    key: 'online',
+    value: '892',
+    change: '+68',
+    tone: 'hsl(var(--success))',
+    icon: 'lucide:users-round',
+    up: true,
   },
   {
-    color: '#00d8ff',
-    content: '健康的身体是实现目标的基石。',
-    date: '2021-04-01',
-    group: '技术牛',
-    icon: 'bx:bxl-react',
-    title: 'React',
-    url: 'https://reactjs.org',
+    key: 'systemStatus',
+    value: '',
+    change: '',
+    tone: 'hsl(var(--primary))',
+    icon: 'lucide:shield-check',
+    up: true,
+  },
+]
+const quickActions = [
+  {
+    key: 'newUser',
+    icon: 'lucide:user-round-plus',
+    tone: 'hsl(var(--primary))',
+  },
+  { key: 'publish', icon: 'lucide:megaphone', tone: 'hsl(var(--success))' },
+  {
+    key: 'newTicket',
+    icon: 'lucide:clipboard-list',
+    tone: 'hsl(var(--warning))',
   },
   {
-    color: '#EBD94E',
-    content: '路是走出来的，而不是空想出来的。',
-    date: '2021-04-01',
-    group: '架构组',
-    icon: 'ion:logo-javascript',
-    title: 'Js',
-    url: 'https://developer.mozilla.org/zh-CN/docs/Web/JavaScript',
+    key: 'newProject',
+    icon: 'lucide:square-plus',
+    tone: 'hsl(var(--primary))',
   },
-];
-
-// 同样，这里的 url 也可以使用以 http 开头的外部链接
-const quickNavItems: WorkbenchQuickNavItem[] = [
+  { key: 'export', icon: 'lucide:download', tone: 'hsl(var(--primary))' },
+  { key: 'settings', icon: 'lucide:settings', tone: '#9a54fa' },
+  { key: 'sendMessage', icon: 'lucide:send', tone: 'hsl(var(--primary))' },
+  { key: 'logs', icon: 'lucide:scroll-text', tone: '#9a54fa' },
   {
-    color: '#1fdaca',
-    icon: 'ion:home-outline',
-    title: '首页',
-    url: '/',
+    key: 'apps',
+    icon: 'lucide:layout-grid',
+    tone: 'hsl(var(--muted-foreground))',
   },
+]
+const tasks = ref([
   {
-    color: '#bf0c2c',
-    icon: 'ion:grid-outline',
-    title: '仪表盘',
-    url: '/dashboard',
+    key: 'leave',
+    priority: 'high',
+    tone: 'hsl(var(--destructive))',
+    hours: 1,
+    done: false,
   },
   {
-    color: '#e18525',
-    icon: 'ion:layers-outline',
-    title: '组件',
-    url: '/demos/features/icons',
+    key: 'server',
+    priority: 'medium',
+    tone: 'hsl(var(--warning))',
+    hours: 2,
+    done: false,
   },
   {
-    color: '#3fb27f',
-    icon: 'ion:settings-outline',
-    title: '系统管理',
-    url: '/demos/features/login-expired', // 登录过期演示入口。
+    key: 'budget',
+    priority: 'medium',
+    tone: 'hsl(var(--warning))',
+    hours: 3,
+    done: false,
   },
   {
-    color: '#4daf1bc9',
-    icon: 'ion:key-outline',
-    title: '权限管理',
-    url: '/demos/access/page-control',
+    key: 'release',
+    priority: 'low',
+    tone: 'hsl(var(--primary))',
+    hours: 4,
+    done: false,
   },
   {
-    color: '#00d8ff',
-    icon: 'ion:bar-chart-outline',
-    title: '图表',
-    url: '/analytics',
-  },
-];
-
-const todoItems = ref<WorkbenchTodoItem[]>([
-  {
-    completed: false,
-    content: `审查最近提交到Git仓库的前端代码，确保代码质量和规范。`,
-    date: '2024-07-30 11:00:00',
-    title: '审查前端代码提交',
+    key: 'feedback',
+    priority: 'medium',
+    tone: 'hsl(var(--warning))',
+    hours: 5,
+    done: false,
   },
   {
-    completed: true,
-    content: `检查并优化系统性能，降低CPU使用率。`,
-    date: '2024-07-30 11:00:00',
-    title: '系统性能优化',
+    key: 'report',
+    priority: 'low',
+    tone: 'hsl(var(--primary))',
+    hours: 0,
+    done: false,
+  },
+])
+const remaining = computed(
+  () => tasks.value.filter((task) => !task.done).length,
+)
+const progressTab = ref(0)
+const period = ref('week')
+const progressTabs = ['approvalTab', 'ticketTab', 'taskTab']
+const progressCounts = [
+  [12, 36, 8, 6],
+  [8, 24, 4, 3],
+  [10, 18, 6, 2],
+]
+const progressRows = [
+  {
+    key: 'pending',
+    icon: 'lucide:user-round-check',
+    tone: 'hsl(var(--warning))',
   },
   {
-    completed: false,
-    content: `进行系统安全检查，确保没有安全漏洞或未授权的访问。 `,
-    date: '2024-07-30 11:00:00',
-    title: '安全检查',
+    key: 'approved',
+    icon: 'lucide:clipboard-check',
+    tone: 'hsl(var(--success))',
+  },
+  { key: 'initiated', icon: 'lucide:send', tone: '#8b5cf6' },
+  { key: 'copied', icon: 'lucide:mail', tone: 'hsl(var(--primary))' },
+]
+const feed = [
+  { key: 'backup', time: '10:45', tone: 'hsl(var(--primary))', today: true },
+  { key: 'release', time: '09:30', tone: 'hsl(var(--success))', today: true },
+  { key: 'leave', time: '09:12', tone: 'hsl(var(--primary))', today: true },
+  { key: 'user', time: '08:50', tone: 'hsl(var(--primary))', today: true },
+  { key: 'cpu', time: '08:20', tone: 'hsl(var(--destructive))', today: true },
+  { key: 'ticket', time: '18:30', tone: 'hsl(var(--success))', today: false },
+  { key: 'report', time: '17:20', tone: 'hsl(var(--primary))', today: false },
+  { key: 'scan', time: '16:10', tone: 'hsl(var(--warning))', today: false },
+]
+const projects = [
+  {
+    key: 'cloud',
+    team: 'product',
+    status: 'inProgress',
+    color: 'hsl(var(--success))',
+    tone: 'hsl(var(--primary))',
+    icon: 'lucide:clipboard-list',
   },
   {
-    completed: false,
-    content: `更新项目中的所有npm依赖包，确保使用最新版本。`,
-    date: '2024-07-30 11:00:00',
-    title: '更新项目依赖',
+    key: 'admin',
+    team: 'tech',
+    status: 'inProgress',
+    color: 'hsl(var(--success))',
+    tone: 'hsl(var(--primary))',
+    icon: 'lucide:clipboard-check',
   },
   {
-    completed: false,
-    content: `修复用户报告的页面UI显示问题，确保在不同浏览器中显示一致。 `,
-    date: '2024-07-30 11:00:00',
-    title: '修复UI显示问题',
-  },
-]);
-const trendItems: WorkbenchTrendItem[] = [
-  {
-    avatar: 'svg:avatar-1',
-    content: `在 <a>开源组</a> 创建了项目 <a>Vue</a>`,
-    date: '刚刚',
-    title: '威廉',
+    key: 'mobile',
+    team: 'mobile',
+    status: 'testing',
+    color: 'hsl(var(--primary))',
+    tone: 'hsl(var(--warning))',
+    icon: 'lucide:smartphone',
   },
   {
-    avatar: 'svg:avatar-2',
-    content: `关注了 <a>威廉</a> `,
-    date: '1个小时前',
-    title: '艾文',
+    key: 'data',
+    team: 'data',
+    status: 'planning',
+    color: '#9a54fa',
+    tone: '#9a54fa',
+    icon: 'lucide:database',
   },
   {
-    avatar: 'svg:avatar-3',
-    content: `发布了 <a>个人动态</a> `,
-    date: '1天前',
-    title: '克里斯',
+    key: 'security',
+    team: 'ops',
+    status: 'inProgress',
+    color: 'hsl(var(--success))',
+    tone: 'hsl(var(--destructive))',
+    icon: 'lucide:shield-check',
+  },
+]
+const dayOffset = ref(0)
+const scheduleDate = computed(() =>
+  new Intl.DateTimeFormat(locale.value, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(new Date(2024, 4, 20 + dayOffset.value)),
+)
+const events = ref([
+  {
+    key: 'standup',
+    name: '',
+    time: '09:30 - 10:00',
+    location: 'a',
+    active: false,
+    day: 0,
   },
   {
-    avatar: 'svg:avatar-1',
-    content: `回复了 <a>杰克</a> 的问题 <a>如何进行项目优化？</a>`,
-    date: '3天前',
-    title: '皮特',
+    key: 'review',
+    name: '',
+    time: '10:00 - 11:00',
+    location: '',
+    active: true,
+    day: 0,
   },
   {
-    avatar: 'svg:avatar-2',
-    content: `关闭了问题 <a>如何运行项目</a> `,
-    date: '1周前',
-    title: '杰克',
+    key: 'summary',
+    name: '',
+    time: '14:00 - 15:00',
+    location: 'b',
+    active: false,
+    day: 0,
   },
   {
-    avatar: 'svg:avatar-3',
-    content: `发布了 <a>个人动态</a> `,
-    date: '1周前',
-    title: '威廉',
+    key: 'optimize',
+    name: '',
+    time: '15:30 - 16:00',
+    location: 'online',
+    active: false,
+    day: 0,
   },
   {
-    avatar: 'svg:avatar-4',
-    content: `推送了代码到 <a>Github</a>`,
-    date: '2021-04-01 20:00',
-    title: '威廉',
+    key: 'client',
+    name: '',
+    time: '16:30 - 17:00',
+    location: 'tencent',
+    active: false,
+    day: 0,
   },
-];
-
-const router = useRouter();
-
-// 外部链接在新窗口打开，站内路径通过路由跳转。
-function navTo(nav: WorkbenchProjectItem | WorkbenchQuickNavItem) {
-  if (nav.url?.startsWith('http')) {
-    openWindow(nav.url);
-    return;
-  }
-  if (nav.url?.startsWith('/')) {
-    router.push(nav.url).catch((error) => {
-      console.error('Navigation failed:', error);
-    });
-  } else {
-    console.warn(`Unknown URL for navigation item: ${nav.title} -> ${nav.url}`);
-  }
+])
+const visibleEvents = computed(() =>
+  events.value.filter((event) => event.day === dayOffset.value),
+)
+const records = [
+  {
+    time: '2024-05-20 14:32:18',
+    name: 'zhang',
+    module: 'users',
+    action: 'add',
+  },
+  {
+    time: '2024-05-20 11:21:06',
+    name: 'li',
+    module: 'settings',
+    action: 'settings',
+  },
+  {
+    time: '2024-05-20 10:15:33',
+    name: 'wang',
+    module: 'menus',
+    action: 'menu',
+  },
+  {
+    time: '2024-05-19 18:44:21',
+    name: 'admin',
+    module: 'roles',
+    action: 'role',
+  },
+  {
+    time: '2024-05-19 16:32:12',
+    name: 'zhao',
+    module: 'tickets',
+    action: 'ticket',
+  },
+  {
+    time: '2024-05-19 14:20:05',
+    name: 'sun',
+    module: 'notices',
+    action: 'notice',
+  },
+]
+const dialog = ref(false)
+const dialogKey = ref('dialog.title')
+const dialogDetail = ref('')
+function showDetail(key: string, detail = '') {
+  dialogKey.value = key
+  dialogDetail.value = detail
+  dialog.value = true
+}
+const newEventDialog = ref(false)
+const newEventName = ref('')
+function addEvent() {
+  if (!newEventName.value.trim()) return
+  events.value.push({
+    key: '',
+    name: newEventName.value.trim(),
+    time: '17:30 - 18:00',
+    location: 'online',
+    active: false,
+    day: dayOffset.value,
+  })
+  newEventName.value = ''
+  newEventDialog.value = false
 }
 </script>
 
 <template>
-  <div class="p-5">
-    <WorkbenchHeader :avatar="userStore.userInfo?.avatar || preferences.app.defaultAvatar">
-      <template #title> 早安, {{ userStore.userInfo?.nickName }}, 开始您一天的工作吧！ </template>
-      <template #description> 今日晴，20℃ - 32℃！ </template>
-    </WorkbenchHeader>
-
-    <div class="mt-5 flex flex-col lg:flex-row">
-      <div class="mr-4 w-full lg:w-3/5">
-        <WorkbenchProject :items="projectItems" title="项目" @click="navTo" />
-        <WorkbenchTrends :items="trendItems" class="mt-5" title="最新动态" />
-      </div>
-      <div class="w-full lg:w-2/5">
-        <WorkbenchQuickNav
-          :items="quickNavItems"
-          class="mt-5 lg:mt-0"
-          title="快捷导航"
-          @click="navTo"
-        />
-        <WorkbenchTodo :items="todoItems" class="mt-5" title="待办事项" />
-        <AnalysisChartCard class="mt-5" title="访问来源">
-          <AnalyticsVisitsSource />
-        </AnalysisChartCard>
-      </div>
+  <div class="dashboard-demo demo-workspace">
+    <DemoHero />
+    <div class="demo-metrics">
+      <Card
+        v-for="metric in metrics"
+        :key="metric.key"
+        class="demo-metric"
+        ><Button
+          variant="ghost"
+          class="demo-metric-button"
+          @click="showDetail(metric.key, metric.value || text('normal'))"
+        >
+          <span
+            class="demo-icon-tile"
+            :style="{ '--tone': metric.tone }"
+            ><VbenIcon :icon="metric.icon"
+          /></span>
+          <div class="demo-metric-copy">
+            <div class="demo-metric-label">{{ text(metric.key) }}</div>
+            <div
+              class="demo-metric-value"
+              :style="!metric.value ? { fontSize: '21px' } : {}"
+            >
+              <VbenCountToAnimator
+                v-if="metric.value"
+                :end-val="Number(metric.value)"
+                :duration="1500"
+              /><span v-else>{{ text('normal') }}</span>
+            </div>
+            <div class="demo-metric-sub">
+              <template v-if="metric.change"
+                ><span>{{ text('yesterday') }}</span
+                ><span :class="metric.up ? 'demo-up' : 'demo-down'"
+                  >{{ metric.change }}
+                  {{ metric.change.startsWith('-') ? '↓' : '↑' }}</span
+                ></template
+              ><span v-else>{{ text('uptime') }}</span>
+            </div>
+          </div>
+          <VbenIcon
+            icon="lucide:chevron-right"
+            class="demo-chevron"
+          /> </Button
+      ></Card>
     </div>
+    <div class="demo-work-main">
+      <DemoPanel :title="text('quick')"
+        ><template #action
+          ><Button
+            variant="link"
+            size="sm"
+            class="demo-link demo-muted"
+            @click="showDetail('customize')"
+          >
+            {{ text('customize')
+            }}<VbenIcon icon="lucide:chevron-down" /></Button
+        ></template>
+        <div class="demo-quick-grid">
+          <Button
+            variant="ghost"
+            size="sm"
+            v-for="action in quickActions"
+            :key="action.key"
+            class="demo-quick"
+            :style="{ '--tone': action.tone }"
+            @click="showDetail(action.key)"
+          >
+            <VbenIcon :icon="action.icon" /><span>{{ text(action.key) }}</span>
+          </Button>
+        </div></DemoPanel
+      >
+      <DemoPanel :title="`${text('todo')}  ${remaining}`"
+        ><template #action
+          ><Button
+            variant="link"
+            size="sm"
+            class="demo-link"
+            @click="
+              showDetail(
+                'todo',
+                tasks
+                  .filter((task) => !task.done)
+                  .map((task) => text(`tasks.${task.key}`))
+                  .join('\n'),
+              )
+            "
+          >
+            {{ text('viewAll') }}<VbenIcon icon="lucide:arrow-right" /></Button
+        ></template>
+        <div
+          v-for="task in tasks"
+          :key="task.key"
+          class="demo-todo"
+          :class="{ done: task.done }"
+        >
+          <ElCheckbox
+            v-model="task.done"
+            class="demo-todo-check"
+            >{{ text(`tasks.${task.key}`) }}</ElCheckbox
+          ><span
+            class="demo-pill"
+            :style="{ '--tone': task.tone }"
+            >{{ text(task.priority) }}</span
+          ><time class="demo-todo-time">{{
+            task.hours
+              ? t('dashboardDemo.agoHours', { count: task.hours })
+              : `${text('today')} 10:30`
+          }}</time>
+        </div></DemoPanel
+      >
+      <DemoPanel :title="text('progress')"
+        ><template #action
+          ><ElSelect
+            size="small"
+            v-model="period"
+            class="demo-select"
+            :aria-label="text('progress')"
+          >
+            <ElOption
+              value="week"
+              :label="text('week')"
+            />
+            <ElOption
+              value="month"
+              :label="text('month')"
+            /> </ElSelect
+        ></template>
+        <Tabs
+          v-model="progressTab"
+          class="mb-2"
+          ><TabsList class="w-full"
+            ><TabsTrigger
+              v-for="(tab, index) in progressTabs"
+              :key="tab"
+              :value="index"
+              class="text-xs"
+              >{{ text(tab) }} ({{ [12, 8, 10][index] }})</TabsTrigger
+            ></TabsList
+          ></Tabs
+        >
+        <div
+          v-for="(row, index) in progressRows"
+          :key="row.key"
+          class="demo-progress-row"
+        >
+          <span
+            class="demo-mini-icon"
+            :style="{ '--tone': row.tone }"
+            ><VbenIcon :icon="row.icon" /></span
+          ><span>{{ text(row.key) }}</span
+          ><span
+            class="demo-pill"
+            :style="{
+              '--tone':
+                index === 0
+                  ? 'hsl(var(--destructive))'
+                  : 'hsl(var(--muted-foreground))',
+            }"
+            >{{
+              (progressCounts[progressTab]?.[index] || 0) *
+              (period === 'month' ? 4 : 1)
+            }}</span
+          >
+        </div></DemoPanel
+      >
+      <DemoPanel :title="text('activityTitle')"
+        ><template #action
+          ><Button
+            variant="link"
+            size="sm"
+            class="demo-link"
+            @click="
+              showDetail(
+                'activityTitle',
+                feed.map((item) => text(`activity.${item.key}`)).join('\n'),
+              )
+            "
+          >
+            {{ text('all') }}<VbenIcon icon="lucide:chevron-right" /></Button
+        ></template>
+        <div
+          v-for="item in feed"
+          :key="item.key"
+          class="demo-feed"
+        >
+          <span
+            class="demo-feed-dot"
+            :style="{ '--tone': item.tone }"
+          /><span class="demo-feed-copy">{{
+            text(`activity.${item.key}`)
+          }}</span
+          ><time
+            >{{ text(item.today ? 'today' : 'yesterdayWord') }}
+            {{ item.time }}</time
+          >
+        </div></DemoPanel
+      >
+    </div>
+    <div class="demo-work-bottom">
+      <DemoPanel :title="text('projectsTitle')"
+        ><template #action
+          ><Button
+            variant="link"
+            size="sm"
+            class="demo-link"
+            @click="
+              showDetail(
+                'projectsTitle',
+                projects
+                  .map((project) => text(`projects.${project.key}`))
+                  .join('\n'),
+              )
+            "
+          >
+            {{ text('allProjects')
+            }}<VbenIcon icon="lucide:arrow-right" /></Button
+        ></template>
+        <div
+          v-for="project in projects"
+          :key="project.key"
+          class="demo-project-row"
+        >
+          <span
+            class="demo-mini-icon"
+            :style="{ '--tone': project.tone }"
+            ><VbenIcon :icon="project.icon"
+          /></span>
+          <div class="demo-project-copy">
+            <strong>{{ text(`projects.${project.key}`) }}</strong
+            ><small>{{ text(`teams.${project.team}`) }}</small>
+          </div>
+          <span
+            class="demo-pill"
+            :style="{ '--tone': project.color }"
+            >{{ text(project.status) }}</span
+          ><Button
+            variant="link"
+            size="sm"
+            class="demo-link demo-muted"
+            :aria-label="text(`projects.${project.key}`)"
+            @click="
+              showDetail(
+                `projects.${project.key}`,
+                text(`teams.${project.team}`),
+              )
+            "
+          >
+            <VbenIcon icon="lucide:ellipsis" />
+          </Button></div
+      ></DemoPanel>
+      <DemoPanel :title="text('schedule')"
+        ><template #action
+          ><Button
+            variant="link"
+            size="sm"
+            class="demo-link demo-muted"
+            :aria-label="text('yesterdayWord')"
+            @click="dayOffset--"
+          >
+            <VbenIcon icon="lucide:chevron-left" /></Button
+          ><span
+            class="demo-muted"
+            style="font-size: 11px"
+            >{{ scheduleDate }}</span
+          ><Button
+            variant="link"
+            size="sm"
+            class="demo-link demo-muted"
+            :aria-label="text('date')"
+            @click="dayOffset++"
+          >
+            <VbenIcon icon="lucide:chevron-right" /></Button
+          ><Button
+            variant="default"
+            size="sm"
+            class="demo-button primary"
+            @click="newEventDialog = true"
+          >
+            <VbenIcon icon="lucide:plus" />{{ text('new') }}
+          </Button></template
+        >
+        <div
+          v-for="(event, index) in visibleEvents"
+          :key="`${event.key}-${index}`"
+          class="demo-schedule-row"
+          :class="{ current: event.active }"
+        >
+          <time>{{ event.time }}</time
+          ><span class="demo-schedule-dot" /><span>{{
+            event.name || text(`events.${event.key}`)
+          }}</span
+          ><span
+            v-if="event.active"
+            class="demo-pill"
+            >{{ text('inProgress') }}</span
+          ><span
+            v-else
+            class="demo-schedule-location"
+            >{{ text(`locations.${event.location}`) }}</span
+          >
+        </div>
+        <div
+          v-if="!visibleEvents.length"
+          class="demo-muted"
+          style="padding: 70px 0; text-align: center"
+        >
+          {{ text('dialog.empty') }}
+        </div></DemoPanel
+      >
+      <DemoPanel :title="text('operations')"
+        ><template #action
+          ><Button
+            variant="link"
+            size="sm"
+            class="demo-link"
+            @click="
+              showDetail(
+                'operations',
+                records
+                  .map(
+                    (record) =>
+                      `${record.time} · ${text(`operation.${record.action}`)}`,
+                  )
+                  .join('\n'),
+              )
+            "
+          >
+            {{ text('more') }}<VbenIcon icon="lucide:chevron-right" /></Button
+        ></template>
+        <div class="demo-table-wrap">
+          <ElTable
+            :data="records"
+            size="small"
+            show-overflow-tooltip
+          >
+            <ElTableColumn
+              prop="time"
+              :label="text('columns.time')"
+              min-width="160"
+            />
+            <ElTableColumn
+              :label="text('columns.user')"
+              min-width="100"
+              ><template #default="{ row }">{{
+                row.name === 'admin'
+                  ? 'admin'
+                  : row.name
+                    ? text(`names.${row.name}`)
+                    : ''
+              }}</template></ElTableColumn
+            >
+            <ElTableColumn
+              :label="text('columns.module')"
+              min-width="110"
+              ><template #default="{ row }">{{
+                row.module ? text(`modules.${row.module}`) : ''
+              }}</template></ElTableColumn
+            >
+            <ElTableColumn
+              :label="text('columns.content')"
+              min-width="190"
+              ><template #default="{ row }">{{
+                row.action ? text(`operation.${row.action}`) : ''
+              }}</template></ElTableColumn
+            >
+            <ElTableColumn
+              :label="text('columns.result')"
+              width="85"
+              ><template #default
+                ><i class="demo-status-dot" />{{ text('success') }}</template
+              ></ElTableColumn
+            ></ElTable
+          >
+        </div></DemoPanel
+      >
+    </div>
+    <ElDialog
+      v-model="dialog"
+      :title="text(dialogKey)"
+      width="min(520px, 92vw)"
+      ><div class="demo-dialog-content">
+        <p>{{ dialogDetail }}</p>
+        <p class="mt-4 text-muted-foreground">{{ text('dialog.body') }}</p>
+      </div>
+      <template #footer
+        ><Button
+          variant="default"
+          size="sm"
+          class="demo-button primary"
+          @click="dialog = false"
+        >
+          {{ text('dialog.close') }}
+        </Button></template
+      ></ElDialog
+    >
+    <ElDialog
+      v-model="newEventDialog"
+      :title="text('schedule')"
+      width="min(440px, 92vw)"
+      ><label
+        class="mb-2 block"
+        for="demo-event-name"
+        >{{ text('dialog.name') }}</label
+      ><ElInput
+        id="demo-event-name"
+        v-model="newEventName"
+        :placeholder="text('dialog.required')"
+        maxlength="60"
+        @keyup.enter="addEvent"
+      />
+      <p class="mt-3 text-xs text-muted-foreground">
+        {{ text('dialog.body') }}
+      </p>
+      <template #footer
+        ><Button
+          variant="default"
+          size="sm"
+          class="demo-button primary"
+          :disabled="!newEventName.trim()"
+          @click="addEvent"
+        >
+          {{ text('dialog.save') }}
+        </Button></template
+      ></ElDialog
+    >
   </div>
 </template>

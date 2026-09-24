@@ -2,6 +2,7 @@
 import type { CSSProperties } from 'vue';
 
 import { computed, onUnmounted, shallowRef, useSlots, watchEffect } from 'vue';
+import { useElementSize } from '@vueuse/core';
 
 import { VbenScrollbar } from '@/plugins/vben-ui/shadcn-ui';
 
@@ -125,6 +126,11 @@ const slots = useSlots();
 
 const asideRef = shallowRef<HTMLElement | null>(null);
 const dragBarRef = shallowRef<HTMLElement | null>(null);
+const menuAreaRef = shallowRef<HTMLElement | null>(null);
+const menuContentRef = shallowRef<HTMLElement | null>(null);
+const { height: menuAreaHeight } = useElementSize(menuAreaRef);
+const { height: menuContentHeight } = useElementSize(menuContentRef);
+const decorationSpace = computed(() => Math.max(0, menuAreaHeight.value - menuContentHeight.value));
 
 const hiddenSideStyle = computed((): CSSProperties => calcMenuWidthStyle(true));
 
@@ -325,9 +331,26 @@ onUnmounted(() => {
       <div v-if="slots.logo" :style="headerStyle">
         <slot name="logo"></slot>
       </div>
-      <VbenScrollbar :style="contentStyle" shadow shadow-border>
-        <slot></slot>
-      </VbenScrollbar>
+      <div
+        ref="menuAreaRef"
+        :style="contentStyle"
+        class="relative isolate overflow-hidden"
+        :class="{ 'sidebar-menu-decorated': slots.decoration && !collapse && !isSidebarMixed }"
+      >
+        <div
+          class="pointer-events-none absolute inset-x-0 bottom-0 z-0"
+          aria-hidden="true"
+        >
+          <slot
+            v-if="!collapse && !isSidebarMixed"
+            name="decoration"
+            :available-space="decorationSpace"
+          ></slot>
+        </div>
+        <VbenScrollbar class="relative z-10 h-full" shadow shadow-border>
+          <div ref="menuContentRef"><slot></slot></div>
+        </VbenScrollbar>
+      </div>
 
       <div :style="collapseStyle"></div>
       <SidebarCollapseButton
@@ -367,3 +390,13 @@ onUnmounted(() => {
     ></div>
   </aside>
 </template>
+
+<style scoped>
+/* Let the bottom illustration show through idle menu items and expanded groups. */
+.sidebar-menu-decorated :deep(.vben-menu) {
+  --menu-item-background-color: transparent;
+  --menu-submenu-background-color: transparent;
+
+  background: transparent;
+}
+</style>

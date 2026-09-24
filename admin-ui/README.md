@@ -1,70 +1,60 @@
-# Admin Platform 前端
+# Admin Platform Frontend
 
-管理平台的 Vue 3 前端，使用 TypeScript、Vite、Element Plus 和 Tailwind CSS。Vben 组件在本地 `src/plugins/vben-ui` 中维护，业务组件位于 `src/components`。
+**English** | [简体中文](./README.zh-CN.md) | [Project README](../README.md)
 
-## 环境与启动
+The Vue 3 frontend for Admin Platform, built with TypeScript, Vite, Element Plus, and Tailwind CSS. Vben components are maintained locally in `src/plugins/vben-ui`; shared application components live in `src/components`.
 
-Node.js 版本要求为 `^22.18.0 || >=24.12.0`，以 [package.json](package.json) 的 `engines` 为准。以下命令均在 `admin-ui` 目录执行：
+## Development
+
+Requires Node.js `^22.18.0 || >=24.12.0`. Run from `admin-ui`:
 
 ```sh
 npm install
 npm run dev
 ```
 
-开发服务通过 [vite.config.ts](vite.config.ts) 将 `/api` 请求代理到 `http://localhost:8080`，并移除路径中的 `/api` 前缀。
+[vite.config.ts](./vite.config.ts) proxies `/api` requests to `http://localhost:8080`, removing the `/api` prefix. See the [project README](../README.md#quick-start) for backend setup.
 
-## 目录说明
+## Structure
 
-| 路径 | 用途 |
+| Path | Purpose |
 | --- | --- |
-| `src/api` | 后端接口调用 |
-| `src/assets` | 样式、图标与图片 |
-| `src/components` | 通用业务组件 |
-| `src/constants/admin.ts` | 项目链接与品牌资源 |
-| `src/layout` | 页面布局与布局部件 |
-| `src/plugins/vben-ui` | Vben 表单、弹窗、标签页等组件 |
-| `src/plugins/preference` | 偏好设置与主题状态 |
-| `src/plugins/locale` | 国际化配置与语言资源 |
-| `src/router` | 路由与访问控制 |
-| `src/store` | Pinia 状态管理 |
-| `src/utils` | 请求、缓存与通用工具 |
-| `src/views/sys` | 系统业务页面 |
-| `src/views/examples`、`src/views/demos` | 组件及功能示例 |
+| `src/api` | Backend API calls |
+| `src/assets` | Styles, icons, and images |
+| `src/components` | Shared application components |
+| `src/constants/admin.ts` | Project links and branding |
+| `src/layout` | Application layouts |
+| `src/plugins/vben-ui` | Local Vben components, forms, and layouts |
+| `src/plugins/preference` | Preferences and theme state |
+| `src/plugins/locale` | Translations and locale configuration |
+| `src/router` | Routing and access control |
+| `src/store` | Pinia stores |
+| `src/utils` | Requests, caching, and utilities |
+| `src/views/sys` | System pages |
+| `src/views/examples`, `src/views/demos` | Component and feature examples |
 
-路径别名 `@` 指向 `src`。项目内组件和工具通过 `@/components/...`、`@/plugins/...`、`@/utils/...` 导入。
+The `@` alias points to `src`. The application entry point is [src/main.ts](./src/main.ts); default preferences are in [src/preference.ts](./src/preference.ts).
 
-应用入口为 [src/main.ts](src/main.ts)，项目偏好配置为 [src/preference.ts](src/preference.ts)。
+## Checks and Build
 
-## 检查与构建
+| Command | Purpose |
+| --- | --- |
+| `npm run type-check` | Check TypeScript and Vue types |
+| `npm run build` | Run type checks and build to `dist` |
+| `npm run build-only` | Build without a separate type check |
+| `npm run preview` | Preview the build locally |
+| `npx eslint src` | Check source code with ESLint |
+| `npm run format` | Format files under `src` in place |
 
-类型检查：
+Scripts are defined in [package.json](./package.json). Review changes after formatting.
 
-```sh
-npx vue-tsc --noEmit -p tsconfig.app.json
-```
+## Component Documentation
 
-打包与本地预览：
+These implementation notes are currently in Chinese:
 
-```sh
-npm run build-only
-npm run preview
-```
-
-构建产物输出到 `dist`。以上分别执行类型检查和打包；当前 `build` 脚本引用了未定义的 `type-check` 脚本，暂不作为构建入口。
-
-代码检查与格式化：
-
-```sh
-npx eslint src
-npm run format
-```
-
-`npm run format` 会改写 `src` 下的文件，提交前需检查差异。
-
-## 组件文档
-
-- [数组表单](src/views/demos/form-array/README.md)
-- [缓存管理](src/utils/cache/README.md)
-- [动画组件](src/components/motion/README.md)
-- [表格组件](src/components/vxe-table/README.md)
-- [图表组件](src/components/echarts/README.md)
+- [Layout](src/layout/basic/README.md)
+- [Array forms](src/views/demos/form-array/README.md)
+- [Caching](src/utils/cache/README.md)
+- [Motion](src/components/motion/README.md)
+- [Tables](src/components/vxe-table/README.md)
+- [Charts](src/components/echarts/README.md)

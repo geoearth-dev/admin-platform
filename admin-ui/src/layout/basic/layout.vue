@@ -114,6 +114,9 @@
       </LayoutHeader>
     </template>
     <!-- 侧边菜单区域 -->
+    <template #sidebar-decoration="{ availableSpace }">
+      <SidebarScenery :available-space="availableSpace" />
+    </template>
     <template #menu>
       <LayoutMenu
         :accordion="preferences.navigation.accordion"
@@ -228,6 +231,7 @@ import { Copyright } from './copyright';
 import { LayoutFooter } from './footer';
 import { LayoutHeader } from './header';
 import { LayoutExtraMenu, LayoutMenu, LayoutMixedMenu, useExtraMenu, useMixedMenu } from './menu';
+import SidebarScenery from '@/plugins/vben-ui/layout-ui/components/sidebar-scenery.vue';
 import { LayoutTabbar } from './tabbar';
 import { useLayoutScroll } from './use-layout-scroll';
 import { useRefresh } from '@/plugins/effects/hooks';
