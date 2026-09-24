@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://admin.geoearth.dev">
-    <img alt="Admin Platform Logo" width="200" src="docs/readme/logo.png">
+    <img alt="Admin Platform Logo" width="200" src="admin-docs/public/images/logo.png">
   </a>
   <br>
   <a href="./LICENSE">
@@ -20,9 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="https://admin.geoearth.dev">项目主页</a>
-  &nbsp;·&nbsp;
-  <a href="https://admin-docs.geoearth.dev">项目文档</a>
+  <a href="https://admin.geoearth.dev">主页</a>
   &nbsp;·&nbsp;
   <a href="https://admin-demo.geoearth.dev">在线演示</a>
   &nbsp;·&nbsp;
@@ -50,8 +48,8 @@
 
 <table>
   <tr>
-    <td><a href="./docs/readme/analysis.png"><img src="./docs/readme/analysis.png"  width="100%" /></a></td>
-    <td><a href="./docs/readme/workbench.png"><img src="./docs/readme/workbench.png"  width="100%" /></a></td>
+    <td><a href="./admin-docs/public/images/analysis.png"><img src="./admin-docs/public/images/analysis.png"  width="100%" /></a></td>
+    <td><a href="./admin-docs/public/images/workbench.png"><img src="./admin-docs/public/images/workbench.png"  width="100%" /></a></td>
   </tr>
 </table>
 
@@ -100,7 +98,7 @@ admin-platform/
 │   └── admin-generator/          # 代码生成
 ├── admin-ui/                     # Vue 前端
 ├── sql/                          # 数据库初始化快照
-├── docs/readme/                  # README 预览图片
+├── admin-docs/                   # 官网与文档，public/images 存放共用图片
 ├── pom.xml                       # Maven 聚合与依赖管理
 └── README.md
 ```
