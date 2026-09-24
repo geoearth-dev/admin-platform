@@ -1,0 +1,103 @@
+:root {
+  --vp-c-brand-1: #087fa6;
+  --vp-c-brand-2: #096e93;
+  --vp-c-brand-3: #087fa6;
+  --vp-c-brand-soft: rgba(8, 127, 166, 0.12);
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(120deg, #00a99d, #078de0);
+  --vp-home-hero-image-background-image: radial-gradient(
+    ellipse,
+    rgba(0, 169, 157, 0.18),
+    rgba(7, 141, 224, 0.1),
+    transparent 70%
+  );
+  --vp-home-hero-image-filter: blur(30px);
+}
+
+.dark {
+  --vp-c-brand-1: #65cddd;
+  --vp-c-brand-2: #35b4cb;
+  --vp-c-brand-3: #087fa6;
+  --vp-c-brand-soft: rgba(101, 205, 221, 0.14);
+}
+
+.VPHomeHero .image-src {
+  max-width: 250px;
+  max-height: 250px;
+}
+.home-preview {
+  max-width: 1280px;
+  margin: 64px auto 0;
+  padding: 0 64px;
+}
+.home-preview h2 {
+  color: var(--vp-c-text-1);
+  font-size: 28px;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: -0.6px;
+}
+.preview-description {
+  margin: 12px 0 24px;
+  color: var(--vp-c-text-2);
+  line-height: 1.7;
+}
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.preview-card {
+  overflow: hidden;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--vp-c-bg-soft);
+  transition: border-color 0.2s;
+}
+.preview-card:hover {
+  border-color: var(--vp-c-brand-1);
+}
+.preview-card:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 4px;
+}
+.preview-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  color: var(--vp-c-text-1);
+  font-weight: 600;
+}
+.preview-card-heading span {
+  color: var(--vp-c-text-2);
+}
+.preview-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+@media (max-width: 959px) {
+  .home-preview {
+    padding: 0 32px;
+  }
+}
+@media (max-width: 639px) {
+  .home-preview {
+    margin-top: 48px;
+    padding: 0 24px;
+  }
+  .home-preview h2 {
+    font-size: 24px;
+  }
+  .preview-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .VPHomeHero .image-src {
+    max-width: 180px;
+    max-height: 180px;
+  }
+}
