@@ -33,6 +33,7 @@
         <druid.version>1.2.28</druid.version>
         <lombok.version>1.18.46</lombok.version>
         <hutool.version>5.8.47</hutool.version>
+        <ip2region.version>3.3.8</ip2region.version>
         <poi.version>5.5.1</poi.version>
         <yauaa.version>8.2.0</yauaa.version>
         <fastjson.version>2.0.64</fastjson.version>
@@ -137,6 +138,13 @@
                 <version>${hutool.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <!-- IP 归属地离线查询 -->
+            <dependency>
+                <groupId>org.lionsoul</groupId>
+                <artifactId>ip2region</artifactId>
+                <version>${ip2region.version}</version>
             </dependency>
 
             <!-- excel工具 -->
