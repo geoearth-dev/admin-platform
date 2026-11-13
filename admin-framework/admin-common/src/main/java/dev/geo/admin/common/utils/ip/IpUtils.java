@@ -41,25 +41,11 @@ public class IpUtils {
         if (request == null) {
             return "unknown";
         }
-        String ip = request.getHeader("x-forwarded-for");
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("Proxy-Client-IP");
-        }
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("X-Forwarded-For");
-        }
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("WL-Proxy-Client-IP");
-        }
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("X-Real-IP");
-        }
-
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddr();
-        }
-
-        return "0:0:0:0:0:0:0:1".equals(ip) ? "127.0.0.1" : getMultistageReverseProxyIp(ip);
+        // forward-headers-strategy=framework 已由 Spring 还原访客 IP。
+        // X-Forwarded-For 处理后会被隐藏，而 X-Real-IP 可能仍是 Cloudflare 节点地址。
+        String ip = request.getRemoteAddr();
+        return "0:0:0:0:0:0:0:1".equals(ip) || "::1".equals(ip)
+                ? "127.0.0.1" : getMultistageReverseProxyIp(ip);
     }
 
     /**
@@ -69,6 +55,21 @@ public class IpUtils {
      * @return 结果
      */
     public static boolean internalIp(String ip) {
+        if (ip != null && ip.contains(":")) {
+            try {
+                InetAddress address = InetAddress.getByName(ip);
+                // IPv4 映射地址由 IPv4 分支判断，公网 IPv6 不能一律视为内网。
+                if (address instanceof Inet4Address) {
+                    return internalIp(address.getHostAddress());
+                }
+                return address.isAnyLocalAddress() || address.isLoopbackAddress()
+                        || address.isLinkLocalAddress() || address.isSiteLocalAddress()
+                        || address.isMulticastAddress()
+                        || (address.getAddress()[0] & 0xfe) == 0xfc;
+            } catch (UnknownHostException e) {
+                return true;
+            }
+        }
         byte[] addr = textToNumericFormatV4(ip);
         return internalIp(addr) || "127.0.0.1".equals(ip);
     }

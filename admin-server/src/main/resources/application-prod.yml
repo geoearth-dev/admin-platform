@@ -1,5 +1,7 @@
 app:
   profile: /opt/admin-platform/upload/
+  # 生产环境记录 IP 归属地；本地开发仍使用 application.yml 中的关闭配置。
+  address-enabled: true
 
 
 spring:

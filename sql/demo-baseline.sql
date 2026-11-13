@@ -1,5 +1,6 @@
 -- Admin Platform demo baseline; exported 2026-09-22 from local admin_platform.
 -- DESTRUCTIVE: recreates the listed tables in the database selected by the client.
+-- Existing sys_login_log and sys_operation_log tables and their data are preserved.
 -- Retains active users and their existing password hashes; do not publish this file.
 -- No CREATE DATABASE / USE statements; source database was read only.
 SET NAMES utf8mb4;
@@ -291,8 +292,8 @@ CREATE TABLE `sys_job_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='定时任务调度日志表';
 
 -- Table: sys_login_log
-DROP TABLE IF EXISTS `sys_login_log`;
-CREATE TABLE `sys_login_log` (
+-- Keep audit history and its AUTO_INCREMENT value during daily resets.
+CREATE TABLE IF NOT EXISTS `sys_login_log` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '访问ID',
   `user_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '用户账号',
   `ip_address` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '登录IP地址',
@@ -540,8 +541,8 @@ CREATE TABLE `sys_notice_read` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='公告已读记录表';
 
 -- Table: sys_operation_log
-DROP TABLE IF EXISTS `sys_operation_log`;
-CREATE TABLE `sys_operation_log` (
+-- Keep audit history and its AUTO_INCREMENT value during daily resets.
+CREATE TABLE IF NOT EXISTS `sys_operation_log` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '日志主键',
   `title` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '模块标题',
   `business_type` int DEFAULT '0' COMMENT '业务类型（0其它 1新增 2修改 3删除）',

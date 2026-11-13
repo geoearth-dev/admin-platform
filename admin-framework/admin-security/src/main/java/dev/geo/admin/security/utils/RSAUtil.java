@@ -110,38 +110,4 @@ public class RSAUtil {
         }
     }
 
-
-    /**
-     * 解密公钥加密后的数据
-     */
-//    public static void main(String[] args) {
-//        // 待解密的密文示例。
-//        String encryptedData = "U/ANHv0/jZLQIKGRq/4syageiHcd93x9mUjaAyBeyWNf4GvVGizZwi1D7VQWHyDO4nbPJCu/bvyJ7ppT0cb4SpxHZN6KpTBW4bLQAF6fdxOAmPFxRS4xBilrawRm9fVJVW91h7mC4gF0V4KKteUoLe2egJisAnrZ6yVYg4uxLP0=";
-//
-//        // 调用解密方法
-//        String decryptedData = decryptData(encryptedData);
-//
-//        // 输出解密后的数据
-//        System.out.println("Decrypted Data: " + decryptedData);
-//    }
-
-    /**
-     * 主方法，演示使用私钥加密和公钥解密数据
-     * 通过 RSA 算法实现数据的加密和解密
-     *
-     * @param args 参数
-     */
-    public static void main(String[] args) {
-        // 原始数据，待加密的明文
-        String data = "这是一个测试数据";
-
-        // 使用私钥加密数据
-        String encryptedData = encryptData(data);
-        System.out.println("加密后的数据: " + encryptedData);
-
-        // 使用公钥解密数据 【公钥会给到第三方】
-        String decryptedData = decryptWithPublicKey(encryptedData);
-        System.out.println("解密后的数据: " + decryptedData);
-    }
-
 }
